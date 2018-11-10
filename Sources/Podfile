@@ -1,0 +1,36 @@
+require 'yaml'
+
+platform :ios, '9.0'
+
+workspace 'FantLab-iOS'
+
+project 'FantLab-iOS.xcodeproj'
+project 'Modules.xcodeproj'
+
+use_modular_headers!
+inhibit_all_warnings!
+
+def all_pods
+	pod 'RxSwift', '4.4.0'
+	pod 'RxCocoa', '4.4.0'
+end
+
+target 'FantLab-iOS' do
+	project 'FantLab-iOS.xcodeproj'
+
+	all_pods
+
+	target 'FantLab-iOSTests' do
+		inherit! :search_paths
+	end
+end
+
+modules = YAML.load_file('Modules.yaml')
+
+modules.keys.sort.each do |target_name|
+	target target_name do
+		project 'Modules.xcodeproj'
+
+		all_pods
+	end
+end

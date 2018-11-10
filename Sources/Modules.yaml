@@ -1,0 +1,15 @@
+FantLabApp:
+  display_name: App
+  sources: Modules/App
+  dependencies:
+    - FantLabNetwork
+  system_frameworks:
+    - Foundation
+    - UIKit
+FantLabNetwork:
+  display_name: Network
+  sources: Modules/Network
+  dependencies:
+  system_frameworks:
+    - Foundation
+    - UIKit
