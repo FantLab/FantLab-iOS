@@ -75,8 +75,6 @@ def setup_group_content(parent_group, dir)
 end
 
 def setup_build_settings(project)
-	project.add_build_configuration('Adhoc', :release)
-
 	for config in project.build_configurations
 		config.build_settings['PRODUCT_NAME'] = '$(TARGET_NAME)'
 		config.build_settings['SWIFT_VERSION'] = '4.2'
@@ -101,6 +99,7 @@ end
 
 def make_modules_project(project_name, modules, ios_version)
 	project = Xcodeproj::Project.new("#{project_name}.xcodeproj")
+	project.add_build_configuration('Adhoc', :release)
 
 	root_group = project.new_group('Sources')
 
