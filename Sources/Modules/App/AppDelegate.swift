@@ -1,4 +1,6 @@
 import UIKit
+import Fabric
+import Crashlytics
 import FantLabStyle
 import FantLabTextUI
 import FantLabSharedUI
@@ -45,6 +47,11 @@ public final class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.tintColor = AppStyle.shared.colors.mainTintColor
 
         Appearance.setup()
+
+        #if DEBUG
+        #else
+        Fabric.with([Crashlytics.self])
+        #endif
 
         return true
     }

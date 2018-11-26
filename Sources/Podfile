@@ -16,6 +16,8 @@ def all_pods
 	pod 'RxSwift', '4.4.0'
     pod 'YYWebImage', '1.0.5'
     pod 'ALLKit', :git => 'https://github.com/geor-kasapidi/ALLKit', :tag => 'v0.0.3'
+    pod 'Fabric'
+    pod 'Crashlytics'
 end
 
 target 'FantLab-iOS' do

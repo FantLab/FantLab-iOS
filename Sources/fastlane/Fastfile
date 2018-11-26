@@ -1,0 +1,24 @@
+default_platform(:ios)
+
+platform :ios do
+	desc "Build project and upload artifacts to fabric"
+	lane :build_beta do
+		gym(
+			workspace: "FantLab-iOS.xcworkspace",
+			configuration: "Adhoc",
+			export_method: "ad-hoc",
+			scheme: "FantLab-iOS",
+			silent: false,
+			clean: true,
+			output_directory: "./build",
+			output_name: "FantLab.ipa"
+			)
+
+		build_secret = File.read("../fabric.buildsecret")
+
+		crashlytics(
+			api_token: "e48f5ec42a49c05139083ca3c19049916013ca2a",
+			build_secret: build_secret
+			)
+	end
+end

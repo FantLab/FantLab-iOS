@@ -71,3 +71,6 @@ fastlane/test_output
 
 Sources/Modules.xcodeproj
 Sources/FantLab-iOS.xcworkspace
+Sources/fastlane/README.md
+Sources/fastlane/report.xml
+fabric.buildsecret
