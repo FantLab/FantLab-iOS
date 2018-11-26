@@ -8,7 +8,7 @@ import FantLabSharedUI
 import FantLabTextUI
 import FantLabModels
 
-final class WorkReviewsViewController: UIViewController {
+final class WorkReviewsViewController: ListViewController {
     private let disposeBag = DisposeBag()
     private let interactor: WorkReviewsInteractor
 
@@ -22,7 +22,6 @@ final class WorkReviewsViewController: UIViewController {
         fatalError()
     }
 
-    private let adapter = CollectionViewAdapter()
     private let sortSelectionControl = UISegmentedControl(items: ["Оценка", "Дата", "Рейтинг"])
 
     override func viewDidLoad() {
@@ -32,12 +31,7 @@ final class WorkReviewsViewController: UIViewController {
 
         view.backgroundColor = AppStyle.shared.colors.viewBackgroundColor
 
-        do {
-            adapter.collectionView.backgroundColor = AppStyle.shared.colors.viewBackgroundColor
-            view.addSubview(adapter.collectionView)
-            adapter.collectionView.pinEdges(to: view)
-            adapter.collectionView.contentInset.top = 48
-        }
+        adapter.collectionView.contentInset.top = 48
 
         do {
             sortSelectionControl.backgroundColor = AppStyle.shared.colors.viewBackgroundColor
@@ -99,18 +93,6 @@ final class WorkReviewsViewController: UIViewController {
             .disposed(by: disposeBag)
 
         interactor.loadNextPage()
-    }
-
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-
-        let bounds = view.bounds
-
-        guard !bounds.isEmpty else {
-            return
-        }
-
-        adapter.set(boundingSize: BoundingSize(width: bounds.width, height: .nan))
     }
 
     // MARK: -

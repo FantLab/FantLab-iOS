@@ -7,11 +7,10 @@ import FantLabStyle
 import FantLabModels
 import FantLabSharedUI
 
-final class WorkViewController: UIViewController {
+final class WorkViewController: ListViewController {
     private let disposeBag = DisposeBag()
     private let router: WorkModuleRouter
     private let interactor: WorkInteractor
-    private let adapter = CollectionViewAdapter()
 
     init(workId: Int, router: WorkModuleRouter) {
         self.router = router
@@ -33,11 +32,6 @@ final class WorkViewController: UIViewController {
         title = ""
 
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .action, target: nil, action: nil)
-
-        adapter.collectionView.backgroundColor = AppStyle.shared.colors.viewBackgroundColor
-        adapter.collectionView.alwaysBounceVertical = true
-
-        view.addSubview(adapter.collectionView)
 
         do {
             adapter.scrollEvents.didScroll = { [weak self] scrollView in
@@ -61,20 +55,6 @@ final class WorkViewController: UIViewController {
             .disposed(by: disposeBag)
 
         interactor.loadWork()
-    }
-
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-
-        let bounds = view.bounds
-
-        guard !bounds.isEmpty else {
-            return
-        }
-
-        adapter.collectionView.frame = bounds
-
-        adapter.set(boundingSize: BoundingSize(width: bounds.width, height: .nan))
     }
 
     // MARK: -
