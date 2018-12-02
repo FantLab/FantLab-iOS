@@ -29,19 +29,20 @@ public final class PreviewTextDecorator: TextDecorator {
 
         string.addAttributes(
             [
-                .font: AppStyle.shared.fonts.regularFont(ofSize: fontSize),
-                .foregroundColor: AppStyle.shared.colors.textMainColor
+                .font: AppStyle.iowanFonts.regularFont(ofSize: fontSize),
+                .foregroundColor: AppStyle.colors.mainTextColor,
+//                .paragraphStyle: paragraphStyle
             ],
             range: range
         )
     }
 
     public func setupBoldIn(range: NSRange, string: NSMutableAttributedString) {
-        string.addAttribute(.font, value: AppStyle.shared.fonts.boldFont(ofSize: fontSize), range: range)
+        string.addAttribute(.font, value: AppStyle.iowanFonts.boldFont(ofSize: fontSize), range: range)
     }
 
     public func setupItalicIn(range: NSRange, string: NSMutableAttributedString) {
-        string.addAttribute(.font, value: AppStyle.shared.fonts.italicFont(ofSize: fontSize), range: range)
+        string.addAttribute(.font, value: AppStyle.iowanFonts.italicFont(ofSize: fontSize), range: range)
     }
 
     public func setupUnderlineIn(range: NSRange, string: NSMutableAttributedString) {
@@ -53,11 +54,11 @@ public final class PreviewTextDecorator: TextDecorator {
     }
 
     public func setupQuoteIn(range: NSRange, string: NSMutableAttributedString) {
-        string.addAttribute(.font, value: AppStyle.shared.fonts.italicFont(ofSize: fontSize), range: range)
+        string.addAttribute(.font, value: AppStyle.iowanFonts.italicFont(ofSize: fontSize), range: range)
     }
 
     public func setupTapAreaIn(range: NSRange, string: NSMutableAttributedString) {
-        string.addAttribute(.font, value: AppStyle.shared.fonts.boldFont(ofSize: fontSize), range: range)
+        string.addAttribute(.font, value: AppStyle.iowanFonts.boldFont(ofSize: fontSize), range: range)
     }
 
     public func setupLinkIn(range: NSRange, string: NSMutableAttributedString) {
@@ -83,8 +84,8 @@ public final class InteractiveTextDecorator: TextDecorator {
 
         string.addAttributes(
             [
-                .font: AppStyle.shared.fonts.regularFont(ofSize: fontSize),
-                .foregroundColor: AppStyle.shared.colors.textMainColor,
+                .font: AppStyle.iowanFonts.regularFont(ofSize: fontSize),
+                .foregroundColor: AppStyle.colors.mainTextColor,
                 .paragraphStyle: paragraphStyle
             ],
             range: range
@@ -92,11 +93,11 @@ public final class InteractiveTextDecorator: TextDecorator {
     }
 
     public func setupBoldIn(range: NSRange, string: NSMutableAttributedString) {
-        string.addAttribute(.font, value: AppStyle.shared.fonts.boldFont(ofSize: fontSize), range: range)
+        string.addAttribute(.font, value: AppStyle.iowanFonts.boldFont(ofSize: fontSize), range: range)
     }
 
     public func setupItalicIn(range: NSRange, string: NSMutableAttributedString) {
-        string.addAttribute(.font, value: AppStyle.shared.fonts.italicFont(ofSize: fontSize), range: range)
+        string.addAttribute(.font, value: AppStyle.iowanFonts.italicFont(ofSize: fontSize), range: range)
     }
 
     public func setupUnderlineIn(range: NSRange, string: NSMutableAttributedString) {
@@ -108,15 +109,15 @@ public final class InteractiveTextDecorator: TextDecorator {
     }
 
     public func setupQuoteIn(range: NSRange, string: NSMutableAttributedString) {
-        string.addAttribute(.font, value: AppStyle.shared.fonts.italicFont(ofSize: fontSize), range: range)
+        string.addAttribute(.font, value: AppStyle.iowanFonts.italicFont(ofSize: fontSize), range: range)
     }
 
     public func setupTapAreaIn(range: NSRange, string: NSMutableAttributedString) {
         string.addAttributes(
             [
-                .foregroundColor: AppStyle.shared.colors.textTapAreaForegroundColor,
-                .backgroundColor: AppStyle.shared.colors.textTapAreaBackgroundColor,
-                .font: AppStyle.shared.fonts.boldFont(ofSize: fontSize)
+                .foregroundColor: AppStyle.colors.textTapAreaForegroundColor,
+                .backgroundColor: AppStyle.colors.textTapAreaBackgroundColor,
+                .font: AppStyle.iowanFonts.boldFont(ofSize: fontSize)
             ],
             range: range
         )
@@ -126,7 +127,7 @@ public final class InteractiveTextDecorator: TextDecorator {
         string.addAttributes(
             [
                 .underlineStyle: NSNumber(value: NSUnderlineStyle.single.rawValue),
-                .foregroundColor: AppStyle.shared.colors.textLinkColor
+                .foregroundColor: AppStyle.colors.linkTextColor
             ],
             range: range
         )

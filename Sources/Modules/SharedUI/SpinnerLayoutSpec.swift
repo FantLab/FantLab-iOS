@@ -3,11 +3,11 @@ import UIKit
 import ALLKit
 
 public final class SpinnerLayoutSpec: LayoutSpec {
-    public override func makeNode() -> LayoutNode {
-        let spinnerNode = LayoutNode(children: [], config: { node in
+    public override func makeNodeWith(sizeConstraints: SizeConstraints) -> LayoutNode {
+        let spinnerNode = LayoutNode(config: { node in
             node.width = 32
             node.height = 32
-        }) { (view: UIActivityIndicatorView, _) in
+        }) { (view: UIActivityIndicatorView) in
             view.style = .gray
             view.startAnimating()
         }

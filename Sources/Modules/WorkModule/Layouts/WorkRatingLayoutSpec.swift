@@ -4,53 +4,35 @@ import ALLKit
 import FantLabUtils
 import FantLabStyle
 import FantLabModels
+import FantLabSharedUI
 
 final class WorkRatingLayoutSpec: ModelLayoutSpec<WorkModel> {
-    override func makeNodeFrom(model: WorkModel) -> LayoutNode {
-        let hasRating = model.rating > 0 && model.votes > 0
-
-        let ratingString = (hasRating ? String(model.rating) : "N/A").attributed()
-            .font(AppStyle.shared.fonts.boldFont(ofSize: 20))
-            .foregroundColor(AppStyle.shared.colors.textMainColor)
+    override func makeNodeFrom(model: WorkModel, sizeConstraints: SizeConstraints) -> LayoutNode {
+        let ratingString = String(model.rating).attributed()
+            .font(AppStyle.systemFonts.boldFont(ofSize: 24))
+            .foregroundColor(AppStyle.colors.secondaryTintColor)
             .make()
 
-        let votesString = String(model.votes).attributed()
-            .font(AppStyle.shared.fonts.regularFont(ofSize: 10))
-            .foregroundColor(AppStyle.shared.colors.textSecondaryColor)
+        let votesString = RussianPluralRule.format(value: model.votes, .votes).attributed()
+            .font(AppStyle.systemFonts.regularFont(ofSize: 12))
+            .foregroundColor(AppStyle.colors.secondaryTextColor)
             .make()
 
-        let reviewsString = "Отзывы (\(model.reviewsCount))".attributed()
-            .font(AppStyle.shared.fonts.regularFont(ofSize: 14))
-            .foregroundColor(AppStyle.shared.colors.textSecondaryColor)
-            .make()
-
-        let ratingNode = LayoutNode(sizeProvider: ratingString, config: nil) { (label: UILabel, _) in
+        let ratingNode = LayoutNode(sizeProvider: ratingString, config: nil) { (label: UILabel) in
             label.attributedText = ratingString
         }
 
-        let votesNode = LayoutNode(sizeProvider: votesString, config: { node in
-            node.isHidden = !hasRating
-        }) { (label: UILabel, _) in
+        let votesNode = LayoutNode(sizeProvider: votesString, config: nil) { (label: UILabel) in
             label.attributedText = votesString
         }
 
-        let leftStackNode = LayoutNode(children: [ratingNode, votesNode], config: { node in
-            node.width = 80
-            node.flexDirection = .column
-            node.alignItems = .center
-        })
-
-        let reviewsNode = LayoutNode(sizeProvider: reviewsString, config: nil) { (label: UILabel, _) in
-            label.attributedText = reviewsString
-        }
-
-        let mainNode = LayoutNode(children: [leftStackNode, reviewsNode], config: { node in
+        let contentNode = LayoutNode(children: [ratingNode, votesNode], config: { node in
             node.flexDirection = .row
-            node.padding(top: 8, left: 16, bottom: 8, right: 0)
             node.alignItems = .center
             node.justifyContent = .spaceBetween
+            node.padding(top: nil, left: 16, bottom: 12, right: 16)
         })
 
-        return mainNode
+        return contentNode
     }
 }

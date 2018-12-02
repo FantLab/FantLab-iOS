@@ -1,5 +1,6 @@
 import Foundation
 import UIKit
+import ALLKit
 
 extension UIColor {
     public convenience init(rgb: UInt32, alpha: CGFloat = 1) {
@@ -15,6 +16,12 @@ extension UIColor {
 extension Collection {
     public subscript(safe index: Index) -> Iterator.Element? {
         return index >= startIndex && index < endIndex ? self[index] : nil
+    }
+}
+
+extension String {
+    public func capitalizedFirstLetter() -> String {
+        return isEmpty ? "" : prefix(1).capitalized + dropFirst()
     }
 }
 
@@ -113,5 +120,27 @@ extension URL {
         }
 
         return components.url
+    }
+}
+
+extension UIScreen {
+    public var px: CGFloat {
+        return 1.0/scale
+    }
+}
+
+extension UIImage {
+    public func with(orientation: UIImage.Orientation) -> UIImage? {
+        guard let cgImage = cgImage else {
+            return nil
+        }
+
+        return UIImage(cgImage: cgImage, scale: scale, orientation: orientation)
+    }
+}
+
+extension ListItem {
+    public convenience init(id: String, layoutSpec: LayoutSpec) {
+        self.init(id: id, model: id, layoutSpec: layoutSpec)
     }
 }

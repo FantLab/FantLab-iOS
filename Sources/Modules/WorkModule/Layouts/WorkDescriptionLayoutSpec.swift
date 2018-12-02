@@ -4,23 +4,23 @@ import ALLKit
 import FantLabModels
 import FantLabText
 import FantLabStyle
+import FantLabSharedUI
 
 final class WorkDescriptionLayoutSpec: ModelLayoutSpec<WorkModel> {
-    override func makeNodeFrom(model: WorkModel) -> LayoutNode {
+    override func makeNodeFrom(model: WorkModel, sizeConstraints: SizeConstraints) -> LayoutNode {
         let text = FLAttributedText(
-            taggedString: model.descriptionText,
+            taggedString: model.descriptionText.nilIfEmpty ?? model.notes,
             decorator: PreviewTextDecorator(),
             replacementRules: TagReplacementRules.previewAttachments
         )
 
-        let textNode = LayoutNode(sizeProvider: text.string, config: nil) { (label: UILabel, _) in
+        let textNode = LayoutNode(sizeProvider: text.string, config: { node in
+            node.maxHeight = 150
+        }) { (label: UILabel) in
             label.numberOfLines = 0
             label.attributedText = text.string
         }
 
-        return LayoutNode(children: [textNode], config: { node in
-            node.padding(top: 16, left: 16, bottom: 16, right: 0)
-            node.maxHeight = 150
-        })
+        return RightArrowLayoutSpec(model: textNode).makeNodeWith(sizeConstraints: sizeConstraints)
     }
 }

@@ -29,12 +29,12 @@ final class WorkReviewsViewController: ListViewController {
 
         title = "Отзывы"
 
-        view.backgroundColor = AppStyle.shared.colors.viewBackgroundColor
+        view.backgroundColor = AppStyle.colors.viewBackgroundColor
 
         adapter.collectionView.contentInset.top = 48
 
         do {
-            sortSelectionControl.backgroundColor = AppStyle.shared.colors.viewBackgroundColor
+            sortSelectionControl.backgroundColor = AppStyle.colors.viewBackgroundColor
             sortSelectionControl.selectedSegmentIndex = 1
             view.addSubview(sortSelectionControl)
             sortSelectionControl.pinEdges(to: view.safeAreaLayoutGuide, top: 8, left: 16, bottom: .nan, right: 16)

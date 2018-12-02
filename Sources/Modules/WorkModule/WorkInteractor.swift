@@ -6,7 +6,7 @@ import FantLabWebAPI
 
 final class WorkInteractor {
     enum State {
-        case idle(WorkModel)
+        case idle(WorkModel, [WorkAnalogModel])
         case loading
         case hasError
     }
@@ -22,12 +22,13 @@ final class WorkInteractor {
     }
 
     func loadWork() {
-        let request = GetWorkNetworkRequest(workId: workId)
+        let workObservable = NetworkClient.shared.perform(request: GetWorkNetworkRequest(workId: workId))
+        let analogsObservable = NetworkClient.shared.perform(request: GetWorkAnalogsNetworkRequest(workId: workId))
 
-        NetworkClient.shared.perform(request: request)
+        Observable.zip(workObservable, analogsObservable)
             .subscribe(
-                onNext: { [weak self] model in
-                    self?.state.value = .idle(model)
+                onNext: { [weak self] (work, analogs) in
+                    self?.state.value = .idle(work, analogs)
                 },
                 onError: { [weak self] _ in
                     self?.state.value = .hasError

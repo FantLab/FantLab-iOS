@@ -1,4 +1,4 @@
-public final class Stack<T> {
+public struct Stack<T> {
     private final class Node {
         let value: T
 
@@ -17,15 +17,26 @@ public final class Stack<T> {
 
     // MARK: -
 
-    public func push(_ value: T) {
+    public private(set) var count: Int = 0
+
+    public mutating func push(_ value: T) {
         let node = Node(value)
         node.prev = top
         top = node
+
+        count += 1
     }
 
     @discardableResult
-    public func pop() -> T? {
-        defer { top = top?.prev }
+    public mutating func pop() -> T? {
+        defer {
+            top = top?.prev
+
+            if count > 0 {
+                count -= 1
+            }
+        }
+
         return peek
     }
 

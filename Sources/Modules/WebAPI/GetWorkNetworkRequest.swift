@@ -31,6 +31,9 @@ public final class GetWorkNetworkRequest: NetworkRequest {
             rating: json["rating"]["rating"].floatValue,
             votes: json["rating"]["voters"].intValue,
             reviewsCount: json["val_responsecount"].intValue,
+            descriptionText: json["work_description"].stringValue,
+            descriptionAuthor: json["work_description_author"].stringValue,
+            notes: json["work_notes"].stringValue,
             authors: json["authors"].jsonArray.map({
                 WorkModel.AuthorModel(
                     id: $0["id"].intValue,
@@ -39,9 +42,30 @@ public final class GetWorkNetworkRequest: NetworkRequest {
                     isOpened: $0["is_opened"].boolValue
                 )
             }),
-            descriptionText: json["work_description"].stringValue,
-            descriptionAuthor: json["work_description_author"].stringValue,
-            notes: json["work_notes"].stringValue
+            children: json["children"].jsonArray.map({
+                WorkModel.ChildWorkModel(
+                    id: $0["work_id"].intValue,
+                    name: $0["work_name"].stringValue,
+                    origName: $0["work_name_orig"].stringValue,
+                    nameBonus: $0["work_name_bonus"].stringValue,
+                    rating: $0["val_midmark"].floatValue,
+                    votes: $0["val_voters"].intValue,
+                    workType: $0["work_type"].stringValue,
+                    publishStatus: $0["publish_status"].stringValue,
+                    isPublished: $0["work_published"].boolValue,
+                    year: $0["work_year"].intValue,
+                    deepLevel: $0["deep"].intValue,
+                    plus: $0["plus"].boolValue
+                )
+            }),
+            classificatory: json["classificatory"]["genre_group"].jsonArray.map({
+                WorkModel.GenreGroupModel(
+                    title: $0["label"].stringValue,
+                    genres: $0["genre"].jsonArray.map({
+                        $0["label"].stringValue
+                    })
+                )
+            })
         )
     }
 }

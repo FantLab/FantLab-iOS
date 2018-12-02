@@ -9,9 +9,9 @@ open class ListViewController: UIViewController {
     open override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = AppStyle.shared.colors.viewBackgroundColor
+        view.backgroundColor = AppStyle.colors.viewBackgroundColor
 
-        adapter.collectionView.backgroundColor = AppStyle.shared.colors.viewBackgroundColor
+        adapter.collectionView.backgroundColor = AppStyle.colors.viewBackgroundColor
         adapter.collectionView.alwaysBounceVertical = true
         view.addSubview(adapter.collectionView)
     }
@@ -27,6 +27,6 @@ open class ListViewController: UIViewController {
 
         adapter.collectionView.frame = bounds
 
-        adapter.set(boundingSize: BoundingSize(width: bounds.width, height: .nan))
+        adapter.set(sizeConstraints: SizeConstraints(width: bounds.width, height: .nan))
     }
 }

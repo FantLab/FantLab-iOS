@@ -8,9 +8,14 @@ import FantLabModels
 import FantLabSharedUI
 
 final class WorkViewController: ListViewController {
+    private enum Separator {
+        case section
+        case item
+    }
+
     private let disposeBag = DisposeBag()
-    private let router: WorkModuleRouter
     private let interactor: WorkInteractor
+    private weak var router: WorkModuleRouter?
 
     init(workId: Int, router: WorkModuleRouter) {
         self.router = router
@@ -60,14 +65,16 @@ final class WorkViewController: ListViewController {
     // MARK: -
 
     private func openAuthors(work model: WorkModel) {
-        guard !model.authors.isEmpty else {
+        let openAuthors = model.authors.filter({ $0.isOpened })
+
+        guard !openAuthors.isEmpty else {
             return
         }
 
-        if model.authors.count == 1 {
+        if openAuthors.count == 1 {
             let author = model.authors[0]
 
-            router.openAuthor?(author.type, author.id)
+            router?.openAuthor(id: author.id, entityName: author.type)
 
             return
         }
@@ -77,7 +84,7 @@ final class WorkViewController: ListViewController {
 
             model.authors.forEach { author in
                 let action = UIAlertAction(title: author.name, style: .default, handler: { [weak self] _ in
-                    self?.router.openAuthor?(author.type, author.id)
+                    self?.router?.openAuthor(id: author.id, entityName: author.type)
                 })
 
                 alert.addAction(action)
@@ -94,7 +101,7 @@ final class WorkViewController: ListViewController {
             return
         }
 
-        router.openWorkReviews?(model.id)
+        router?.openWorkReviews(workId: model.id)
     }
 
     private func openDescriptionAndNotes(work model: WorkModel) {
@@ -106,7 +113,15 @@ final class WorkViewController: ListViewController {
             model.notes
             ].compactAndJoin("\n")
 
-        router.showInteractiveText?("Описание", text)
+        router?.showInteractiveText(text, title: "Описание")
+    }
+
+    private func openContent(work model: WorkModel) {
+        router?.openWorkContent(workModel: model)
+    }
+
+    private func openWorkAnalogs(_ models: [WorkAnalogModel]) {
+        router?.showWorkAnalogs(models)
     }
 
     // MARK: -
@@ -121,76 +136,146 @@ final class WorkViewController: ListViewController {
             return [item]
         case .hasError:
             return [] // TODO:
-        case .idle(let workModel):
-            return makeListItemsFrom(work: workModel)
+        case let .idle(workModel, analogModels):
+            return makeListItemsFrom(work: workModel, analogs: analogModels)
         }
     }
 
-    private func makeListItemsFrom(work model: WorkModel) -> [ListItem] {
+    private func makeListItemsFrom(work model: WorkModel, analogs analogModels: [WorkAnalogModel]) -> [ListItem] {
         imageBackgroundViewController?.imageURL = model.imageURL // TODO: move
 
-        let modelId = String(model.id)
-
         var items: [ListItem] = []
 
-        items.append(contentsOf: makeSectionItems(
-            id: modelId + "_header",
-            hasSeparator: false,
-            layoutSpec: WorkHeaderLayoutSpec(model: model),
-            onSelect: { [weak self] in
-                self?.openAuthors(work: model)
-            }
-        ))
-
-        items.append(contentsOf: makeSectionItems(
-            id: modelId + "_rating",
-            hasSeparator: true,
-            layoutSpec: RightArrowLayoutSpec(model: WorkRatingLayoutSpec(model: model)),
-            onSelect: {  [weak self] in
-                self?.openReviews(work: model)
-            }
-        ))
-
-        items.append(contentsOf: makeSectionItems(
-            id: modelId + "_description",
-            hasSeparator: true,
-            layoutSpec: RightArrowLayoutSpec(model: WorkDescriptionLayoutSpec(model: model)),
-            onSelect: { [weak self] in
-                self?.openDescriptionAndNotes(work: model)
-            }
-        ))
-
-        return items
-    }
-
-    private func makeSectionItems(id: String,
-                                  hasSeparator: Bool,
-                                  layoutSpec: @autoclosure () -> LayoutSpec,
-                                  onSelect: (() -> Void)?) -> [ListItem] {
-        var items: [ListItem] = []
-
-        if hasSeparator {
-            let itemId = id + "_separator"
-
-            let item = ListItem(
-                id: itemId,
-                model: itemId,
-                layoutSpec: WorkSectionSeparatorLayoutSpec()
-            )
-
-            items.append(item)
-        }
+        // header
 
         do {
             let item = ListItem(
-                id: id,
-                model: id,
-                layoutSpec: layoutSpec()
+                id: UUID().uuidString,
+                layoutSpec: WorkHeaderLayoutSpec(model: model)
             )
 
-            item.actions.onSelect = onSelect
+            item.actions.onSelect = { [weak self] in
+                self?.openAuthors(work: model)
+            }
 
             items.append(item)
+        }
+
+        // content
+
+        if !model.children.isEmpty {
+            items.append(ListItem(
+                id: UUID().uuidString,
+                layoutSpec: SectionSeparatorLayoutSpec(model: 12)
+            ))
+
+            let item = ListItem(
+                id: UUID().uuidString,
+                layoutSpec: WorkSectionReferenceLayoutSpec(model: WorkSectionReferenceLayoutModel(
+                    title: "Содержание",
+                    count: model.children.count
+                ))
+            )
+
+            item.actions.onSelect = { [weak self] in
+                self?.openContent(work: model)
+            }
+
+            items.append(item)
+        }
+
+        // description and classification
+
+        let hasDescription = !model.descriptionText.isEmpty || !model.notes.isEmpty
+        let hasClassification = !model.classificatory.isEmpty
+
+        if hasDescription || hasClassification {
+            items.append(ListItem(
+                id: UUID().uuidString,
+                layoutSpec: SectionSeparatorLayoutSpec(model: 12)
+            ))
+
+            if hasDescription {
+                let item = ListItem(
+                    id: UUID().uuidString,
+                    layoutSpec: WorkDescriptionLayoutSpec(model: model)
+                )
+
+                item.actions.onSelect = { [weak self] in
+                    self?.openDescriptionAndNotes(work: model)
+                }
+
+                items.append(item)
+            }
+
+            if hasClassification {
+                if hasDescription {
+                    items.append(ListItem(
+                        id: UUID().uuidString,
+                        layoutSpec: ItemSeparatorLayoutSpec()
+                    ))
+                }
+
+                items.append(ListItem(
+                    id: UUID().uuidString,
+                    layoutSpec: WorkGenresLayoutSpec(model: model)
+                ))
+            }
+        }
+
+        // analogs
+
+        if !analogModels.isEmpty {
+            items.append(ListItem(
+                id: UUID().uuidString,
+                layoutSpec: SectionSeparatorLayoutSpec(model: 12)
+            ))
+
+            let item = ListItem(
+                id: UUID().uuidString,
+                layoutSpec: WorkSectionReferenceLayoutSpec(model: WorkSectionReferenceLayoutModel(
+                    title: "Похожие",
+                    count: analogModels.count
+                ))
+            )
+
+            item.actions.onSelect = { [weak self] in
+                self?.openWorkAnalogs(analogModels)
+            }
+
+            items.append(item)
+        }
+
+        // reviews
+
+        if model.reviewsCount > 0 {
+            items.append(ListItem(
+                id: UUID().uuidString,
+                layoutSpec: SectionSeparatorLayoutSpec(model: 12)
+            ))
+
+            let item = ListItem(
+                id: UUID().uuidString,
+                layoutSpec: WorkSectionReferenceLayoutSpec(model: WorkSectionReferenceLayoutModel(
+                    title: "Отзывы",
+                    count: model.reviewsCount
+                ))
+            )
+
+            item.actions.onSelect = { [weak self] in
+                self?.openReviews(work: model)
+            }
+
+            items.append(item)
+        }
+
+        // footer separator
+
+        do {
+            items.append(ListItem(
+                id: UUID().uuidString,
+                layoutSpec: ItemSeparatorLayoutSpec()
+            ))
         }
 
         return items
