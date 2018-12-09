@@ -13,8 +13,8 @@
 		14ECD21E21972FCE007A8781 /* libFantLabApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14ECD21D21972FCE007A8781 /* libFantLabApp.a */; };
 		14ECD2222197309C007A8781 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14ECD2212197309C007A8781 /* main.swift */; };
 		14ECD25721973542007A8781 /* libFantLabApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14ECD25621973542007A8781 /* libFantLabApp.a */; };
-		518644EA3E2071D3DC1F6642 /* libPods-FantLab-iOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CC87BA5B472A1BDC82766D25 /* libPods-FantLab-iOSTests.a */; };
-		B25490E4E43A3FC61EA979F9 /* libPods-FantLab-iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B8724DB1033F7B5972A1C940 /* libPods-FantLab-iOS.a */; };
+		7505221A9D30DCA32A516984 /* libPods-FantLab-iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4538A8D4B068A554721878EC /* libPods-FantLab-iOS.a */; };
+		FA8742610D52F3CEFB76B7BF /* libPods-FantLab-iOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C31E0C1022A01BAC5F49CA0 /* libPods-FantLab-iOSTests.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,14 +38,14 @@
 		14ECD21D21972FCE007A8781 /* libFantLabApp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libFantLabApp.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		14ECD2212197309C007A8781 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		14ECD25621973542007A8781 /* libFantLabApp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libFantLabApp.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		337A8C31157EB29BADABE210 /* Pods-FantLab-iOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FantLab-iOSTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-FantLab-iOSTests/Pods-FantLab-iOSTests.release.xcconfig"; sourceTree = "<group>"; };
-		38BE48800766ACEA371F3C53 /* Pods-FantLab-iOS.adhoc.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FantLab-iOS.adhoc.xcconfig"; path = "Pods/Target Support Files/Pods-FantLab-iOS/Pods-FantLab-iOS.adhoc.xcconfig"; sourceTree = "<group>"; };
-		5C3BD39CAC574C1CF3D95070 /* Pods-FantLab-iOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FantLab-iOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-FantLab-iOS/Pods-FantLab-iOS.release.xcconfig"; sourceTree = "<group>"; };
-		A52C907D139D4B8B53CC805D /* Pods-FantLab-iOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FantLab-iOSTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-FantLab-iOSTests/Pods-FantLab-iOSTests.debug.xcconfig"; sourceTree = "<group>"; };
-		B8724DB1033F7B5972A1C940 /* libPods-FantLab-iOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-FantLab-iOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		CC87BA5B472A1BDC82766D25 /* libPods-FantLab-iOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-FantLab-iOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		EAF0C91CB6E122FBCBBB711D /* Pods-FantLab-iOSTests.adhoc.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FantLab-iOSTests.adhoc.xcconfig"; path = "Pods/Target Support Files/Pods-FantLab-iOSTests/Pods-FantLab-iOSTests.adhoc.xcconfig"; sourceTree = "<group>"; };
-		F32C13F998EC544884B27330 /* Pods-FantLab-iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FantLab-iOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-FantLab-iOS/Pods-FantLab-iOS.debug.xcconfig"; sourceTree = "<group>"; };
+		36B77768760DAEDB08BF4C03 /* Pods-FantLab-iOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FantLab-iOSTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-FantLab-iOSTests/Pods-FantLab-iOSTests.release.xcconfig"; sourceTree = "<group>"; };
+		44EFEFC22C852A7F13F18156 /* Pods-FantLab-iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FantLab-iOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-FantLab-iOS/Pods-FantLab-iOS.debug.xcconfig"; sourceTree = "<group>"; };
+		4538A8D4B068A554721878EC /* libPods-FantLab-iOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-FantLab-iOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5C31E0C1022A01BAC5F49CA0 /* libPods-FantLab-iOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-FantLab-iOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A4371F143A70C0879E551271 /* Pods-FantLab-iOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FantLab-iOSTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-FantLab-iOSTests/Pods-FantLab-iOSTests.debug.xcconfig"; sourceTree = "<group>"; };
+		CD548A85DF71070E7B34BDF3 /* Pods-FantLab-iOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FantLab-iOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-FantLab-iOS/Pods-FantLab-iOS.release.xcconfig"; sourceTree = "<group>"; };
+		CF7902CA231670DA7763980A /* Pods-FantLab-iOS.adhoc.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FantLab-iOS.adhoc.xcconfig"; path = "Pods/Target Support Files/Pods-FantLab-iOS/Pods-FantLab-iOS.adhoc.xcconfig"; sourceTree = "<group>"; };
+		F945D7D65C575F3905AD0C7A /* Pods-FantLab-iOSTests.adhoc.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FantLab-iOSTests.adhoc.xcconfig"; path = "Pods/Target Support Files/Pods-FantLab-iOSTests/Pods-FantLab-iOSTests.adhoc.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,7 +54,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				14ECD21E21972FCE007A8781 /* libFantLabApp.a in Frameworks */,
-				B25490E4E43A3FC61EA979F9 /* libPods-FantLab-iOS.a in Frameworks */,
+				7505221A9D30DCA32A516984 /* libPods-FantLab-iOS.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -63,7 +63,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				14ECD25721973542007A8781 /* libFantLabApp.a in Frameworks */,
-				518644EA3E2071D3DC1F6642 /* libPods-FantLab-iOSTests.a in Frameworks */,
+				FA8742610D52F3CEFB76B7BF /* libPods-FantLab-iOSTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -77,7 +77,7 @@
 				14ECD1D42196D9C7007A8781 /* FantLab-iOSTests */,
 				14ECD1BE2196D9C5007A8781 /* Products */,
 				14ECD21C21972FCE007A8781 /* Frameworks */,
-				253216C0FC5D2F8A04BC2560 /* Pods */,
+				2A2A9C6172341731A73C2C3D /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -115,21 +115,21 @@
 			children = (
 				14ECD25621973542007A8781 /* libFantLabApp.a */,
 				14ECD21D21972FCE007A8781 /* libFantLabApp.a */,
-				B8724DB1033F7B5972A1C940 /* libPods-FantLab-iOS.a */,
-				CC87BA5B472A1BDC82766D25 /* libPods-FantLab-iOSTests.a */,
+				4538A8D4B068A554721878EC /* libPods-FantLab-iOS.a */,
+				5C31E0C1022A01BAC5F49CA0 /* libPods-FantLab-iOSTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		253216C0FC5D2F8A04BC2560 /* Pods */ = {
+		2A2A9C6172341731A73C2C3D /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				F32C13F998EC544884B27330 /* Pods-FantLab-iOS.debug.xcconfig */,
-				5C3BD39CAC574C1CF3D95070 /* Pods-FantLab-iOS.release.xcconfig */,
-				38BE48800766ACEA371F3C53 /* Pods-FantLab-iOS.adhoc.xcconfig */,
-				A52C907D139D4B8B53CC805D /* Pods-FantLab-iOSTests.debug.xcconfig */,
-				337A8C31157EB29BADABE210 /* Pods-FantLab-iOSTests.release.xcconfig */,
-				EAF0C91CB6E122FBCBBB711D /* Pods-FantLab-iOSTests.adhoc.xcconfig */,
+				44EFEFC22C852A7F13F18156 /* Pods-FantLab-iOS.debug.xcconfig */,
+				CD548A85DF71070E7B34BDF3 /* Pods-FantLab-iOS.release.xcconfig */,
+				CF7902CA231670DA7763980A /* Pods-FantLab-iOS.adhoc.xcconfig */,
+				A4371F143A70C0879E551271 /* Pods-FantLab-iOSTests.debug.xcconfig */,
+				36B77768760DAEDB08BF4C03 /* Pods-FantLab-iOSTests.release.xcconfig */,
+				F945D7D65C575F3905AD0C7A /* Pods-FantLab-iOSTests.adhoc.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -141,7 +141,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 14ECD1DA2196D9C7007A8781 /* Build configuration list for PBXNativeTarget "FantLab-iOS" */;
 			buildPhases = (
-				3D44EFED43CC1D9F8C4A9C40 /* [CP] Check Pods Manifest.lock */,
+				209204118953F4C7D76D97AA /* [CP] Check Pods Manifest.lock */,
 				14ECD1B92196D9C5007A8781 /* Sources */,
 				14ECD1BA2196D9C5007A8781 /* Frameworks */,
 				14ECD1BB2196D9C5007A8781 /* Resources */,
@@ -160,7 +160,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 14ECD1DD2196D9C7007A8781 /* Build configuration list for PBXNativeTarget "FantLab-iOSTests" */;
 			buildPhases = (
-				29F2DE6CFBAA6C1D8EC41A58 /* [CP] Check Pods Manifest.lock */,
+				A7986E379BFD6BD515740168 /* [CP] Check Pods Manifest.lock */,
 				14ECD1CD2196D9C7007A8781 /* Sources */,
 				14ECD1CE2196D9C7007A8781 /* Frameworks */,
 				14ECD1CF2196D9C7007A8781 /* Resources */,
@@ -251,29 +251,7 @@
 			shellPath = /bin/sh;
 			shellScript = "if [ \"${CONFIGURATION}\" == \"Debug\" ]; then\nexit 0;\nfi\n\n\"${PODS_ROOT}/Fabric/run\" e48f5ec42a49c05139083ca3c19049916013ca2a $(cat \"${SRCROOT}/Sources/fabric.buildsecret\")\n";
 		};
-		29F2DE6CFBAA6C1D8EC41A58 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-FantLab-iOSTests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		3D44EFED43CC1D9F8C4A9C40 /* [CP] Check Pods Manifest.lock */ = {
+		209204118953F4C7D76D97AA /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -289,6 +267,28 @@
 			);
 			outputPaths = (
 				"$(DERIVED_FILE_DIR)/Pods-FantLab-iOS-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		A7986E379BFD6BD515740168 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-FantLab-iOSTests-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -382,7 +382,7 @@
 		};
 		144CE72A21AC19CC005E36D5 /* Adhoc */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 38BE48800766ACEA371F3C53 /* Pods-FantLab-iOS.adhoc.xcconfig */;
+			baseConfigurationReference = CF7902CA231670DA7763980A /* Pods-FantLab-iOS.adhoc.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -404,7 +404,7 @@
 		};
 		144CE72B21AC19CC005E36D5 /* Adhoc */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = EAF0C91CB6E122FBCBBB711D /* Pods-FantLab-iOSTests.adhoc.xcconfig */;
+			baseConfigurationReference = F945D7D65C575F3905AD0C7A /* Pods-FantLab-iOSTests.adhoc.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -541,7 +541,7 @@
 		};
 		14ECD1DB2196D9C7007A8781 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = F32C13F998EC544884B27330 /* Pods-FantLab-iOS.debug.xcconfig */;
+			baseConfigurationReference = 44EFEFC22C852A7F13F18156 /* Pods-FantLab-iOS.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -562,7 +562,7 @@
 		};
 		14ECD1DC2196D9C7007A8781 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5C3BD39CAC574C1CF3D95070 /* Pods-FantLab-iOS.release.xcconfig */;
+			baseConfigurationReference = CD548A85DF71070E7B34BDF3 /* Pods-FantLab-iOS.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -583,7 +583,7 @@
 		};
 		14ECD1DE2196D9C7007A8781 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A52C907D139D4B8B53CC805D /* Pods-FantLab-iOSTests.debug.xcconfig */;
+			baseConfigurationReference = A4371F143A70C0879E551271 /* Pods-FantLab-iOSTests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -604,7 +604,7 @@
 		};
 		14ECD1DF2196D9C7007A8781 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 337A8C31157EB29BADABE210 /* Pods-FantLab-iOSTests.release.xcconfig */;
+			baseConfigurationReference = 36B77768760DAEDB08BF4C03 /* Pods-FantLab-iOSTests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
