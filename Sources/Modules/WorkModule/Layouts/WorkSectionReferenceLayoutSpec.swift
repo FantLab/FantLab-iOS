@@ -6,26 +6,36 @@ import FantLabUtils
 import FantLabStyle
 import FantLabSharedUI
 
-struct WorkSectionReferenceLayoutModel {
+struct WorkSectionTitleLayoutModel {
     let title: String
+    let icon: UIImage?
     let count: Int
+    let showArrow: Bool
 }
 
-final class WorkSectionReferenceLayoutSpec: ModelLayoutSpec<WorkSectionReferenceLayoutModel> {
-    override func makeNodeFrom(model: WorkSectionReferenceLayoutModel, sizeConstraints: SizeConstraints) -> LayoutNode {
+final class WorkSectionTitleLayoutSpec: ModelLayoutSpec<WorkSectionTitleLayoutModel> {
+    override func makeNodeFrom(model: WorkSectionTitleLayoutModel, sizeConstraints: SizeConstraints) -> LayoutNode {
         let titleString = model.title.attributed()
-            .font(AppStyle.iowanFonts.regularFont(ofSize: 17))
-            .foregroundColor(AppStyle.colors.mainTextColor)
+            .font(Fonts.system.bold(size: 20))
+            .foregroundColor(UIColor.black)
             .make()
 
         let countString = String(model.count).attributed()
-            .font(AppStyle.systemFonts.regularFont(ofSize: 15))
-            .foregroundColor(AppStyle.colors.secondaryTextColor)
+            .font(Fonts.system.regular(size: 17))
+            .foregroundColor(UIColor.lightGray)
             .make()
 
-        let titleNode = LayoutNode(sizeProvider: titleString, config: { node in
-            node.flex = 1
-        }) { (label: UILabel) in
+        let iconNode = LayoutNode(config: { node in
+            node.width = 24
+            node.height = 24
+            node.marginRight = 12
+            node.isHidden = model.icon == nil
+        }) { (view: UIImageView) in
+            view.contentMode = .scaleAspectFit
+            view.image = model.icon
+        }
+
+        let titleNode = LayoutNode(sizeProvider: titleString, config: nil) { (label: UILabel) in
             label.numberOfLines = 0
             label.attributedText = titleString
         }
@@ -38,12 +48,38 @@ final class WorkSectionReferenceLayoutSpec: ModelLayoutSpec<WorkSectionReference
             label.attributedText = countString
         }
 
-        let contentNode = LayoutNode(children: [titleNode, countNode], config: { node in
+        let textStackNode = LayoutNode(children: [titleNode, countNode], config: { node in
             node.flexDirection = .row
             node.alignItems = .center
             node.justifyContent = .spaceBetween
+            node.flex = 1
         })
 
-        return RightArrowLayoutSpec(model: contentNode).makeNodeWith(sizeConstraints: sizeConstraints)
+        let contentNode = LayoutNode(children: [iconNode, textStackNode], config: { node in
+            node.flexDirection = .row
+            node.alignItems = .center
+            node.flex = 1
+        })
+
+        let arrowNode = LayoutNode(config: { node in
+            node.marginLeft = 8
+            node.width = 12
+            node.height = 12
+//            node.isHidden = !model.showArrow
+        }) { (view: UIImageView) in
+            view.contentMode = .scaleAspectFit
+            view.tintColor = UIColor(rgb: 0xC8C7CC)
+            view.image = UIImage(named: "arrow_right")?.withRenderingMode(.alwaysTemplate)
+            view.isHidden = !model.showArrow
+        }
+
+        let mainNode = LayoutNode(children: [contentNode, arrowNode], config: { node in
+            node.flexDirection = .row
+            node.alignItems = .center
+            node.paddingLeft = 16
+            node.paddingRight = 12
+        })
+
+        return mainNode
     }
 }

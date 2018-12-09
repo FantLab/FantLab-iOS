@@ -5,19 +5,27 @@ import FantLabStyle
 import FantLabTextUI
 import FantLabSharedUI
 import FantLabWorkModule
-import FantLabWorkReviewsModule
 
-public final class AppDelegate: UIResponder, UIApplicationDelegate {
-    public var window: UIWindow?
+public func runApp() {
+    UIApplicationMain(CommandLine.argc,
+                      CommandLine.unsafeArgv,
+                      NSStringFromClass(Application.self),
+                      NSStringFromClass(AppDelegate.self))
+}
+
+private final class Application: UIApplication {}
+
+private final class AppDelegate: UIResponder, UIApplicationDelegate {
+    var window: UIWindow?
 
     private let router = AppRouter()
 
-    public func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         window = UIWindow()
         window?.rootViewController = router.rootNavigationController
         window?.makeKeyAndVisible()
 
-        window?.tintColor = AppStyle.colors.mainTintColor
+        window?.tintColor = Colors.flBlue
 
         Appearance.setup()
 
@@ -26,7 +34,12 @@ public final class AppDelegate: UIResponder, UIApplicationDelegate {
         Fabric.with([Crashlytics.self])
         #endif
 
-        router.openWork(workId: 502648)
+        let searchController = SearchViewController()
+        searchController.openWork = { [weak self] workId in
+            self?.router.openWork(id: workId)
+        }
+
+        router.rootNavigationController.pushViewController(searchController, animated: true)
 
         return true
     }

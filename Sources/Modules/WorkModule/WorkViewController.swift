@@ -15,7 +15,7 @@ final class WorkViewController: ListViewController {
 
     private let disposeBag = DisposeBag()
     private let interactor: WorkInteractor
-    private weak var router: WorkModuleRouter?
+    private let router: WorkModuleRouter
 
     init(workId: Int, router: WorkModuleRouter) {
         self.router = router
@@ -35,18 +35,6 @@ final class WorkViewController: ListViewController {
         super.viewDidLoad()
 
         title = ""
-
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .action, target: nil, action: nil)
-
-        do {
-            adapter.scrollEvents.didScroll = { [weak self] scrollView in
-                let offset = scrollView.contentOffset.y + scrollView.adjustedContentInset.top
-
-                let position = min(100, max(0, -offset)) / 100
-
-                self?.imageBackgroundViewController?.position = position
-            }
-        }
 
         interactor.stateObservable
             .observeOn(SerialDispatchQueueScheduler(qos: .default))
@@ -74,7 +62,7 @@ final class WorkViewController: ListViewController {
         if openAuthors.count == 1 {
             let author = model.authors[0]
 
-            router?.openAuthor(id: author.id, entityName: author.type)
+            router.openAuthor(id: author.id, entityName: author.type)
 
             return
         }
@@ -84,7 +72,7 @@ final class WorkViewController: ListViewController {
 
             model.authors.forEach { author in
                 let action = UIAlertAction(title: author.name, style: .default, handler: { [weak self] _ in
-                    self?.router?.openAuthor(id: author.id, entityName: author.type)
+                    self?.router.openAuthor(id: author.id, entityName: author.type)
                 })
 
                 alert.addAction(action)
@@ -101,7 +89,9 @@ final class WorkViewController: ListViewController {
             return
         }
 
-        router?.openWorkReviews(workId: model.id)
+        let vc = WorkReviewsViewController(workId: model.id, router: router)
+
+        router.push(viewController: vc)
     }
 
     private func openDescriptionAndNotes(work model: WorkModel) {
@@ -113,15 +103,13 @@ final class WorkViewController: ListViewController {
             model.notes
             ].compactAndJoin("\n")
 
-        router?.showInteractiveText(text, title: "Описание")
+        router.showInteractiveText(text, title: "Описание")
     }
 
-    private func openContent(work model: WorkModel) {
-        router?.openWorkContent(workModel: model)
-    }
+    private func openContent(workModel: WorkModel) {
+        let vc = WorkContentViewController(workModel: workModel, router: router)
 
-    private func openWorkAnalogs(_ models: [WorkAnalogModel]) {
-        router?.showWorkAnalogs(models)
+        router.push(viewController: vc)
     }
 
     // MARK: -
@@ -142,8 +130,6 @@ final class WorkViewController: ListViewController {
     }
 
     private func makeListItemsFrom(work model: WorkModel, analogs analogModels: [WorkAnalogModel]) -> [ListItem] {
-        imageBackgroundViewController?.imageURL = model.imageURL // TODO: move
-
         var items: [ListItem] = []
 
         // header
@@ -161,64 +147,159 @@ final class WorkViewController: ListViewController {
             items.append(item)
         }
 
-        // content
+        // rating TODO:
 
-        if !model.children.isEmpty {
-            items.append(ListItem(
-                id: UUID().uuidString,
-                layoutSpec: SectionSeparatorLayoutSpec(model: 12)
-            ))
+//        if model.rating > 0 && model.votes > 0 {
+//            let item = ListItem(
+//                id: UUID().uuidString,
+//                layoutSpec: WorkRatingLayoutSpec(model: model)
+//            )
+//
+//            items.append(item)
+//        }
 
+        // description
+
+        if !model.descriptionText.isEmpty || !model.notes.isEmpty {
             let item = ListItem(
                 id: UUID().uuidString,
-                layoutSpec: WorkSectionReferenceLayoutSpec(model: WorkSectionReferenceLayoutModel(
-                    title: "Содержание",
-                    count: model.children.count
-                ))
+                layoutSpec: WorkDescriptionLayoutSpec(model: model)
             )
 
             item.actions.onSelect = { [weak self] in
-                self?.openContent(work: model)
+                self?.openDescriptionAndNotes(work: model)
             }
 
             items.append(item)
         }
 
-        // description and classification
+        // classification
 
-        let hasDescription = !model.descriptionText.isEmpty || !model.notes.isEmpty
-        let hasClassification = !model.classificatory.isEmpty
-
-        if hasDescription || hasClassification {
+        if !model.classificatory.isEmpty {
             items.append(ListItem(
                 id: UUID().uuidString,
-                layoutSpec: SectionSeparatorLayoutSpec(model: 12)
+                layoutSpec: WorkGenresLayoutSpec(model: model)
+            ))
+        }
+
+        // parents
+
+        if !model.parents.isEmpty {
+            items.append(ListItem(
+                id: UUID().uuidString,
+                layoutSpec: EmptySpaceLayoutSpec(model: (UIColor.white, 32))
             ))
 
-            if hasDescription {
-                let item = ListItem(
-                    id: UUID().uuidString,
-                    layoutSpec: WorkDescriptionLayoutSpec(model: model)
-                )
+            items.append(ListItem(
+                id: UUID().uuidString,
+                layoutSpec: WorkSectionTitleLayoutSpec(model: WorkSectionTitleLayoutModel(
+                    title: "Входит в",
+                    icon: UIImage(named: "layers"),
+                    count: 0,
+                    showArrow: false
+                ))
+            ))
 
-                item.actions.onSelect = { [weak self] in
-                    self?.openDescriptionAndNotes(work: model)
-                }
+            items.append(ListItem(
+                id: UUID().uuidString,
+                layoutSpec: EmptySpaceLayoutSpec(model: (UIColor.white, 8))
+            ))
 
-                items.append(item)
+            model.parents.forEach { parents in
+                parents.enumerated().forEach({ (index, parentModel) in
+                    let item = ListItem(
+                        id: UUID().uuidString,
+                        layoutSpec: WorkParentModelLayoutSpec(model: WorkParentModelLayoutModel(
+                            work: parentModel,
+                            level: index,
+                            showArrow: parentModel.id > 0
+                        ))
+                    )
+
+                    if parentModel.id > 0 {
+                        item.actions.onSelect = { [weak self] in
+                            self?.router.openWork(id: parentModel.id)
+                        }
+                    }
+
+                    items.append(item)
+
+                    items.append(ListItem(
+                        id: UUID().uuidString,
+                        layoutSpec: ItemSeparatorLayoutSpec()
+                    ))
+                })
             }
+        }
 
-            if hasClassification {
-                if hasDescription {
+        // content
+
+        if !model.children.isEmpty {
+            items.append(ListItem(
+                id: UUID().uuidString,
+                layoutSpec: EmptySpaceLayoutSpec(model: (UIColor.white, 32))
+            ))
+
+            if model.children.count < 7 {
+                items.append(ListItem(
+                    id: UUID().uuidString,
+                    layoutSpec: WorkSectionTitleLayoutSpec(model: WorkSectionTitleLayoutModel(
+                        title: "Содержание",
+                        icon: UIImage(named: "content"),
+                        count: 0,
+                        showArrow: false
+                    ))
+                ))
+
+                items.append(ListItem(
+                    id: UUID().uuidString,
+                    layoutSpec: EmptySpaceLayoutSpec(model: (UIColor.white, 8))
+                ))
+
+                model.children.forEach { work in
+                    let item = ListItem(
+                        id: UUID().uuidString,
+                        layoutSpec: WorkChildModelLayoutSpec(model: work)
+                    )
+
+                    if work.id > 0 {
+                        item.actions.onSelect = { [weak self] in
+                            self?.router.openWork(id: work.id)
+                        }
+                    }
+
+                    items.append(item)
+
                     items.append(ListItem(
                         id: UUID().uuidString,
                         layoutSpec: ItemSeparatorLayoutSpec()
                     ))
                 }
+            } else {
+                let item = ListItem(
+                    id: UUID().uuidString,
+                    layoutSpec: WorkSectionTitleLayoutSpec(model: WorkSectionTitleLayoutModel(
+                        title: "Содержание",
+                        icon: UIImage(named: "content"),
+                        count: model.children.count,
+                        showArrow: true
+                    ))
+                )
+
+                item.actions.onSelect = { [weak self] in
+                    self?.openContent(workModel: model)
+                }
+
+                items.append(item)
 
                 items.append(ListItem(
                     id: UUID().uuidString,
-                    layoutSpec: WorkGenresLayoutSpec(model: model)
+                    layoutSpec: EmptySpaceLayoutSpec(model: (UIColor.white, 12))
+                ))
+
+                items.append(ListItem(
+                    id: UUID().uuidString,
+                    layoutSpec: ItemSeparatorLayoutSpec()
                 ))
             }
         }
@@ -228,22 +309,25 @@ final class WorkViewController: ListViewController {
         if !analogModels.isEmpty {
             items.append(ListItem(
                 id: UUID().uuidString,
-                layoutSpec: SectionSeparatorLayoutSpec(model: 12)
+                layoutSpec: EmptySpaceLayoutSpec(model: (UIColor.white, 48))
             ))
 
-            let item = ListItem(
+            items.append(ListItem(
                 id: UUID().uuidString,
-                layoutSpec: WorkSectionReferenceLayoutSpec(model: WorkSectionReferenceLayoutModel(
+                layoutSpec: WorkSectionTitleLayoutSpec(model: WorkSectionTitleLayoutModel(
                     title: "Похожие",
-                    count: analogModels.count
+                    icon: UIImage(named: "analogs"),
+                    count: analogModels.count,
+                    showArrow: false
                 ))
-            )
+            ))
 
-            item.actions.onSelect = { [weak self] in
-                self?.openWorkAnalogs(analogModels)
-            }
-
-            items.append(item)
+            items.append(ListItem(
+                id: UUID().uuidString,
+                layoutSpec: WorkAnalogListLayoutSpec(model: (analogModels, { [weak self] workId in
+                    self?.router.openWork(id: workId)
+                }))
+            ))
         }
 
         // reviews
@@ -251,14 +335,16 @@ final class WorkViewController: ListViewController {
         if model.reviewsCount > 0 {
             items.append(ListItem(
                 id: UUID().uuidString,
-                layoutSpec: SectionSeparatorLayoutSpec(model: 12)
+                layoutSpec: EmptySpaceLayoutSpec(model: (UIColor.white, 32))
             ))
 
             let item = ListItem(
                 id: UUID().uuidString,
-                layoutSpec: WorkSectionReferenceLayoutSpec(model: WorkSectionReferenceLayoutModel(
+                layoutSpec: WorkSectionTitleLayoutSpec(model: WorkSectionTitleLayoutModel(
                     title: "Отзывы",
-                    count: model.reviewsCount
+                    icon: UIImage(named: "reviews"),
+                    count: model.reviewsCount,
+                    showArrow: true
                 ))
             )
 
@@ -267,16 +353,24 @@ final class WorkViewController: ListViewController {
             }
 
             items.append(item)
-        }
 
-        // footer separator
+            items.append(ListItem(
+                id: UUID().uuidString,
+                layoutSpec: EmptySpaceLayoutSpec(model: (UIColor.white, 12))
+            ))
 
-        do {
             items.append(ListItem(
                 id: UUID().uuidString,
                 layoutSpec: ItemSeparatorLayoutSpec()
             ))
         }
+
+        // extra footer space
+
+        items.append(ListItem(
+            id: UUID().uuidString,
+            layoutSpec: EmptySpaceLayoutSpec(model: (UIColor.white, 64))
+        ))
 
         return items
     }

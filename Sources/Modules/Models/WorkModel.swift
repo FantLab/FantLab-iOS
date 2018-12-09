@@ -61,6 +61,21 @@ public final class WorkModel {
         }
     }
 
+    public final class ParentWorkModel {
+        public let id: Int
+        public let name: String
+        public let workType: String
+
+        public init(id: Int,
+                    name: String,
+                    workType: String) {
+
+            self.id = id
+            self.name = name
+            self.workType = workType
+        }
+    }
+
     public final class GenreGroupModel {
         public let title: String
         public let genres: [String]
@@ -84,8 +99,10 @@ public final class WorkModel {
     public let descriptionText: String
     public let descriptionAuthor: String
     public let notes: String
+    public let linguisticAnalysis: [String]
     public let authors: [AuthorModel]
     public let children: [ChildWorkModel]
+    public let parents: [[ParentWorkModel]]
     public let classificatory: [GenreGroupModel]
 
     public init(id: Int,
@@ -101,8 +118,10 @@ public final class WorkModel {
                 descriptionText: String,
                 descriptionAuthor: String,
                 notes: String,
+                linguisticAnalysis: [String],
                 authors: [AuthorModel],
                 children: [ChildWorkModel],
+                parents: [[ParentWorkModel]],
                 classificatory: [GenreGroupModel]) {
 
         self.id = id
@@ -118,8 +137,10 @@ public final class WorkModel {
         self.descriptionText = descriptionText
         self.descriptionAuthor = descriptionAuthor
         self.notes = notes
+        self.linguisticAnalysis = linguisticAnalysis
         self.authors = authors
         self.children = children
+        self.parents = parents
         self.classificatory = classificatory
     }
 }

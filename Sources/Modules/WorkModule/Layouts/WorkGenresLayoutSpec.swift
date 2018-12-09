@@ -12,18 +12,17 @@ final class WorkGenresLayoutSpec: ModelLayoutSpec<WorkModel> {
 
         model.classificatory.forEach { genreGroup in
             let titleString = genreGroup.title.attributed()
-                .font(AppStyle.iowanFonts.regularFont(ofSize: 14))
-                .foregroundColor(AppStyle.colors.secondaryTextColor)
+                .font(Fonts.system.regular(size: 13))
+                .foregroundColor(UIColor.lightGray)
                 .make()
 
             let genresString = genreGroup.genres.joined(separator: "\n").attributed()
-                .font(AppStyle.iowanFonts.regularFont(ofSize: 14))
-                .foregroundColor(AppStyle.colors.mainTextColor)
+                .font(Fonts.system.regular(size: 13))
+                .foregroundColor(UIColor.black)
                 .make()
 
             let titleNode = LayoutNode(sizeProvider: titleString, config: { node in
                 node.width = 40%
-                node.marginTop = 2
             }) { (label: UILabel) in
                 label.numberOfLines = 0
                 label.attributedText = titleString
@@ -40,18 +39,18 @@ final class WorkGenresLayoutSpec: ModelLayoutSpec<WorkModel> {
             let textStackNode = LayoutNode(children: [titleNode, genresNode], config: { node in
                 node.flexDirection = .row
                 node.alignItems = .flexStart
-                node.marginTop = 12
+                node.marginBottom = 16
             })
 
             textStackNodes.append(textStackNode)
         }
 
-        let mainNode = LayoutNode(children: textStackNodes, config: { node in
+        let contentNode = LayoutNode(children: textStackNodes, config: { node in
             node.flexDirection = .column
             node.alignItems = .flexStart
-            node.padding(top: nil, left: 16, bottom: 16, right: 16)
+            node.padding(top: 16, left: 16, bottom: nil, right: 16)
         })
 
-        return mainNode
+        return contentNode
     }
 }

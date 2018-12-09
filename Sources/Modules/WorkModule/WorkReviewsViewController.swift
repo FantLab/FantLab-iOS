@@ -11,9 +11,11 @@ import FantLabModels
 final class WorkReviewsViewController: ListViewController {
     private let disposeBag = DisposeBag()
     private let interactor: WorkReviewsInteractor
+    private let router: WorkModuleRouter
 
-    init(workId: Int) {
+    init(workId: Int, router: WorkModuleRouter) {
         self.interactor = WorkReviewsInteractor(workId: workId)
+        self.router = router
 
         super.init(nibName: nil, bundle: nil)
     }
@@ -29,12 +31,12 @@ final class WorkReviewsViewController: ListViewController {
 
         title = "Отзывы"
 
-        view.backgroundColor = AppStyle.colors.viewBackgroundColor
+        view.backgroundColor = UIColor.white
 
         adapter.collectionView.contentInset.top = 48
 
         do {
-            sortSelectionControl.backgroundColor = AppStyle.colors.viewBackgroundColor
+            sortSelectionControl.backgroundColor = UIColor.white
             sortSelectionControl.selectedSegmentIndex = 1
             view.addSubview(sortSelectionControl)
             sortSelectionControl.pinEdges(to: view.safeAreaLayoutGuide, top: 8, left: 16, bottom: .nan, right: 16)
@@ -146,9 +148,6 @@ final class WorkReviewsViewController: ListViewController {
     }
 
     private func open(review: WorkReviewModel) {
-        let vc = FLTextViewController(string: review.text)
-        vc.title = "Отзыв"
-
-        navigationController?.pushViewController(vc, animated: true)
+        router.showInteractiveText(review.text, title: "Отзыв")
     }
 }

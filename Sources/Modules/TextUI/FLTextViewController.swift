@@ -33,7 +33,7 @@ public final class FLTextViewController: UIViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        textView.backgroundColor = AppStyle.colors.viewBackgroundColor
+        textView.backgroundColor = UIColor.white
         textView.alwaysBounceVertical = true
         textView.isEditable = false
         textView.isSelectable = false // TODO: ???

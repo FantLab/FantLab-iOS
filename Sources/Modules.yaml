@@ -2,9 +2,6 @@ FantLabApp:
   display_name: App
   sources: Modules/App
   dependencies:
-    - FantLabWorkReviewsModule
-    - FantLabWorkContentModule
-    - FantLabWorkAnalogsModule
     - FantLabWorkModule
     - FantLabStyle
   system_frameworks:
@@ -13,48 +10,6 @@ FantLabApp:
 FantLabWorkModule:
   display_name: WorkModule
   sources: Modules/WorkModule
-  dependencies:
-    - FantLabStyle
-    - FantLabUtils
-    - FantLabModels
-    - FantLabText
-    - FantLabWebAPI
-    - FantLabTextUI
-    - FantLabSharedUI
-  system_frameworks:
-    - Foundation
-    - UIKit
-FantLabWorkAnalogsModule:
-  display_name: WorkAnalogsModule
-  sources: Modules/WorkAnalogsModule
-  dependencies:
-    - FantLabStyle
-    - FantLabUtils
-    - FantLabModels
-    - FantLabText
-    - FantLabWebAPI
-    - FantLabTextUI
-    - FantLabSharedUI
-  system_frameworks:
-    - Foundation
-    - UIKit
-FantLabWorkContentModule:
-  display_name: WorkContentModule
-  sources: Modules/WorkContentModule
-  dependencies:
-    - FantLabStyle
-    - FantLabUtils
-    - FantLabModels
-    - FantLabText
-    - FantLabWebAPI
-    - FantLabTextUI
-    - FantLabSharedUI
-  system_frameworks:
-    - Foundation
-    - UIKit
-FantLabWorkReviewsModule:
-  display_name: WorkReviewsModule
-  sources: Modules/WorkReviewsModule
   dependencies:
     - FantLabStyle
     - FantLabUtils

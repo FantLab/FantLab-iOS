@@ -34,7 +34,7 @@ public final class RussianPluralRule {
         }
     }
 
-    public static func format(value: Int, _ format: Format) -> String {
+    public static func format(value: Int, format: Format, separator: String) -> String {
         let categoryString: String
 
         switch categoryFrom(value: value) {
@@ -46,7 +46,7 @@ public final class RussianPluralRule {
             categoryString = format.many
         }
 
-        return String(value) + " " + categoryString
+        return String(value) + separator + categoryString
     }
 }
 

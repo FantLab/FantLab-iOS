@@ -8,38 +8,39 @@ import FantLabModels
 
 final class WorkHeaderLayoutSpec: ModelLayoutSpec<WorkModel> {
     override func makeNodeFrom(model: WorkModel, sizeConstraints: SizeConstraints) -> LayoutNode {
-        let nameString: NSAttributedString?
+        let nameString: NSAttributedString
+        let authorString: NSAttributedString
+        let infoString: NSAttributedString
 
         do {
-            let nameText = [model.name, model.origName].compactAndJoin(" / ")
+            let nameText = model.name == model.origName ? model.name : [model.name, model.origName].compactAndJoin(" / ")
 
-            nameString = nameText.nilIfEmpty?.attributed()
-                .font(AppStyle.iowanFonts.boldFont(ofSize: 24))
-                .foregroundColor(AppStyle.colors.mainTextColor)
+            nameString = nameText.attributed()
+                .font(Fonts.iowan.bold(size: 24))
+                .foregroundColor(UIColor.black)
                 .make()
-        }
 
-        let authorString: NSAttributedString?
-
-        do {
-            let authorText = model.authors.map({ $0.name }).compactAndJoin(", ")
-
-            authorString = authorText.nilIfEmpty?.attributed()
-                .font(AppStyle.iowanFonts.boldFont(ofSize: 14))
-                .foregroundColor(AppStyle.colors.linkTextColor)
+            authorString = model.authors.map({ $0.name }).compactAndJoin(", ").attributed()
+                .font(Fonts.iowan.bold(size: 15))
+                .foregroundColor(Colors.flBlue)
                 .make()
-        }
 
-        let infoString: NSAttributedString?
-
-        do {
             let yearText = model.year > 0 ? String(model.year) : ""
             let infoText = ([model.workType, yearText] + model.publishStatuses).compactAndJoin(", ")
 
-            infoString = infoText.nilIfEmpty?.attributed()
-                .font(AppStyle.systemFonts.regularFont(ofSize: 12))
-                .foregroundColor(AppStyle.colors.secondaryTextColor)
+            infoString = infoText.attributed()
+                .font(Fonts.system.regular(size: 13))
+                .foregroundColor(UIColor.lightGray)
                 .make()
+        }
+
+        let coverNode = LayoutNode(config: { node in
+            node.width = 100
+            node.height = 150
+        }) { (view: UIImageView) in
+            view.contentMode = .scaleAspectFit
+
+            view.yy_setImage(with: model.imageURL, placeholder: UIImage(named: "not_found_cover"), options: .setImageWithFadeAnimation, completion: nil)
         }
 
         let nameNode = LayoutNode(sizeProvider: nameString, config: nil) { (label: UILabel) in
@@ -48,22 +49,29 @@ final class WorkHeaderLayoutSpec: ModelLayoutSpec<WorkModel> {
         }
 
         let authorNode = LayoutNode(sizeProvider: authorString, config: { node in
-            node.marginTop = 4
-            node.maxHeight = 40
+            node.marginTop = 16
         }) { (label: UILabel) in
             label.numberOfLines = 0
             label.attributedText = authorString
         }
 
         let infoNode = LayoutNode(sizeProvider: infoString, config: { node in
-            node.marginTop = 6
+            node.marginTop = 4
         }) { (label: UILabel) in
             label.numberOfLines = 0
             label.attributedText = infoString
         }
 
-        let contentNode = LayoutNode(children: [nameNode, authorNode, infoNode], config: { node in
+        let textStackNode = LayoutNode(children: [nameNode, infoNode, authorNode], config: { node in
             node.flexDirection = .column
+            node.alignItems = .flexStart
+            node.marginLeft = 16
+            node.flex = 1
+        })
+
+        let contentNode = LayoutNode(children: [coverNode, textStackNode], config: { node in
+            node.flexDirection = .row
+            node.alignItems = .flexStart
             node.padding(all: 16)
         })
 

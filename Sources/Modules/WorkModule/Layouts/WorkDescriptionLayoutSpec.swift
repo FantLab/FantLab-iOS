@@ -15,12 +15,21 @@ final class WorkDescriptionLayoutSpec: ModelLayoutSpec<WorkModel> {
         )
 
         let textNode = LayoutNode(sizeProvider: text.string, config: { node in
-            node.maxHeight = 150
+            node.maxHeight = 200
         }) { (label: UILabel) in
             label.numberOfLines = 0
             label.attributedText = text.string
         }
 
-        return RightArrowLayoutSpec(model: textNode).makeNodeWith(sizeConstraints: sizeConstraints)
+        let backgroundNode = LayoutNode(children: [textNode], config: { node in
+            node.padding(top: 8, left: 12, bottom: 8, right: 12)
+            node.margin(top: 12, left: 12, bottom: 12, right: 12)
+            node.flexDirection = .column
+        }) { (view: UIView) in
+            view.backgroundColor = UIColor(rgb: 0xEFEFF4).withAlphaComponent(0.7)
+            view.layer.cornerRadius = 8
+        }
+
+        return LayoutNode(children: [backgroundNode])
     }
 }

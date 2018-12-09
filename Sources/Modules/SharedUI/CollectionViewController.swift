@@ -9,9 +9,9 @@ open class ListViewController: UIViewController {
     open override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = AppStyle.colors.viewBackgroundColor
+        view.backgroundColor = UIColor.white
 
-        adapter.collectionView.backgroundColor = AppStyle.colors.viewBackgroundColor
+        adapter.collectionView.backgroundColor = UIColor.white
         adapter.collectionView.alwaysBounceVertical = true
         view.addSubview(adapter.collectionView)
     }

@@ -9,8 +9,8 @@ final class TextPopoverViewController: UIViewController, UIPopoverPresentationCo
 
     init(text: String, sourceView: UIView, sourceRect: CGRect) {
         string = text.attributed()
-            .font(AppStyle.iowanFonts.regularFont(ofSize: 14))
-            .foregroundColor(AppStyle.colors.mainTextColor)
+            .font(Fonts.iowan.regular(size: 14))
+            .foregroundColor(UIColor.black)
             .lineSpacing(2)
             .make()
 
@@ -21,7 +21,7 @@ final class TextPopoverViewController: UIViewController, UIPopoverPresentationCo
         modalPresentationStyle = .popover
 
         popoverPresentationController.flatMap {
-            $0.backgroundColor = AppStyle.colors.viewBackgroundColor
+            $0.backgroundColor = UIColor.white
             $0.delegate = self
             $0.permittedArrowDirections = .any
             $0.sourceView = sourceView
@@ -46,7 +46,7 @@ final class TextPopoverViewController: UIViewController, UIPopoverPresentationCo
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        textView.backgroundColor = AppStyle.colors.viewBackgroundColor
+        textView.backgroundColor = UIColor.white
         textView.isEditable = false
         textView.isSelectable = false
         textView.dataDetectorTypes = []

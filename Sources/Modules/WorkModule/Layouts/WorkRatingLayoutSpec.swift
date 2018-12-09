@@ -1,36 +1,43 @@
 import Foundation
 import UIKit
 import ALLKit
+import FantLabModels
 import FantLabUtils
 import FantLabStyle
-import FantLabModels
-import FantLabSharedUI
 
 final class WorkRatingLayoutSpec: ModelLayoutSpec<WorkModel> {
     override func makeNodeFrom(model: WorkModel, sizeConstraints: SizeConstraints) -> LayoutNode {
+        let ratingColor = RatingColorRule.colorFor(rating: model.rating)
+
         let ratingString = String(model.rating).attributed()
-            .font(AppStyle.systemFonts.boldFont(ofSize: 24))
-            .foregroundColor(AppStyle.colors.secondaryTintColor)
+            .font(Fonts.system.bold(size: 24))
+            .foregroundColor(ratingColor)
+            .alignment(.center)
             .make()
 
-        let votesString = RussianPluralRule.format(value: model.votes, .votes).attributed()
-            .font(AppStyle.systemFonts.regularFont(ofSize: 12))
-            .foregroundColor(AppStyle.colors.secondaryTextColor)
+        let votesString = RussianPluralRule.format(value: model.votes, format: .votes, separator: " ").attributed()
+            .font(Fonts.system.regular(size: 11))
+            .foregroundColor(UIColor.lightGray)
             .make()
 
-        let ratingNode = LayoutNode(sizeProvider: ratingString, config: nil) { (label: UILabel) in
+        let ratingNode = LayoutNode(sizeProvider: ratingString, config: { node in
+            node.width = 100
+        }) { (label: UILabel) in
+            label.numberOfLines = 0
             label.attributedText = ratingString
         }
 
         let votesNode = LayoutNode(sizeProvider: votesString, config: nil) { (label: UILabel) in
+            label.numberOfLines = 0
             label.attributedText = votesString
         }
 
         let contentNode = LayoutNode(children: [ratingNode, votesNode], config: { node in
+            node.paddingLeft = 16
+            node.paddingRight = 32
             node.flexDirection = .row
-            node.alignItems = .center
+            node.alignItems = .flexEnd
             node.justifyContent = .spaceBetween
-            node.padding(top: nil, left: 16, bottom: 12, right: 16)
         })
 
         return contentNode

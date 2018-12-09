@@ -5,23 +5,24 @@ import FantLabStyle
 import FantLabText
 import FantLabUtils
 import FantLabModels
+import FantLabSharedUI
 import YYWebImage
 
 final class WorkReviewLayoutSpec: ModelLayoutSpec<WorkReviewModel> {
     override func makeNodeFrom(model: WorkReviewModel, sizeConstraints: SizeConstraints) -> LayoutNode {
         let userNameString = model.user.name.attributed()
-            .font(AppStyle.iowanFonts.boldFont(ofSize: 15))
-            .foregroundColor(AppStyle.colors.mainTintColor)
+            .font(Fonts.iowan.bold(size: 15))
+            .foregroundColor(Colors.flBlue)
             .make()
 
         let dateString = model.date?.formatDayMonthAndYearIfNotCurrent().attributed()
-            .font(AppStyle.iowanFonts.regularFont(ofSize: 10))
-            .foregroundColor(AppStyle.colors.secondaryTextColor)
+            .font(Fonts.system.regular(size: 10))
+            .foregroundColor(UIColor.lightGray)
             .make()
 
         let markString = "Оценка: \(model.mark)".attributed()
-            .font(AppStyle.iowanFonts.boldFont(ofSize: 13))
-            .foregroundColor(AppStyle.colors.mainTextColor)
+            .font(Fonts.system.bold(size: 13))
+            .foregroundColor(UIColor.black)
             .make()
 
         let showMark = model.mark > 0 && model.votes > 0
@@ -77,25 +78,22 @@ final class WorkReviewLayoutSpec: ModelLayoutSpec<WorkReviewModel> {
             label.attributedText = text.string
         }
 
-        let backgroundNode = LayoutNode(children: [topStackNode, textNode], config: { node in
+        let shadowNode = LayoutNode(children: [topStackNode, textNode], config: { node in
             node.flexDirection = .column
             node.padding(all: 16)
         }) { (view: UIView) in
-            view.backgroundColor = AppStyle.colors.viewBackgroundColor
+            view.backgroundColor = UIColor.white
             view.layer.cornerRadius = 8
             view.layer.shouldRasterize = true
             view.layer.rasterizationScale = UIScreen.main.scale
             view.layer.shadowOpacity = 1
-            view.layer.shadowColor = AppStyle.colors.viewShadowColor.cgColor
-            view.layer.shadowOffset = CGSize(width: 0, height: 4)
-            view.layer.shadowRadius = 16
+            view.layer.shadowColor = UIColor.black.withAlphaComponent(0.1).cgColor
+            view.layer.shadowOffset = CGSize(width: 0, height: 2)
+            view.layer.shadowRadius = 8
         }
 
-        let mainStack = LayoutNode(children: [backgroundNode], config: { node in
+        return LayoutNode(children: [shadowNode], config: { node in
             node.padding(top: nil, left: 16, bottom: 16, right: 16)
-            node.flexDirection = .column
         })
-
-        return mainStack
     }
 }
