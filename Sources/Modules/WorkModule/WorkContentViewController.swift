@@ -70,7 +70,7 @@ final class WorkContentViewController: ListViewController {
             )
 
             if work.id > 0 {
-                item.actions.onSelect = { [weak self] in
+                item.selectAction = { [weak self] in
                     self?.router.openWork(id: work.id)
                 }
             }

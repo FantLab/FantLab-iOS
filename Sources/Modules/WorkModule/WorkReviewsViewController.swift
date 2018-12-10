@@ -43,18 +43,6 @@ final class WorkReviewsViewController: ListViewController {
         }
 
         do {
-            adapter.collectionEvents.didHighlightCell = { (cell, _) in
-                UIView.animate(withDuration: 0.1, animations: {
-                    cell.transform = CGAffineTransform(scaleX: 0.92, y: 0.92)
-                })
-            }
-
-            adapter.collectionEvents.didUnhighlightCell = { (cell, _) in
-                UIView.animate(withDuration: 0.15, animations: {
-                    cell.transform = CGAffineTransform.identity
-                })
-            }
-
             adapter.scrollEvents.didScroll = { [weak self] scrollView in
                 self?.isSortSelectionControlHidden = (scrollView.contentOffset.y + scrollView.adjustedContentInset.top) > 10
                 
@@ -120,17 +108,29 @@ final class WorkReviewsViewController: ListViewController {
 
     private func makeListItemsFrom(state: WorkReviewsInteractor.State) -> [ListItem] {
         var items: [ListItem] = state.reviews.map { review -> ListItem in
-            let listItem = ListItem(
+            let item = ListItem(
                 id: String(review.id),
                 model: String(review.id),
                 layoutSpec: WorkReviewLayoutSpec(model: review)
             )
 
-            listItem.actions.onSelect = { [weak self] in
+            item.didHighlight = { cell in
+                UIView.animate(withDuration: 0.1, animations: {
+                    cell.transform = CGAffineTransform(scaleX: 0.92, y: 0.92)
+                })
+            }
+
+            item.didUnhighlight = { cell in
+                UIView.animate(withDuration: 0.15, animations: {
+                    cell.transform = CGAffineTransform.identity
+                })
+            }
+
+            item.selectAction = { [weak self] in
                 self?.open(review: review)
             }
 
-            return listItem
+            return item
         }
 
         switch state.status {

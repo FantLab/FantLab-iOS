@@ -16,7 +16,7 @@ final class WorkHeaderLayoutSpec: ModelLayoutSpec<WorkModel> {
             let nameText = model.name == model.origName ? model.name : [model.name, model.origName].compactAndJoin(" / ")
 
             nameString = nameText.attributed()
-                .font(Fonts.iowan.bold(size: 24))
+                .font(Fonts.iowan.bold(size: 20))
                 .foregroundColor(UIColor.black)
                 .make()
 

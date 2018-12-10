@@ -140,7 +140,7 @@ final class WorkViewController: ListViewController {
                 layoutSpec: WorkHeaderLayoutSpec(model: model)
             )
 
-            item.actions.onSelect = { [weak self] in
+            item.selectAction = { [weak self] in
                 self?.openAuthors(work: model)
             }
 
@@ -166,7 +166,7 @@ final class WorkViewController: ListViewController {
                 layoutSpec: WorkDescriptionLayoutSpec(model: model)
             )
 
-            item.actions.onSelect = { [weak self] in
+            item.selectAction = { [weak self] in
                 self?.openDescriptionAndNotes(work: model)
             }
 
@@ -217,7 +217,7 @@ final class WorkViewController: ListViewController {
                     )
 
                     if parentModel.id > 0 {
-                        item.actions.onSelect = { [weak self] in
+                        item.selectAction = { [weak self] in
                             self?.router.openWork(id: parentModel.id)
                         }
                     }
@@ -263,7 +263,7 @@ final class WorkViewController: ListViewController {
                     )
 
                     if work.id > 0 {
-                        item.actions.onSelect = { [weak self] in
+                        item.selectAction = { [weak self] in
                             self?.router.openWork(id: work.id)
                         }
                     }
@@ -286,7 +286,7 @@ final class WorkViewController: ListViewController {
                     ))
                 )
 
-                item.actions.onSelect = { [weak self] in
+                item.selectAction = { [weak self] in
                     self?.openContent(workModel: model)
                 }
 
@@ -348,7 +348,7 @@ final class WorkViewController: ListViewController {
                 ))
             )
 
-            item.actions.onSelect = { [weak self] in
+            item.selectAction = { [weak self] in
                 self?.openReviews(work: model)
             }
 

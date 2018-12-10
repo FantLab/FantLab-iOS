@@ -26,7 +26,9 @@ private final class WorkAnalogLayoutSpec: ModelLayoutSpec<WorkAnalogModel> {
                 .make()
         }
 
-        let nameNode = LayoutNode(sizeProvider: nameString, config: nil) { (label: UILabel) in
+        let nameNode = LayoutNode(sizeProvider: nameString, config: { node in
+            node.maxHeight = 150
+        }) { (label: UILabel) in
             label.numberOfLines = 0
             label.attributedText = nameString
         }
@@ -73,17 +75,7 @@ private final class WorkAnalogListView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        adapter.collectionEvents.didHighlightCell = { (cell, _) in
-            UIView.animate(withDuration: 0.1, animations: {
-                cell.transform = CGAffineTransform(scaleX: 0.92, y: 0.92)
-            })
-        }
 
-        adapter.collectionEvents.didUnhighlightCell = { (cell, _) in
-            UIView.animate(withDuration: 0.15, animations: {
-                cell.transform = CGAffineTransform.identity
-            })
-        }
 
         adapter.collectionView.alwaysBounceHorizontal = true
         adapter.collectionView.showsHorizontalScrollIndicator = false
@@ -114,10 +106,20 @@ private final class WorkAnalogListView: UIView {
                     layoutSpec: WorkAnalogLayoutSpec(model: model)
                 )
 
-                item.actions.onSelect = {
-                    CATransaction.setCompletionBlock({
-                        onSelect(model.id)
+                item.didHighlight = { cell in
+                    UIView.animate(withDuration: 0.1, animations: {
+                        cell.transform = CGAffineTransform(scaleX: 0.92, y: 0.92)
                     })
+                }
+
+                item.didUnhighlight = { cell in
+                    UIView.animate(withDuration: 0.15, animations: {
+                        cell.transform = CGAffineTransform.identity
+                    })
+                }
+
+                item.selectAction = {
+                    onSelect(model.id)
                 }
 
                 return item
