@@ -132,9 +132,19 @@ final class WorkViewController: ListViewController {
     private func makeListItemsFrom(work model: WorkModel, analogs analogModels: [WorkAnalogModel]) -> [ListItem] {
         var items: [ListItem] = []
 
+        let addSeparator = {
+            items.append(ListItem(id: UUID().uuidString, layoutSpec: ItemSeparatorLayoutSpec()))
+        }
+
+        let addSpace = { (height: Int) in
+            items.append(ListItem(id: UUID().uuidString, layoutSpec: EmptySpaceLayoutSpec(model: (UIColor.white, height))))
+        }
+
         // header
 
         do {
+            addSpace(16)
+
             let item = ListItem(
                 id: UUID().uuidString,
                 layoutSpec: WorkHeaderLayoutSpec(model: model)
@@ -147,20 +157,24 @@ final class WorkViewController: ListViewController {
             items.append(item)
         }
 
-        // rating TODO:
+        if model.rating > 0 && model.votes > 0 {
+            addSpace(24)
 
-//        if model.rating > 0 && model.votes > 0 {
-//            let item = ListItem(
-//                id: UUID().uuidString,
-//                layoutSpec: WorkRatingLayoutSpec(model: model)
-//            )
-//
-//            items.append(item)
-//        }
+            let item = ListItem(
+                id: UUID().uuidString,
+                layoutSpec: WorkRatingLayoutSpec(model: model)
+            )
+
+            items.append(item)
+
+            addSpace(12)
+        }
 
         // description
 
         if !model.descriptionText.isEmpty || !model.notes.isEmpty {
+            addSpace(12)
+
             let item = ListItem(
                 id: UUID().uuidString,
                 layoutSpec: WorkDescriptionLayoutSpec(model: model)
@@ -176,6 +190,8 @@ final class WorkViewController: ListViewController {
         // classification
 
         if !model.classificatory.isEmpty {
+            addSpace(24)
+
             items.append(ListItem(
                 id: UUID().uuidString,
                 layoutSpec: WorkGenresLayoutSpec(model: model)
@@ -185,25 +201,19 @@ final class WorkViewController: ListViewController {
         // parents
 
         if !model.parents.isEmpty {
-            items.append(ListItem(
-                id: UUID().uuidString,
-                layoutSpec: EmptySpaceLayoutSpec(model: (UIColor.white, 32))
-            ))
+            addSpace(48)
 
             items.append(ListItem(
                 id: UUID().uuidString,
                 layoutSpec: WorkSectionTitleLayoutSpec(model: WorkSectionTitleLayoutModel(
                     title: "Входит в",
-                    icon: UIImage(named: "layers"),
+                    icon: UIImage(named: "tree"),
                     count: 0,
                     showArrow: false
                 ))
             ))
 
-            items.append(ListItem(
-                id: UUID().uuidString,
-                layoutSpec: EmptySpaceLayoutSpec(model: (UIColor.white, 8))
-            ))
+            addSpace(12)
 
             model.parents.forEach { parents in
                 parents.enumerated().forEach({ (index, parentModel) in
@@ -224,10 +234,7 @@ final class WorkViewController: ListViewController {
 
                     items.append(item)
 
-                    items.append(ListItem(
-                        id: UUID().uuidString,
-                        layoutSpec: ItemSeparatorLayoutSpec()
-                    ))
+                    addSeparator()
                 })
             }
         }
@@ -235,10 +242,7 @@ final class WorkViewController: ListViewController {
         // content
 
         if !model.children.isEmpty {
-            items.append(ListItem(
-                id: UUID().uuidString,
-                layoutSpec: EmptySpaceLayoutSpec(model: (UIColor.white, 32))
-            ))
+            addSpace(48)
 
             if model.children.count < 7 {
                 items.append(ListItem(
@@ -251,10 +255,7 @@ final class WorkViewController: ListViewController {
                     ))
                 ))
 
-                items.append(ListItem(
-                    id: UUID().uuidString,
-                    layoutSpec: EmptySpaceLayoutSpec(model: (UIColor.white, 8))
-                ))
+                addSpace(12)
 
                 model.children.forEach { work in
                     let item = ListItem(
@@ -270,10 +271,7 @@ final class WorkViewController: ListViewController {
 
                     items.append(item)
 
-                    items.append(ListItem(
-                        id: UUID().uuidString,
-                        layoutSpec: ItemSeparatorLayoutSpec()
-                    ))
+                    addSeparator()
                 }
             } else {
                 let item = ListItem(
@@ -292,31 +290,21 @@ final class WorkViewController: ListViewController {
 
                 items.append(item)
 
-                items.append(ListItem(
-                    id: UUID().uuidString,
-                    layoutSpec: EmptySpaceLayoutSpec(model: (UIColor.white, 12))
-                ))
-
-                items.append(ListItem(
-                    id: UUID().uuidString,
-                    layoutSpec: ItemSeparatorLayoutSpec()
-                ))
+                addSpace(12)
+                addSeparator()
             }
         }
 
         // analogs
 
         if !analogModels.isEmpty {
-            items.append(ListItem(
-                id: UUID().uuidString,
-                layoutSpec: EmptySpaceLayoutSpec(model: (UIColor.white, 48))
-            ))
+            addSpace(48)
 
             items.append(ListItem(
                 id: UUID().uuidString,
                 layoutSpec: WorkSectionTitleLayoutSpec(model: WorkSectionTitleLayoutModel(
                     title: "Похожие",
-                    icon: UIImage(named: "analogs"),
+                    icon: UIImage(named: "libra"),
                     count: analogModels.count,
                     showArrow: false
                 ))
@@ -333,10 +321,7 @@ final class WorkViewController: ListViewController {
         // reviews
 
         if model.reviewsCount > 0 {
-            items.append(ListItem(
-                id: UUID().uuidString,
-                layoutSpec: EmptySpaceLayoutSpec(model: (UIColor.white, 32))
-            ))
+            addSpace(48)
 
             let item = ListItem(
                 id: UUID().uuidString,
@@ -354,23 +339,13 @@ final class WorkViewController: ListViewController {
 
             items.append(item)
 
-            items.append(ListItem(
-                id: UUID().uuidString,
-                layoutSpec: EmptySpaceLayoutSpec(model: (UIColor.white, 12))
-            ))
-
-            items.append(ListItem(
-                id: UUID().uuidString,
-                layoutSpec: ItemSeparatorLayoutSpec()
-            ))
+            addSpace(12)
+            addSeparator()
         }
 
         // extra footer space
 
-        items.append(ListItem(
-            id: UUID().uuidString,
-            layoutSpec: EmptySpaceLayoutSpec(model: (UIColor.white, 64))
-        ))
+        addSpace(64)
 
         return items
     }

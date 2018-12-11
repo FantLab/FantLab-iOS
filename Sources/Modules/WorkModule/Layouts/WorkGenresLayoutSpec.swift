@@ -10,7 +10,7 @@ final class WorkGenresLayoutSpec: ModelLayoutSpec<WorkModel> {
     override func makeNodeFrom(model: WorkModel, sizeConstraints: SizeConstraints) -> LayoutNode {
         var textStackNodes: [LayoutNode] = []
 
-        model.classificatory.forEach { genreGroup in
+        model.classificatory.enumerated().forEach { (index, genreGroup) in
             let titleString = genreGroup.title.attributed()
                 .font(Fonts.system.regular(size: 13))
                 .foregroundColor(UIColor.lightGray)
@@ -39,7 +39,10 @@ final class WorkGenresLayoutSpec: ModelLayoutSpec<WorkModel> {
             let textStackNode = LayoutNode(children: [titleNode, genresNode], config: { node in
                 node.flexDirection = .row
                 node.alignItems = .flexStart
-                node.marginBottom = 16
+
+                if index < model.classificatory.count - 1 {
+                    node.marginBottom = 16
+                }
             })
 
             textStackNodes.append(textStackNode)
@@ -48,7 +51,7 @@ final class WorkGenresLayoutSpec: ModelLayoutSpec<WorkModel> {
         let contentNode = LayoutNode(children: textStackNodes, config: { node in
             node.flexDirection = .column
             node.alignItems = .flexStart
-            node.padding(top: 16, left: 16, bottom: nil, right: 16)
+            node.padding(top: nil, left: 16, bottom: nil, right: 16)
         })
 
         return contentNode

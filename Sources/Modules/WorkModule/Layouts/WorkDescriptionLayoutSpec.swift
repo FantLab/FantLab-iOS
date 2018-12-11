@@ -23,10 +23,11 @@ final class WorkDescriptionLayoutSpec: ModelLayoutSpec<WorkModel> {
 
         let backgroundNode = LayoutNode(children: [textNode], config: { node in
             node.padding(top: 8, left: 12, bottom: 8, right: 12)
-            node.margin(top: 12, left: 12, bottom: 12, right: 12)
+            node.marginLeft = 12
+            node.marginRight = 12
             node.flexDirection = .column
         }) { (view: UIView) in
-            view.backgroundColor = UIColor(rgb: 0xEFEFF4).withAlphaComponent(0.7)
+            view.backgroundColor = UIColor(rgb: 0xEFEFF4) //.withAlphaComponent(0.7)
             view.layer.cornerRadius = 8
         }
 

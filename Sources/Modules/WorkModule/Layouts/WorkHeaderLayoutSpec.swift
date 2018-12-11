@@ -72,7 +72,8 @@ final class WorkHeaderLayoutSpec: ModelLayoutSpec<WorkModel> {
         let contentNode = LayoutNode(children: [coverNode, textStackNode], config: { node in
             node.flexDirection = .row
             node.alignItems = .flexStart
-            node.padding(all: 16)
+            node.paddingLeft = 16
+            node.paddingRight = 16
         })
 
         return contentNode

@@ -59,7 +59,7 @@ private final class WorkAnalogLayoutSpec: ModelLayoutSpec<WorkAnalogModel> {
         }
 
         return LayoutNode(children: [contentNode], config: { node in
-            node.padding(top: 16, left: 12, bottom: 24, right: 12)
+            node.padding(top: 20, left: 12, bottom: 24, right: 12)
         })
     }
 }

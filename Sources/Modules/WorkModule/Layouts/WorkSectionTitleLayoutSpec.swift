@@ -16,7 +16,7 @@ struct WorkSectionTitleLayoutModel {
 final class WorkSectionTitleLayoutSpec: ModelLayoutSpec<WorkSectionTitleLayoutModel> {
     override func makeNodeFrom(model: WorkSectionTitleLayoutModel, sizeConstraints: SizeConstraints) -> LayoutNode {
         let titleString = model.title.attributed()
-            .font(Fonts.system.bold(size: 20))
+            .font(Fonts.system.bold(size: 18))
             .foregroundColor(UIColor.black)
             .make()
 
@@ -28,11 +28,12 @@ final class WorkSectionTitleLayoutSpec: ModelLayoutSpec<WorkSectionTitleLayoutMo
         let iconNode = LayoutNode(config: { node in
             node.width = 24
             node.height = 24
-            node.marginRight = 12
+            node.marginRight = 8
             node.isHidden = model.icon == nil
         }) { (view: UIImageView) in
             view.contentMode = .scaleAspectFit
-            view.image = model.icon
+            view.tintColor = UIColor(rgb: 0xc45e24) // UIColor.lightGray
+            view.image = model.icon?.withRenderingMode(.alwaysTemplate)
         }
 
         let titleNode = LayoutNode(sizeProvider: titleString, config: nil) { (label: UILabel) in
@@ -42,6 +43,9 @@ final class WorkSectionTitleLayoutSpec: ModelLayoutSpec<WorkSectionTitleLayoutMo
 
         let countNode = LayoutNode(sizeProvider: countString, config: { node in
             node.marginLeft = 12
+            if !model.showArrow {
+                node.marginRight = 8
+            }
             node.isHidden = model.count < 1
         }) { (label: UILabel) in
             label.numberOfLines = 0
@@ -65,7 +69,7 @@ final class WorkSectionTitleLayoutSpec: ModelLayoutSpec<WorkSectionTitleLayoutMo
             node.marginLeft = 8
             node.width = 12
             node.height = 12
-//            node.isHidden = !model.showArrow
+            node.isHidden = !model.showArrow
         }) { (view: UIImageView) in
             view.contentMode = .scaleAspectFit
             view.tintColor = UIColor(rgb: 0xC8C7CC)
