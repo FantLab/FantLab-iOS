@@ -20,7 +20,7 @@ public final class ItemSeparatorLayoutSpec: LayoutSpec {
         let separatorNode = LayoutNode(config: { node in
             node.height = YGValue(UIScreen.main.px)
         }) { (view: UIView) in
-            view.backgroundColor = UIColor(rgb: 0xC8C7CC).withAlphaComponent(0.6)
+            view.backgroundColor = UIColor(rgb: 0xC8C7CC)
         }
 
         let containerNode = LayoutNode(children: [separatorNode], config: { node in

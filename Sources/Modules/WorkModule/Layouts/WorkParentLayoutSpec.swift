@@ -18,7 +18,7 @@ final class WorkParentModelLayoutSpec: ModelLayoutSpec<WorkParentModelLayoutMode
 
         do {
             nameString = model.work.name.attributed()
-                .font(Fonts.system.regular(size: 13))
+                .font(Fonts.system.regular(size: 14))
                 .foregroundColor(UIColor.black)
                 .make()
 

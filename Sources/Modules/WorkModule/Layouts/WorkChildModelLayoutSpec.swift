@@ -174,7 +174,7 @@ final class WorkChildModelLayoutSpec: ModelLayoutSpec<WorkModel.ChildWorkModel> 
             let useBold = !work.name.isEmpty && work.id > 0
 
             titleString = titleText.attributed()
-                .font(useBold ? Fonts.system.medium(size: 13) : Fonts.system.regular(size: 13))
+                .font(useBold ? Fonts.system.medium(size: 14) : Fonts.system.regular(size: 14))
                 .foregroundColor(work.isPublished ? UIColor.black : UIColor.lightGray)
                 .make()
 
@@ -183,7 +183,7 @@ final class WorkChildModelLayoutSpec: ModelLayoutSpec<WorkModel.ChildWorkModel> 
             let subtitleText = ([typeText, yearText, work.publishStatus]).compactAndJoin(", ")
 
             subtitleString = subtitleText.nilIfEmpty?.attributed()
-                .font(Fonts.system.regular(size: 11))
+                .font(Fonts.system.regular(size: 12))
                 .foregroundColor(UIColor.lightGray)
                 .make()
 
