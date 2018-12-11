@@ -21,19 +21,19 @@ public final class PreviewTextDecorator: TextDecorator {
     // MARK: -
 
     public func setupDefaultAttributesIn(range: NSRange, string: NSMutableAttributedString) {
-//        let paragraphStyle = NSMutableParagraphStyle()
-//        paragraphStyle.lineSpacing = 2
-//        paragraphStyle.alignment = .left
-//        paragraphStyle.firstLineHeadIndent = 32
-//        paragraphStyle.paragraphSpacing = 2
-//        paragraphStyle.paragraphSpacingBefore = 2
-//        paragraphStyle.lineBreakMode = .byTruncatingTail
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = 2
+        paragraphStyle.alignment = .left
+        paragraphStyle.hyphenationFactor = 1
+        paragraphStyle.firstLineHeadIndent = 24
+        paragraphStyle.paragraphSpacing = 2
+        paragraphStyle.paragraphSpacingBefore = 2
 
         string.addAttributes(
             [
                 .font: Fonts.iowan.regular(size: fontSize),
                 .foregroundColor: UIColor.black,
-//                .paragraphStyle: paragraphStyle
+                .paragraphStyle: paragraphStyle
             ],
             range: range
         )

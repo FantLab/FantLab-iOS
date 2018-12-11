@@ -87,6 +87,8 @@ extension FLAttributedText {
             }
         }
 
+        mutableString.fixAttributes(in: mutableString.fullRange)
+
         mutableString.endEditing()
 
         self.init(string: mutableString, attachmentRanges: attachmentRanges)

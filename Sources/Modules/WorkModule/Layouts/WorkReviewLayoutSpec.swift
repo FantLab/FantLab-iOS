@@ -73,9 +73,8 @@ final class WorkReviewLayoutSpec: ModelLayoutSpec<WorkReviewModel> {
         let textNode = LayoutNode(sizeProvider: text.string, config: { node in
             node.marginTop = 12
             node.maxHeight = 200
-        }) { (label: UILabel) in
-            label.numberOfLines = 0
-            label.attributedText = text.string
+        }) { (label: AsyncLabel) in
+            label.text = text.string
         }
 
         let shadowNode = LayoutNode(children: [topStackNode, textNode], config: { node in
