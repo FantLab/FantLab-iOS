@@ -14,10 +14,12 @@ final class WorkDescriptionLayoutSpec: ModelLayoutSpec<WorkModel> {
             replacementRules: TagReplacementRules.previewAttachments
         )
 
-        let textNode = LayoutNode(sizeProvider: text.string, config: { node in
+        let textDrawing = text.string.drawing(options: [.truncatesLastVisibleLine, .usesFontLeading, .usesLineFragmentOrigin])
+
+        let textNode = LayoutNode(sizeProvider: textDrawing, config: { node in
             node.maxHeight = 200
         }) { (label: AsyncLabel) in
-            label.text = text.string
+            label.stringDrawing = textDrawing
         }
 
         let backgroundNode = LayoutNode(children: [textNode], config: { node in

@@ -70,11 +70,13 @@ final class WorkReviewLayoutSpec: ModelLayoutSpec<WorkReviewModel> {
 
         let text = FLAttributedText(taggedString: model.text, decorator: PreviewTextDecorator(), replacementRules: TagReplacementRules.previewAttachments)
 
-        let textNode = LayoutNode(sizeProvider: text.string, config: { node in
+        let textDrawing = text.string.drawing(options: [.truncatesLastVisibleLine, .usesFontLeading, .usesLineFragmentOrigin])
+
+        let textNode = LayoutNode(sizeProvider: textDrawing, config: { node in
             node.marginTop = 12
             node.maxHeight = 200
         }) { (label: AsyncLabel) in
-            label.text = text.string
+            label.stringDrawing = textDrawing
         }
 
         let shadowNode = LayoutNode(children: [topStackNode, textNode], config: { node in
