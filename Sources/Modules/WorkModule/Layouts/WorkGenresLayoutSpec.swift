@@ -6,6 +6,18 @@ import FantLabUtils
 import FantLabStyle
 import FantLabModels
 
+typealias GenreModel = WorkModel.GenreGroupModel.GenreModel
+
+extension GenreModel {
+    func traverse(using closure: (GenreModel) -> Void) {
+        closure(self)
+
+        genres.forEach {
+            $0.traverse(using: closure)
+        }
+    }
+}
+
 final class WorkGenresLayoutSpec: ModelLayoutSpec<WorkModel> {
     override func makeNodeFrom(model: WorkModel, sizeConstraints: SizeConstraints) -> LayoutNode {
         var textStackNodes: [LayoutNode] = []
@@ -16,7 +28,17 @@ final class WorkGenresLayoutSpec: ModelLayoutSpec<WorkModel> {
                 .foregroundColor(UIColor.lightGray)
                 .make()
 
-            let genresString = genreGroup.genres.joined(separator: "\n").attributed()
+            var genres: [String] = []
+
+            do {
+                genreGroup.genres.forEach {
+                    $0.traverse(using: { genre in
+                        genres.append(genre.label)
+                    })
+                }
+            }
+
+            let genresString = genres.joined(separator: "\n").attributed()
                 .font(Fonts.system.regular(size: 13))
                 .foregroundColor(UIColor.black)
                 .make()

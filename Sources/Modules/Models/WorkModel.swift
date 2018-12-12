@@ -77,10 +77,31 @@ public final class WorkModel {
     }
 
     public final class GenreGroupModel {
-        public let title: String
-        public let genres: [String]
+        public final class GenreModel {
+            public let id: Int
+            public let label: String
+            public let votes: Int
+            public let percent: Float
+            public let genres: [GenreModel]
 
-        public init(title: String, genres: [String]) {
+            public init(id: Int,
+                        label: String,
+                        votes: Int,
+                        percent: Float,
+                        genres: [GenreModel]) {
+
+                self.id = id
+                self.label = label
+                self.votes = votes
+                self.percent = percent
+                self.genres = genres
+            }
+        }
+
+        public let title: String
+        public let genres: [GenreModel]
+
+        public init(title: String, genres: [GenreModel]) {
             self.title = title
             self.genres = genres
         }

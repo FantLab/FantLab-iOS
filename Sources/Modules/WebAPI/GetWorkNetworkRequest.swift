@@ -69,12 +69,24 @@ public final class GetWorkNetworkRequest: NetworkRequest {
                 })
             }),
             classificatory: json["classificatory"]["genre_group"].jsonArray.map({
-                WorkModel.GenreGroupModel( // TODO: recursive genres
+                WorkModel.GenreGroupModel(
                     title: $0["label"].stringValue,
                     genres: $0["genre"].jsonArray.map({
-                        $0["label"].stringValue
+                        parseGenre(json: $0)
                     })
                 )
+            })
+        )
+    }
+
+    private func parseGenre(json: JSON) -> WorkModel.GenreGroupModel.GenreModel {
+        return WorkModel.GenreGroupModel.GenreModel(
+            id: json["genre_id"].intValue,
+            label: json["label"].stringValue,
+            votes: json["votes"].intValue,
+            percent: json["percent"].floatValue,
+            genres: json["genre"].jsonArray.map({
+                parseGenre(json: $0)
             })
         )
     }
