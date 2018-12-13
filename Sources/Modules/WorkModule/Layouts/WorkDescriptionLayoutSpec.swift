@@ -23,7 +23,7 @@ final class WorkDescriptionLayoutSpec: ModelLayoutSpec<WorkModel> {
         }
 
         let backgroundNode = LayoutNode(children: [textNode], config: { node in
-            node.padding(top: 8, left: 12, bottom: 8, right: 12)
+            node.padding(top: 16, left: 12, bottom: 16, right: 12)
             node.marginLeft = 12
             node.marginRight = 12
             node.flexDirection = .column

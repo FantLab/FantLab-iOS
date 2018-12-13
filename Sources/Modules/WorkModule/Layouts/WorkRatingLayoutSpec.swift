@@ -13,7 +13,7 @@ final class WorkRatingLayoutSpec: ModelLayoutSpec<WorkModel> {
         let starText = String(repeating: "★", count: intRating) + String(repeating: "☆", count: (10 - intRating))
 
         let ratingString = String(model.rating).attributed()
-            .font(Fonts.system.bold(size: 28))
+            .font(Fonts.system.bold(size: 22))
             .foregroundColor(ratingColor)
             .make()
 

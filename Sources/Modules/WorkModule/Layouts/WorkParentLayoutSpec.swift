@@ -29,21 +29,21 @@ final class WorkParentModelLayoutSpec: ModelLayoutSpec<WorkParentModelLayoutMode
         }
 
         let nameNode = LayoutNode(sizeProvider: nameString, config: { node in
-            node.flex = 1
+            node.marginLeft = 12
         }) { (label: UILabel) in
             label.numberOfLines = 0
             label.attributedText = nameString
         }
 
         let typeNode = LayoutNode(sizeProvider: typeString, config: { node in
-            node.marginLeft = 12
             node.isHidden = typeString == nil
+            node.flex = 1
         }) { (label: UILabel) in
             label.numberOfLines = 0
             label.attributedText = typeString
         }
 
-        let contentNode = LayoutNode(children: [nameNode, typeNode], config: { node in
+        let contentNode = LayoutNode(children: [typeNode, nameNode], config: { node in
             node.flexDirection = .row
             node.alignItems = .center
             node.flex = 1

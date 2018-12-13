@@ -28,7 +28,7 @@ final class WorkSectionTitleLayoutSpec: ModelLayoutSpec<WorkSectionTitleLayoutMo
         let iconNode = LayoutNode(config: { node in
             node.width = 24
             node.height = 24
-            node.marginRight = 8
+            node.marginRight = 12
             node.isHidden = model.icon == nil
         }) { (view: UIImageView) in
             view.contentMode = .scaleAspectFit
