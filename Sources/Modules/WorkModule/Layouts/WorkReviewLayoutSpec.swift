@@ -23,18 +23,19 @@ final class WorkReviewHeaderLayoutSpec: ModelLayoutSpec<WorkReviewModel> {
         let markString: NSAttributedString?
 
         if model.mark > 0 && model.votes > 0 {
-            let mark = "Оценка: \(model.mark)".attributed()
-                .font(Fonts.system.bold(size: 12))
-                .foregroundColor(UIColor.black)
+            let markColor = RatingColorRule.colorFor(rating: Float(model.mark))
+
+            let mark = String(model.mark).attributed()
+                .font(Fonts.system.bold(size: 14))
+                .foregroundColor(markColor)
                 .makeMutable()
 
-            //            let votes = (" (" + String(model.votes) + ")").attributed()
-            //                .font(Fonts.system.regular(size: 10))
-            //                .foregroundColor(UIColor.lightGray)
-            //                .baselineOffset(1)
-            //                .make()
-            //
-            //            mark.append(votes)
+            let votes = (" / +" + String(model.votes)).attributed()
+                .font(Fonts.system.regular(size: 14))
+                .foregroundColor(UIColor.lightGray)
+                .make()
+
+            mark.append(votes)
 
             markString = mark
         } else {

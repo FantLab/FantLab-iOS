@@ -35,7 +35,7 @@ final class WorkHeaderLayoutSpec: ModelLayoutSpec<WorkModel> {
             if !model.origName.isEmpty && model.origName != nameText {
                 origNameString = model.origName.attributed()
                     .font(Fonts.system.medium(size: 11))
-                    .foregroundColor(UIColor.gray)
+                    .foregroundColor(UIColor.lightGray)
                     .make()
             } else {
                 origNameString = nil
@@ -46,7 +46,7 @@ final class WorkHeaderLayoutSpec: ModelLayoutSpec<WorkModel> {
 
             infoString = infoText.attributed()
                 .font(Fonts.system.regular(size: 15))
-                .foregroundColor(UIColor.lightGray)
+                .foregroundColor(UIColor.gray)
                 .make()
 
             authorString = model.authors.map({ $0.name }).compactAndJoin(", ").attributed()
@@ -103,7 +103,7 @@ final class WorkHeaderLayoutSpec: ModelLayoutSpec<WorkModel> {
 
         let contentNode = LayoutNode(children: [textStackNode, coverNode], config: { node in
             node.flexDirection = .row
-            node.alignItems = .center
+            node.alignItems = .flexStart
             node.padding(all: 16)
         })
 

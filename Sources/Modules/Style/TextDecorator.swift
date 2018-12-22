@@ -22,10 +22,8 @@ public final class PreviewTextDecorator: TextDecorator {
 
     public func setupDefaultAttributesIn(range: NSRange, string: NSMutableAttributedString) {
         let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineSpacing = 3
         paragraphStyle.alignment = .left
-        paragraphStyle.hyphenationFactor = 1
-        paragraphStyle.firstLineHeadIndent = 24
+        paragraphStyle.lineSpacing = 3
         paragraphStyle.paragraphSpacing = 4
         paragraphStyle.paragraphSpacingBefore = 4
 
@@ -77,10 +75,8 @@ public final class InteractiveTextDecorator: TextDecorator {
 
     public func setupDefaultAttributesIn(range: NSRange, string: NSMutableAttributedString) {
         let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineSpacing = 4
         paragraphStyle.alignment = .left
-        paragraphStyle.hyphenationFactor = 1
-        paragraphStyle.firstLineHeadIndent = 32
+        paragraphStyle.lineSpacing = 4
         paragraphStyle.paragraphSpacing = 4
         paragraphStyle.paragraphSpacingBefore = 4
 
