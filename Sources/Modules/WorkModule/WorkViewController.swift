@@ -13,13 +13,7 @@ enum TabIndex: String {
     case analogs
 }
 
-final class WorkViewController: ListViewController {
-    private enum Separator {
-        case section
-        case item
-    }
-
-    private let disposeBag = DisposeBag()
+final class WorkViewController: ImageBackedListViewController {
     private let interactor: WorkInteractor
     private let router: WorkModuleRouter
     private let contentBuilder = WorkContentBuilder()
@@ -49,6 +43,8 @@ final class WorkViewController: ListViewController {
         super.viewDidLoad()
 
         title = ""
+
+        // content builder callbacks
 
         do {
             contentBuilder.onExpandOrCollapse = { [weak self] in
@@ -92,19 +88,23 @@ final class WorkViewController: ListViewController {
             }
         }
 
+        // image background
+
         do {
-            interactor.stateObservable
-                .observeOn(MainScheduler.instance)
-                .subscribe(onNext: { [weak self] state in
-                    switch state {
-                    case .initial, .error, .loading:
-                        break
-                    case let .idle(data):
-                        break
-                    }
-                })
-            .disposed(by: disposeBag)
+            setupWith(urlObservable: interactor.stateObservable.map({ state -> URL? in
+                if case let .idle(data) = state {
+                    return data.work.imageURL
+                }
+
+                return nil
+            }))
+
+            adapter.scrollEvents.didScroll = { [weak self] scrollView in
+                self?.updateImageVisibilityWith(scrollView: scrollView)
+            }
         }
+
+        // state
 
         do {
             Observable.combineLatest(interactor.stateObservable,

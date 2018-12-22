@@ -9,7 +9,6 @@ import FantLabTextUI
 import FantLabModels
 
 final class WorkReviewsViewController: ListViewController {
-    private let disposeBag = DisposeBag()
     private let interactor: WorkReviewsInteractor
     private let router: WorkModuleRouter
     private let reviewsCount: Int

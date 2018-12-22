@@ -149,3 +149,9 @@ extension ListItem {
         self.init(id: id, model: id, layoutSpec: layoutSpec)
     }
 }
+
+extension UIViewController {
+    public func parentVC<T: UIViewController>() -> T? {
+        return (parent as? T) ?? parent?.parentVC()
+    }
+}

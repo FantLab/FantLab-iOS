@@ -22,7 +22,15 @@ private final class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         window = UIWindow()
-        window?.rootViewController = router.rootNavigationController
+        do {
+            let rootNC = router.rootNavigationController
+            let imageVC = ImageBackgroundViewController()
+            imageVC.addChild(rootNC)
+            imageVC.contentView.addSubview(rootNC.view)
+            rootNC.view.pinEdges(to: imageVC.view)
+            rootNC.didMove(toParent: imageVC)
+            window?.rootViewController = imageVC
+        }
         window?.makeKeyAndVisible()
 
         window?.tintColor = Colors.flBlue

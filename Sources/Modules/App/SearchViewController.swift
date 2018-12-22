@@ -9,7 +9,6 @@ import FantLabUtils
 import FantLabStyle
 
 final class SearchViewController: ListViewController, UISearchResultsUpdating {
-    private let disposeBag = DisposeBag()
     private let searchSubject = PublishSubject<String>()
 
     deinit {

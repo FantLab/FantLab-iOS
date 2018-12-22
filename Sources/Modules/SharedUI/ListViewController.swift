@@ -1,9 +1,12 @@
 import Foundation
 import UIKit
+import RxSwift
 import ALLKit
 import FantLabStyle
 
 open class ListViewController: UIViewController {
+    public let disposeBag = DisposeBag()
+
     public let adapter = CollectionViewAdapter()
 
     open override func viewDidLoad() {
