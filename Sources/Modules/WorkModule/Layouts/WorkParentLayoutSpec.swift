@@ -18,50 +18,46 @@ final class WorkParentModelLayoutSpec: ModelLayoutSpec<WorkParentModelLayoutMode
 
         do {
             nameString = model.work.name.attributed()
-                .font(Fonts.system.regular(size: 14))
+                .font(Fonts.system.medium(size: 14))
                 .foregroundColor(UIColor.black)
                 .make()
 
-            typeString = model.work.workType.nilIfEmpty?.attributed()
-                .font(Fonts.system.regular(size: 13))
+            typeString = model.work.workType.capitalizedFirstLetter().nilIfEmpty?.attributed()
+                .font(Fonts.system.regular(size: 12))
                 .foregroundColor(UIColor.lightGray)
                 .make()
         }
 
-        let nameNode = LayoutNode(sizeProvider: nameString, config: { node in
-            node.marginLeft = 12
-        }) { (label: UILabel) in
+        let nameNode = LayoutNode(sizeProvider: nameString, config: nil) { (label: UILabel) in
             label.numberOfLines = 0
             label.attributedText = nameString
         }
 
         let typeNode = LayoutNode(sizeProvider: typeString, config: { node in
-            node.isHidden = typeString == nil
-            node.flex = 1
+            node.marginTop = 2
         }) { (label: UILabel) in
             label.numberOfLines = 0
             label.attributedText = typeString
         }
 
-        let contentNode = LayoutNode(children: [typeNode, nameNode], config: { node in
-            node.flexDirection = .row
-            node.alignItems = .center
+        let textContentNode = LayoutNode(children: [nameNode, typeNode], config: { node in
+            node.flexDirection = .column
+            node.alignItems = .flexStart
             node.flex = 1
         })
 
         let arrowNode = LayoutNode(config: { node in
             node.marginLeft = 8
-            node.width = 12
-            node.height = 12
-            node.isHidden = !model.showArrow
+            node.width = 10
+            node.height = 10
         }) { (view: UIImageView) in
             view.contentMode = .scaleAspectFit
-            view.tintColor = UIColor(rgb: 0xC8C7CC)
+            view.tintColor = UIColor.lightGray
             view.image = UIImage(named: "arrow_right")?.withRenderingMode(.alwaysTemplate)
             view.isHidden = !model.showArrow
         }
 
-        let mainNode = LayoutNode(children: [contentNode, arrowNode], config: { node in
+        let contentNode = LayoutNode(children: [textContentNode, arrowNode], config: { node in
             node.flexDirection = .row
             node.alignItems = .center
             node.padding(
@@ -72,6 +68,6 @@ final class WorkParentModelLayoutSpec: ModelLayoutSpec<WorkParentModelLayoutMode
             )
         })
 
-        return mainNode
+        return contentNode
     }
 }

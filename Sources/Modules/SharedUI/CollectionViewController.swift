@@ -13,6 +13,7 @@ open class ListViewController: UIViewController {
 
         adapter.collectionView.backgroundColor = UIColor.white
         adapter.collectionView.alwaysBounceVertical = true
+        adapter.settings.deselectOnSelect = true
         view.addSubview(adapter.collectionView)
     }
 

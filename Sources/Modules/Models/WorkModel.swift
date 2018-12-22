@@ -27,6 +27,7 @@ public final class WorkModel {
         public let rating: Float
         public let votes: Int
         public let workType: String
+        public let workTypeKey: String
         public let publishStatus: String
         public let isPublished: Bool
         public let year: Int
@@ -40,6 +41,7 @@ public final class WorkModel {
                     rating: Float,
                     votes: Int,
                     workType: String,
+                    workTypeKey: String,
                     publishStatus: String,
                     isPublished: Bool,
                     year: Int,
@@ -53,6 +55,7 @@ public final class WorkModel {
             self.rating = rating
             self.votes = votes
             self.workType = workType
+            self.workTypeKey = workTypeKey
             self.publishStatus = publishStatus
             self.isPublished = isPublished
             self.year = year

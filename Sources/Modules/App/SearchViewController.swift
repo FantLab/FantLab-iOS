@@ -72,7 +72,7 @@ final class SearchViewController: ListViewController, UISearchResultsUpdating {
                 layoutSpec: SearchResultsWorkLayoutSpec(model: workModel)
             )
 
-            item.selectAction = { [weak self] in
+            item.didSelect = { [weak self] _ in
                 self?.openWork?(workModel.id)
             }
 

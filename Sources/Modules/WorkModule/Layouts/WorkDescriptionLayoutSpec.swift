@@ -14,24 +14,33 @@ final class WorkDescriptionLayoutSpec: ModelLayoutSpec<WorkModel> {
             replacementRules: TagReplacementRules.previewAttachments
         )
 
-        let textDrawing = text.string.drawing(options: [.truncatesLastVisibleLine, .usesFontLeading, .usesLineFragmentOrigin])
+        let textDrawing = text.string.drawing(options: [.truncatesLastVisibleLine,
+                                                        .usesFontLeading,
+                                                        .usesLineFragmentOrigin])
 
         let textNode = LayoutNode(sizeProvider: textDrawing, config: { node in
-            node.maxHeight = 200
+            node.maxHeight = 120
+            node.flex = 1
         }) { (label: AsyncLabel) in
             label.stringDrawing = textDrawing
         }
 
-        let backgroundNode = LayoutNode(children: [textNode], config: { node in
-            node.padding(top: 16, left: 12, bottom: 16, right: 12)
+        let arrowNode = LayoutNode(config: { node in
+            node.width = 10
+            node.height = 10
             node.marginLeft = 12
-            node.marginRight = 12
-            node.flexDirection = .column
-        }) { (view: UIView) in
-            view.backgroundColor = UIColor(rgb: 0xEFEFF4) //.withAlphaComponent(0.7)
-            view.layer.cornerRadius = 8
+        }) { (view: UIImageView) in
+            view.contentMode = .scaleAspectFit
+            view.tintColor = UIColor.lightGray
+            view.image = UIImage(named: "arrow_right")?.withRenderingMode(.alwaysTemplate)
         }
 
-        return LayoutNode(children: [backgroundNode])
+        let contentNode = LayoutNode(children: [textNode, arrowNode], config: { node in
+            node.flexDirection = .row
+            node.alignItems = .center
+            node.padding(top: 16, left: 16, bottom: 24, right: 12)
+        })
+
+        return contentNode
     }
 }

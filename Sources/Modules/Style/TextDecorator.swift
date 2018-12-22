@@ -22,16 +22,16 @@ public final class PreviewTextDecorator: TextDecorator {
 
     public func setupDefaultAttributesIn(range: NSRange, string: NSMutableAttributedString) {
         let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineSpacing = 2
+        paragraphStyle.lineSpacing = 3
         paragraphStyle.alignment = .left
         paragraphStyle.hyphenationFactor = 1
         paragraphStyle.firstLineHeadIndent = 24
-        paragraphStyle.paragraphSpacing = 2
-        paragraphStyle.paragraphSpacingBefore = 2
+        paragraphStyle.paragraphSpacing = 4
+        paragraphStyle.paragraphSpacingBefore = 4
 
         string.addAttributes(
             [
-                .font: Fonts.iowan.regular(size: fontSize),
+                .font: Fonts.system.regular(size: fontSize),
                 .foregroundColor: UIColor.black,
                 .paragraphStyle: paragraphStyle
             ],
@@ -40,11 +40,11 @@ public final class PreviewTextDecorator: TextDecorator {
     }
 
     public func setupBoldIn(range: NSRange, string: NSMutableAttributedString) {
-        string.addAttribute(.font, value: Fonts.iowan.bold(size: fontSize), range: range)
+        string.addAttribute(.font, value: Fonts.system.medium(size: fontSize), range: range)
     }
 
     public func setupItalicIn(range: NSRange, string: NSMutableAttributedString) {
-        string.addAttribute(.font, value: Fonts.iowan.italic(size: fontSize), range: range)
+        string.addAttribute(.font, value: Fonts.system.italic(size: fontSize), range: range)
     }
 
     public func setupUnderlineIn(range: NSRange, string: NSMutableAttributedString) {
@@ -69,7 +69,7 @@ public final class PreviewTextDecorator: TextDecorator {
 }
 
 public final class InteractiveTextDecorator: TextDecorator {
-    private let fontSize: CGFloat = 17
+    private let fontSize: CGFloat = 16
 
     public init() {}
 
@@ -86,7 +86,7 @@ public final class InteractiveTextDecorator: TextDecorator {
 
         string.addAttributes(
             [
-                .font: Fonts.iowan.regular(size: fontSize),
+                .font: Fonts.system.regular(size: fontSize),
                 .foregroundColor: UIColor.black,
                 .paragraphStyle: paragraphStyle
             ],
@@ -95,11 +95,11 @@ public final class InteractiveTextDecorator: TextDecorator {
     }
 
     public func setupBoldIn(range: NSRange, string: NSMutableAttributedString) {
-        string.addAttribute(.font, value: Fonts.iowan.bold(size: fontSize), range: range)
+        string.addAttribute(.font, value: Fonts.system.bold(size: fontSize), range: range)
     }
 
     public func setupItalicIn(range: NSRange, string: NSMutableAttributedString) {
-        string.addAttribute(.font, value: Fonts.iowan.italic(size: fontSize), range: range)
+        string.addAttribute(.font, value: Fonts.system.italic(size: fontSize), range: range)
     }
 
     public func setupUnderlineIn(range: NSRange, string: NSMutableAttributedString) {
@@ -111,7 +111,7 @@ public final class InteractiveTextDecorator: TextDecorator {
     }
 
     public func setupQuoteIn(range: NSRange, string: NSMutableAttributedString) {
-        string.addAttribute(.font, value: Fonts.iowan.italic(size: fontSize), range: range)
+        string.addAttribute(.font, value: Fonts.system.italic(size: fontSize), range: range)
     }
 
     public func setupTapAreaIn(range: NSRange, string: NSMutableAttributedString) {
@@ -119,7 +119,7 @@ public final class InteractiveTextDecorator: TextDecorator {
             [
                 .foregroundColor: UIColor.white,
                 .backgroundColor: Colors.flBlue,
-                .font: Fonts.iowan.bold(size: fontSize)
+                .font: Fonts.system.medium(size: fontSize)
             ],
             range: range
         )

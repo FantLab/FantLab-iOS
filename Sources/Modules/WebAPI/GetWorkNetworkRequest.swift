@@ -52,6 +52,7 @@ public final class GetWorkNetworkRequest: NetworkRequest {
                     rating: $0["val_midmark_by_weight"].floatValue,
                     votes: $0["val_voters"].intValue,
                     workType: $0["work_type"].stringValue,
+                    workTypeKey: $0["work_type_name"].stringValue,
                     publishStatus: $0["publish_status"].stringValue,
                     isPublished: $0["work_published"].boolValue,
                     year: $0["work_year"].intValue,

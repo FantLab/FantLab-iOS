@@ -106,9 +106,14 @@ extension Date {
 }
 
 extension URL {
-    public static func from(string: String, defaultHost: String? = nil, defaultScheme: String = "https") -> URL? {
-        guard var components = URLComponents(string: string) else {
-            return nil
+    public static func from(string: String,
+                            defaultHost: String? = nil,
+                            defaultScheme: String = "https") -> URL? {
+        guard
+            !string.isEmpty,
+            var components = URLComponents(string: string),
+            !components.path.isEmpty else {
+                return nil
         }
 
         if components.host == nil {

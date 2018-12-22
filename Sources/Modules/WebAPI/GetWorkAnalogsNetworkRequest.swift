@@ -12,7 +12,7 @@ public final class GetWorkAnalogsNetworkRequest: NetworkRequest {
     }
 
     public func makeURLRequest() -> URLRequest {
-        return URLRequest(url: URL(string: "https://\(Hosts.api)/work/\(workId)/analogs")!)
+        return URLRequest(url: URL(string: "https://\(Hosts.api)/work/\(workId)/similars")!)
     }
 
     public func parse(response: URLResponse, data: Data) throws -> [WorkAnalogModel] {
@@ -21,13 +21,19 @@ public final class GetWorkAnalogsNetworkRequest: NetworkRequest {
         }
 
         return json.jsonArray.map {
-            WorkAnalogModel(
-                id: $0["work_id"].intValue,
-                name: $0["rusname"].stringValue,
-                nameOrig: $0["name"].stringValue,
-                workType: $0["name_show_im"].stringValue,
+            return WorkAnalogModel(
+                id: $0["id"].intValue,
+                name: $0["name"].stringValue,
+                nameOrig: $0["name_orig"].stringValue,
+                workType: $0["name_type"].stringValue,
+                imageURL: URL.from(string: $0["image"].stringValue),
                 year: $0["year"].intValue,
-                authors: [$0["autor1_rusname"].string ?? $0["autor1_name"].stringValue]
+                authors: $0["creators"]["authors"].jsonArray.map({
+                    $0["name"].string ?? $0["name_orig"].stringValue
+                }),
+                rating: $0["stat"]["rating"].floatValue,
+                votes: $0["stat"]["voters"].intValue,
+                reviewsCount: $0["stat"]["responses"].intValue
             )
         }
     }

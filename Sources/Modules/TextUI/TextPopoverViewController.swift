@@ -9,7 +9,7 @@ final class TextPopoverViewController: UIViewController, UIPopoverPresentationCo
 
     init(text: String, sourceView: UIView, sourceRect: CGRect) {
         string = text.attributed()
-            .font(Fonts.iowan.regular(size: 14))
+            .font(Fonts.system.regular(size: 14))
             .foregroundColor(UIColor.black)
             .lineSpacing(2)
             .make()

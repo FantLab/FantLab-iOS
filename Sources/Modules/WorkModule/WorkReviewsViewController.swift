@@ -12,10 +12,12 @@ final class WorkReviewsViewController: ListViewController {
     private let disposeBag = DisposeBag()
     private let interactor: WorkReviewsInteractor
     private let router: WorkModuleRouter
+    private let reviewsCount: Int
 
-    init(workId: Int, router: WorkModuleRouter) {
+    init(workId: Int, reviewsCount: Int, router: WorkModuleRouter) {
         self.interactor = WorkReviewsInteractor(workId: workId)
         self.router = router
+        self.reviewsCount = reviewsCount
 
         super.init(nibName: nil, bundle: nil)
     }
@@ -29,7 +31,7 @@ final class WorkReviewsViewController: ListViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = "Отзывы"
+        title = "Отзывы (\(reviewsCount))"
 
         view.backgroundColor = UIColor.white
 
@@ -45,10 +47,6 @@ final class WorkReviewsViewController: ListViewController {
         do {
             adapter.scrollEvents.didScroll = { [weak self] scrollView in
                 self?.isSortSelectionControlHidden = (scrollView.contentOffset.y + scrollView.adjustedContentInset.top) > 10
-                
-                if (scrollView.contentOffset.y / scrollView.contentSize.height) > 0.8 {
-                    self?.interactor.loadNextPage()
-                }
             }
 
             sortSelectionControl.all_setEventHandler(for: .valueChanged) { [weak self] in
@@ -107,30 +105,37 @@ final class WorkReviewsViewController: ListViewController {
     private let errorItemId = UUID().uuidString
 
     private func makeListItemsFrom(state: WorkReviewsInteractor.State) -> [ListItem] {
-        var items: [ListItem] = state.reviews.map { review -> ListItem in
-            let item = ListItem(
-                id: String(review.id),
-                model: String(review.id),
-                layoutSpec: WorkReviewLayoutSpec(model: review)
+        var items: [ListItem] = state.reviews.enumerated().flatMap { (index, review) -> [ListItem] in
+            let itemId = "review_" + String(review.id)
+
+            let headerItem = ListItem(
+                id: itemId + "_header",
+                layoutSpec: WorkReviewHeaderLayoutSpec(model: review)
             )
 
-            item.didHighlight = { cell in
-                UIView.animate(withDuration: 0.1, animations: {
-                    cell.transform = CGAffineTransform(scaleX: 0.92, y: 0.92)
+            let textItem = ListItem(
+                id: itemId + "_text",
+                layoutSpec: WorkReviewTextLayoutSpec(model: review)
+            )
+
+            textItem.didSelect = { [weak self] cell in
+                CellSelection.scale(cell: cell, action: {
+                    self?.open(review: review)
                 })
             }
 
-            item.didUnhighlight = { cell in
-                UIView.animate(withDuration: 0.15, animations: {
-                    cell.transform = CGAffineTransform.identity
-                })
+            if index == state.reviews.endIndex - 1 {
+                textItem.willDisplay = { [weak self] _ in
+                    self?.interactor.loadNextPage()
+                }
             }
 
-            item.selectAction = { [weak self] in
-                self?.open(review: review)
-            }
+            let separatorItem = ListItem(
+                id: String(review.id) + "_separator",
+                layoutSpec: ItemSeparatorLayoutSpec()
+            )
 
-            return item
+            return [headerItem, textItem, separatorItem]
         }
 
         switch state.status {

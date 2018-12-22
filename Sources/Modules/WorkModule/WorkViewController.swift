@@ -7,6 +7,12 @@ import FantLabStyle
 import FantLabModels
 import FantLabSharedUI
 
+enum TabIndex: String {
+    case info
+    case reviews
+    case analogs
+}
+
 final class WorkViewController: ListViewController {
     private enum Separator {
         case section
@@ -16,6 +22,9 @@ final class WorkViewController: ListViewController {
     private let disposeBag = DisposeBag()
     private let interactor: WorkInteractor
     private let router: WorkModuleRouter
+    private let contentBuilder = WorkContentBuilder()
+    private let expandCollapseSubject = PublishSubject<Void>()
+    private let tabIndexSubject = PublishSubject<TabIndex>()
 
     init(workId: Int, router: WorkModuleRouter) {
         self.router = router
@@ -29,25 +38,98 @@ final class WorkViewController: ListViewController {
         fatalError()
     }
 
-    // MAKR: -
+    deinit {
+        expandCollapseSubject.onCompleted()
+        tabIndexSubject.onCompleted()
+    }
+
+    // MARK: -
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         title = ""
 
-        interactor.stateObservable
-            .observeOn(SerialDispatchQueueScheduler(qos: .default))
-            .map({ [weak self] state -> [ListItem] in
-                return self?.makeListItemsFrom(state: state) ?? []
-            })
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { [weak self] items in
-                self?.adapter.set(items: items)
-            })
-            .disposed(by: disposeBag)
+        do {
+            contentBuilder.onExpandOrCollapse = { [weak self] in
+                self?.expandCollapseSubject.onNext(())
+            }
 
-        interactor.loadWork()
+            contentBuilder.onChildWorkTap = { [weak self] workId in
+                self?.router.openWork(id: workId)
+            }
+
+            contentBuilder.onHeaderTap = { [weak self] work in
+                self?.openAuthors(work: work)
+            }
+
+            contentBuilder.onTabTap = { [weak self] index in
+                if index == .reviews {
+                    self?.interactor.loadReviews()
+                }
+
+                self?.tabIndexSubject.onNext(index)
+            }
+
+            contentBuilder.onParentWorkTap = { [weak self] workId in
+                self?.router.openWork(id: workId)
+            }
+
+            contentBuilder.onDescriptionTap = { [weak self] work in
+                self?.openDescriptionAndNotes(work: work)
+            }
+
+            contentBuilder.onReviewTap = { [weak self] review in
+                self?.router.showInteractiveText(review.text, title: "Отзыв")
+            }
+
+            contentBuilder.onShowAllReviewsTap = { [weak self] work in
+                self?.openReviews(work: work)
+            }
+
+            contentBuilder.onWorkAnalogTap = { [weak self] workId in
+                self?.router.openWork(id: workId)
+            }
+        }
+
+        do {
+            interactor.stateObservable
+                .observeOn(MainScheduler.instance)
+                .subscribe(onNext: { [weak self] state in
+                    switch state {
+                    case .initial, .error, .loading:
+                        break
+                    case let .idle(data):
+                        break
+                    }
+                })
+            .disposed(by: disposeBag)
+        }
+
+        do {
+            Observable.combineLatest(interactor.stateObservable,
+                                     interactor.reviewsStateObservable,
+                                     tabIndexSubject.distinctUntilChanged(),
+                                     expandCollapseSubject)
+                .observeOn(SerialDispatchQueueScheduler(qos: .default))
+                .map({ [weak self] args -> [ListItem] in
+                    return self?.contentBuilder.makeListItemsFrom(
+                        state: args.0,
+                        reviewsState: args.1,
+                        tabIndex: args.2
+                        ) ?? []
+                })
+                .observeOn(MainScheduler.instance)
+                .subscribe(onNext: { [weak self] items in
+                    self?.adapter.set(items: items)
+                })
+                .disposed(by: disposeBag)
+
+            expandCollapseSubject.onNext(())
+            tabIndexSubject.onNext(.info)
+
+            interactor.loadWork()
+        }
     }
 
     // MARK: -
@@ -89,264 +171,20 @@ final class WorkViewController: ListViewController {
             return
         }
 
-        let vc = WorkReviewsViewController(workId: model.id, router: router)
+        let vc = WorkReviewsViewController(
+            workId: model.id,
+            reviewsCount: model.reviewsCount,
+            router: router
+        )
 
         router.push(viewController: vc)
     }
 
     private func openDescriptionAndNotes(work model: WorkModel) {
-        let author = model.descriptionAuthor
-
-        let text = [
-            model.descriptionText,
-            author.isEmpty ? "" : "© " + author,
-            model.notes
-            ].compactAndJoin("\n")
+        let text = [model.descriptionText,
+                    model.descriptionAuthor,
+                    model.notes].compactAndJoin("\n\n")
 
         router.showInteractiveText(text, title: "Описание")
-    }
-
-    private func openContent(workModel: WorkModel) {
-        let vc = WorkContentViewController(workModel: workModel, router: router)
-
-        router.push(viewController: vc)
-    }
-
-    // MARK: -
-
-    private let loadingItemId = UUID().uuidString
-
-    private func makeListItemsFrom(state: WorkInteractor.State) -> [ListItem] {
-        switch state {
-        case .loading:
-            let item = ListItem(id: loadingItemId, model: loadingItemId, layoutSpec: SpinnerLayoutSpec())
-
-            return [item]
-        case .hasError:
-            return [] // TODO:
-        case let .idle(workModel, analogModels):
-            return makeListItemsFrom(work: workModel, analogs: analogModels)
-        }
-    }
-
-    private func makeListItemsFrom(work model: WorkModel, analogs analogModels: [WorkAnalogModel]) -> [ListItem] {
-        var items: [ListItem] = []
-
-        let addSeparator = {
-            items.append(ListItem(id: UUID().uuidString, layoutSpec: ItemSeparatorLayoutSpec()))
-        }
-
-        let addSpace = { (height: Int) in
-            items.append(ListItem(id: UUID().uuidString, layoutSpec: EmptySpaceLayoutSpec(model: (UIColor.white, height))))
-        }
-
-        // header
-
-        do {
-            addSpace(16)
-
-            let item = ListItem(
-                id: UUID().uuidString,
-                layoutSpec: WorkHeaderLayoutSpec(model: model)
-            )
-
-            item.selectAction = { [weak self] in
-                self?.openAuthors(work: model)
-            }
-
-            items.append(item)
-        }
-
-        if model.rating > 0 && model.votes > 0 {
-            addSpace(24)
-
-            let item = ListItem(
-                id: UUID().uuidString,
-                layoutSpec: WorkRatingLayoutSpec(model: model)
-            )
-
-            items.append(item)
-
-            addSpace(12)
-        }
-
-        // description
-
-        if !model.descriptionText.isEmpty || !model.notes.isEmpty {
-            addSpace(12)
-
-            let item = ListItem(
-                id: UUID().uuidString,
-                layoutSpec: WorkDescriptionLayoutSpec(model: model)
-            )
-
-            item.selectAction = { [weak self] in
-                self?.openDescriptionAndNotes(work: model)
-            }
-
-            items.append(item)
-        }
-
-        // classification
-
-        if !model.classificatory.isEmpty {
-            addSpace(24)
-
-            items.append(ListItem(
-                id: UUID().uuidString,
-                layoutSpec: WorkGenresLayoutSpec(model: model)
-            ))
-        }
-
-        // parents
-
-        if !model.parents.isEmpty {
-            addSpace(48)
-
-            items.append(ListItem(
-                id: UUID().uuidString,
-                layoutSpec: WorkSectionTitleLayoutSpec(model: WorkSectionTitleLayoutModel(
-                    title: "Входит в",
-                    icon: UIImage(named: "tree"),
-                    count: 0,
-                    showArrow: false
-                ))
-            ))
-
-            addSpace(12)
-
-            model.parents.forEach { parents in
-                parents.enumerated().forEach({ (index, parentModel) in
-                    let item = ListItem(
-                        id: UUID().uuidString,
-                        layoutSpec: WorkParentModelLayoutSpec(model: WorkParentModelLayoutModel(
-                            work: parentModel,
-                            level: index,
-                            showArrow: parentModel.id > 0
-                        ))
-                    )
-
-                    if parentModel.id > 0 {
-                        item.selectAction = { [weak self] in
-                            self?.router.openWork(id: parentModel.id)
-                        }
-                    }
-
-                    items.append(item)
-
-                    addSeparator()
-                })
-            }
-        }
-
-        // content
-
-        if !model.children.isEmpty {
-            addSpace(48)
-
-            if model.children.count < 7 {
-                items.append(ListItem(
-                    id: UUID().uuidString,
-                    layoutSpec: WorkSectionTitleLayoutSpec(model: WorkSectionTitleLayoutModel(
-                        title: "Содержание",
-                        icon: UIImage(named: "content"),
-                        count: 0,
-                        showArrow: false
-                    ))
-                ))
-
-                addSpace(12)
-
-                model.children.forEach { work in
-                    let item = ListItem(
-                        id: UUID().uuidString,
-                        layoutSpec: WorkChildModelLayoutSpec(model: work)
-                    )
-
-                    if work.id > 0 {
-                        item.selectAction = { [weak self] in
-                            self?.router.openWork(id: work.id)
-                        }
-                    }
-
-                    items.append(item)
-
-                    addSeparator()
-                }
-            } else {
-                let item = ListItem(
-                    id: UUID().uuidString,
-                    layoutSpec: WorkSectionTitleLayoutSpec(model: WorkSectionTitleLayoutModel(
-                        title: "Содержание",
-                        icon: UIImage(named: "content"),
-                        count: model.children.count,
-                        showArrow: true
-                    ))
-                )
-
-                item.selectAction = { [weak self] in
-                    self?.openContent(workModel: model)
-                }
-
-                items.append(item)
-
-                addSpace(12)
-                addSeparator()
-            }
-        }
-
-        // analogs
-
-        if !analogModels.isEmpty {
-            addSpace(48)
-
-            items.append(ListItem(
-                id: UUID().uuidString,
-                layoutSpec: WorkSectionTitleLayoutSpec(model: WorkSectionTitleLayoutModel(
-                    title: "Похожие",
-                    icon: UIImage(named: "libra"),
-                    count: analogModels.count,
-                    showArrow: false
-                ))
-            ))
-
-            items.append(ListItem(
-                id: UUID().uuidString,
-                layoutSpec: WorkAnalogListLayoutSpec(model: (analogModels, { [weak self] workId in
-                    self?.router.openWork(id: workId)
-                }))
-            ))
-        }
-
-        // reviews
-
-        if model.reviewsCount > 0 {
-            addSpace(48)
-
-            let item = ListItem(
-                id: UUID().uuidString,
-                layoutSpec: WorkSectionTitleLayoutSpec(model: WorkSectionTitleLayoutModel(
-                    title: "Отзывы",
-                    icon: UIImage(named: "reviews"),
-                    count: model.reviewsCount,
-                    showArrow: true
-                ))
-            )
-
-            item.selectAction = { [weak self] in
-                self?.openReviews(work: model)
-            }
-
-            items.append(item)
-
-            addSpace(12)
-            addSeparator()
-        }
-
-        // extra footer space
-
-        addSpace(64)
-
-        return items
     }
 }

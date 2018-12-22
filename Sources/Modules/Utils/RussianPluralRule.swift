@@ -49,11 +49,3 @@ public final class RussianPluralRule {
         return String(value) + separator + categoryString
     }
 }
-
-extension RussianPluralRule.Format {
-    public static let votes = RussianPluralRule.Format(
-        one: "оценка",
-        few: "оценки",
-        many: "оценок"
-    )
-}
