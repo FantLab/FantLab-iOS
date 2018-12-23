@@ -106,7 +106,7 @@ class TextParserTests: XCTestCase {
     func testHiddenTag() {
         let text = parse("lorem [h]ipsum <b>dolor</b> sit[/h] amet")
 
-        XCTAssert(text.string == "lorem \(TagReplacementRules.spoilers["h"]!) amet")
+        XCTAssert(text.string == "lorem \(TagReplacementRules.previewAttachments["h"]!) amet")
     }
 
     func testSingleBBTags1() {
@@ -133,7 +133,7 @@ class TextParserTests: XCTestCase {
     // MARK: -
 
     private func parse(_ string: String) -> FLText {
-        let combinedReplacementRules = TagReplacementRules.defaults.merging(TagReplacementRules.spoilers) { (_, new) in new }
+        let combinedReplacementRules = TagReplacementRules.defaults.merging(TagReplacementRules.previewAttachments) { (_, new) in new }
 
         let text = FLTextBuilder.makeTextFrom(node: FLTextParser.parse(string: string), replacementRules: combinedReplacementRules)
 
