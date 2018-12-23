@@ -20,15 +20,15 @@ final class WorkHeaderLayoutSpec: ModelLayoutSpec<WorkModel> {
             let nameFontSize: CGFloat
 
             if nameLength < 30 {
-                nameFontSize = 24
+                nameFontSize = 22
             } else if nameLength < 50 {
                 nameFontSize = 20
             } else {
-                nameFontSize = 16
+                nameFontSize = 18
             }
 
             nameString = nameText.attributed()
-                .font(Fonts.system.medium(size: nameFontSize))
+                .font(Fonts.system.bold(size: nameFontSize))
                 .foregroundColor(UIColor.black)
                 .make()
 
@@ -45,12 +45,12 @@ final class WorkHeaderLayoutSpec: ModelLayoutSpec<WorkModel> {
             let infoText = ([model.workType, yearText] + model.publishStatuses).compactAndJoin(", ")
 
             infoString = infoText.attributed()
-                .font(Fonts.system.regular(size: 15))
+                .font(Fonts.system.regular(size: 14))
                 .foregroundColor(UIColor.gray)
                 .make()
 
             authorString = model.authors.map({ $0.name }).compactAndJoin(", ").attributed()
-                .font(Fonts.system.medium(size: 16))
+                .font(Fonts.system.medium(size: 15))
                 .foregroundColor(Colors.flBlue)
                 .make()
         }

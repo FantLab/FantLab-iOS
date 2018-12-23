@@ -26,12 +26,12 @@ final class WorkReviewHeaderLayoutSpec: ModelLayoutSpec<WorkReviewModel> {
             let markColor = RatingColorRule.colorFor(rating: Float(model.mark))
 
             let mark = String(model.mark).attributed()
-                .font(Fonts.system.bold(size: 14))
+                .font(Fonts.system.bold(size: 13))
                 .foregroundColor(markColor)
                 .makeMutable()
 
-            let votes = (" / +" + String(model.votes)).attributed()
-                .font(Fonts.system.regular(size: 14))
+            let votes = " / +\(model.votes)".attributed()
+                .font(Fonts.system.regular(size: 13))
                 .foregroundColor(UIColor.lightGray)
                 .make()
 
