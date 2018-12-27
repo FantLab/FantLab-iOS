@@ -2,6 +2,7 @@ import FantLabUtils
 
 private protocol ParseController {
     func save(string: String)
+    func saveLineBreak()
     func open(tag name: String, value: String)
     func close(tag name: String)
 }
@@ -166,10 +167,15 @@ private final class BBTagCharacterHandler: CharacterHandler {
 
 private final class DefaultCharacterHandler: CharacterHandler {
     private var string: String = ""
+    private var hasLineBreak: Bool = false
 
     func accept(character: Character) -> Bool {
         switch character {
         case "[", "<", ":":
+            return false
+        case "\r", "\n", "\r\n":
+            hasLineBreak = true
+
             return false
         default:
             string.append(character)
@@ -179,11 +185,13 @@ private final class DefaultCharacterHandler: CharacterHandler {
     }
 
     func flush(to controller: ParseController) {
-        guard !string.isEmpty else {
-            return
+        if !string.isEmpty {
+            controller.save(string: string)
         }
 
-        controller.save(string: string)
+        if hasLineBreak {
+            controller.saveLineBreak()
+        }
     }
 
     func nextHandlerWith(terminator: Character) -> CharacterHandler {
@@ -202,10 +210,15 @@ private final class DefaultCharacterHandler: CharacterHandler {
 
 private final class EmoticonCharacterHandler: CharacterHandler {
     private var string: String = ":"
+    private var hasLineBreak: Bool = false
 
     func accept(character: Character) -> Bool {
         switch character {
         case "[", "<":
+            return false
+        case "\r", "\n", "\r\n":
+            hasLineBreak = true
+
             return false
         case ":":
             string.append(character)
@@ -219,7 +232,17 @@ private final class EmoticonCharacterHandler: CharacterHandler {
     }
 
     func flush(to controller: ParseController) {
-        controller.save(string: Emoticons.trie.valueFor(key: string) ?? string)
+        if let emoticon = Emoticons.trie.valueFor(key: string) {
+            controller.save(string: emoticon)
+        } else {
+            if !string.isEmpty {
+                controller.save(string: string)
+            }
+
+            if hasLineBreak {
+                controller.saveLineBreak()
+            }
+        }
     }
 
     func nextHandlerWith(terminator: Character) -> CharacterHandler {
@@ -242,6 +265,7 @@ struct FLTag {
 final class FLTagNode {
     enum Child {
         case string(String)
+        case lineBreak
         case node(FLTagNode)
     }
 
@@ -291,6 +315,10 @@ private final class Parser: ParseController {
 
     func save(string: String) {
         nodeStack.peek?.children.append(.string(string))
+    }
+
+    func saveLineBreak() {
+        nodeStack.peek?.children.append(.lineBreak)
     }
 
     func open(tag name: String, value: String) {

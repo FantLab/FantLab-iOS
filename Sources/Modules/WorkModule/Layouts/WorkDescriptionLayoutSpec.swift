@@ -8,21 +8,22 @@ import FantLabSharedUI
 
 final class WorkDescriptionLayoutSpec: ModelLayoutSpec<WorkModel> {
     override func makeNodeFrom(model: WorkModel, sizeConstraints: SizeConstraints) -> LayoutNode {
-        let text = FLAttributedText(
-            taggedString: model.descriptionText.nilIfEmpty ?? model.notes,
-            decorator: PreviewTextDecorator(),
-            replacementRules: TagReplacementRules.previewAttachments
-        )
+        let text = FLStringPreview(string: model.descriptionText.nilIfEmpty ?? model.notes).value.attributed()
+            .font(Fonts.system.regular(size: 15))
+            .lineSpacing(3)
+            .paragraphSpacing(12)
+            .make()
+            .drawing(options: [
+                .truncatesLastVisibleLine,
+                .usesFontLeading,
+                .usesLineFragmentOrigin
+                ])
 
-        let textDrawing = text.string.drawing(options: [.truncatesLastVisibleLine,
-                                                        .usesFontLeading,
-                                                        .usesLineFragmentOrigin])
-
-        let textNode = LayoutNode(sizeProvider: textDrawing, config: { node in
+        let textNode = LayoutNode(sizeProvider: text, config: { node in
             node.maxHeight = 120
             node.flex = 1
         }) { (label: AsyncLabel) in
-            label.stringDrawing = textDrawing
+            label.stringDrawing = text
         }
 
         let arrowNode = LayoutNode(config: { node in

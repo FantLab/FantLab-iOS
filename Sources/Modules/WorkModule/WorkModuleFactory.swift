@@ -1,9 +1,10 @@
 import Foundation
 import UIKit
+import ALLKit
 import FantLabModels
 
 public protocol WorkModuleRouter: class {
-    func showInteractiveText(_ text: String, title: String)
+    func showInteractiveText(_ text: String, title: String, headerListItems: [ListItem])
     func openAuthor(id: Int, entityName: String)
     func openWork(id: Int)
     func push(viewController: UIViewController)

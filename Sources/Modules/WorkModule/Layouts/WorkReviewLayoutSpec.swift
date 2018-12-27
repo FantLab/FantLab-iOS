@@ -22,7 +22,7 @@ final class WorkReviewHeaderLayoutSpec: ModelLayoutSpec<WorkReviewModel> {
 
         let markString: NSAttributedString?
 
-        if model.mark > 0 && model.votes > 0 {
+        if model.mark > 0 {
             let markColor = RatingColorRule.colorFor(rating: Float(model.mark))
 
             let mark = String(model.mark).attributed()
@@ -30,12 +30,14 @@ final class WorkReviewHeaderLayoutSpec: ModelLayoutSpec<WorkReviewModel> {
                 .foregroundColor(markColor)
                 .makeMutable()
 
-            let votes = " / +\(model.votes)".attributed()
-                .font(Fonts.system.regular(size: 13))
-                .foregroundColor(UIColor.lightGray)
-                .make()
+            if model.votes > 0 {
+                let votes = " / +\(model.votes)".attributed()
+                    .font(Fonts.system.regular(size: 13))
+                    .foregroundColor(UIColor.lightGray)
+                    .make()
 
-            mark.append(votes)
+                mark.append(votes)
+            }
 
             markString = mark
         } else {
@@ -81,7 +83,7 @@ final class WorkReviewHeaderLayoutSpec: ModelLayoutSpec<WorkReviewModel> {
         let contentNode = LayoutNode(children: [userAvatarNode, userStackNode, markNode], config: { node in
             node.alignItems = .center
             node.flexDirection = .row
-            node.padding(top: 16, left: 24, bottom: 16, right: 24)
+            node.padding(top: 16, left: 16, bottom: 16, right: 16)
         })
 
         return contentNode
@@ -90,18 +92,25 @@ final class WorkReviewHeaderLayoutSpec: ModelLayoutSpec<WorkReviewModel> {
 
 final class WorkReviewTextLayoutSpec: ModelLayoutSpec<WorkReviewModel> {
     override func makeNodeFrom(model: WorkReviewModel, sizeConstraints: SizeConstraints) -> LayoutNode {
-        let text = FLAttributedText(taggedString: model.text, decorator: PreviewTextDecorator(), replacementRules: TagReplacementRules.previewAttachments)
+        let text = FLStringPreview(string: model.text).value.attributed()
+            .font(Fonts.system.regular(size: 15))
+            .lineSpacing(3)
+            .paragraphSpacing(12)
+            .make()
+            .drawing(options: [
+                .truncatesLastVisibleLine,
+                .usesFontLeading,
+                .usesLineFragmentOrigin
+                ])
 
-        let textDrawing = text.string.drawing(options: [.truncatesLastVisibleLine, .usesFontLeading, .usesLineFragmentOrigin])
-
-        let textNode = LayoutNode(sizeProvider: textDrawing, config: { node in
+        let textNode = LayoutNode(sizeProvider: text, config: { node in
             node.maxHeight = 120
         }) { (label: AsyncLabel) in
-            label.stringDrawing = textDrawing
+            label.stringDrawing = text
         }
 
         let contentNode = LayoutNode(children: [textNode], config: { node in
-            node.padding(top: 8, left: 24, bottom: 16, right: 24)
+            node.padding(top: 8, left: 16, bottom: 16, right: 16)
         })
 
         return contentNode

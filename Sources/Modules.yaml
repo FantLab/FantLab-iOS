@@ -37,7 +37,6 @@ FantLabText:
   sources: Modules/Text
   dependencies:
     - FantLabUtils
-    - FantLabStyle
   system_frameworks:
     - Foundation
     - UIKit

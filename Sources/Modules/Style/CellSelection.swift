@@ -17,11 +17,15 @@ public final class CellSelection {
     }
 
     public static func scale(cell: UICollectionViewCell, action: @escaping () -> Void) {
+        UIApplication.shared.beginIgnoringInteractionEvents()
+
         UIView.animate(withDuration: 0.1, animations: {
             cell.transform = CGAffineTransform(scaleX: 0.92, y: 0.92)
         }, completion: { _ in
             UIView.animate(withDuration: 0.15, animations: {
                 cell.transform = CGAffineTransform.identity
+            }, completion: { _ in
+                UIApplication.shared.endIgnoringInteractionEvents()
             })
 
             action()

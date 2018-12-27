@@ -76,7 +76,7 @@ final class WorkViewController: ImageBackedListViewController {
             }
 
             contentBuilder.onReviewTap = { [weak self] review in
-                self?.router.showInteractiveText(review.text, title: "Отзыв")
+                self?.openReview(review)
             }
 
             contentBuilder.onShowAllReviewsTap = { [weak self] work in
@@ -174,10 +174,21 @@ final class WorkViewController: ImageBackedListViewController {
         let vc = WorkReviewsViewController(
             workId: model.id,
             reviewsCount: model.reviewsCount,
-            router: router
+            openReview: { [weak self] review in
+                self?.openReview(review)
+            }
         )
 
         router.push(viewController: vc)
+    }
+
+    private func openReview(_ model: WorkReviewModel) {
+        let item = ListItem(
+            id: "review",
+            layoutSpec: WorkReviewHeaderLayoutSpec(model: model)
+        )
+
+        router.showInteractiveText(model.text, title: "Отзыв", headerListItems: [item])
     }
 
     private func openDescriptionAndNotes(work model: WorkModel) {
@@ -185,6 +196,6 @@ final class WorkViewController: ImageBackedListViewController {
                     model.descriptionAuthor,
                     model.notes].compactAndJoin("\n\n")
 
-        router.showInteractiveText(text, title: "Описание")
+        router.showInteractiveText(text, title: "Описание", headerListItems: [])
     }
 }

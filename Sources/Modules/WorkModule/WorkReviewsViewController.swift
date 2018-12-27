@@ -7,16 +7,17 @@ import FantLabStyle
 import FantLabSharedUI
 import FantLabTextUI
 import FantLabModels
+import FantLabText
 
 final class WorkReviewsViewController: ListViewController {
     private let interactor: WorkReviewsInteractor
-    private let router: WorkModuleRouter
     private let reviewsCount: Int
+    private let openReview: ((WorkReviewModel) -> Void)?
 
-    init(workId: Int, reviewsCount: Int, router: WorkModuleRouter) {
+    init(workId: Int, reviewsCount: Int, openReview: ((WorkReviewModel) -> Void)?) {
         self.interactor = WorkReviewsInteractor(workId: workId)
-        self.router = router
         self.reviewsCount = reviewsCount
+        self.openReview = openReview
 
         super.init(nibName: nil, bundle: nil)
     }
@@ -152,6 +153,6 @@ final class WorkReviewsViewController: ListViewController {
     }
 
     private func open(review: WorkReviewModel) {
-        router.showInteractiveText(review.text, title: "Отзыв")
+        openReview?(review)
     }
 }

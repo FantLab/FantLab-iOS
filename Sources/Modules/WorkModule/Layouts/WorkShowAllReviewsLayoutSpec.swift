@@ -7,7 +7,7 @@ final class WorkShowAllReviewsLayoutSpec: LayoutSpec {
     override func makeNodeWith(sizeConstraints: SizeConstraints) -> LayoutNode {
         let titleString = "Все отзывы".attributed()
             .font(Fonts.system.medium(size: 17))
-            .foregroundColor(UIColor(rgb: 0x007AFF))
+            .foregroundColor(Colors.flOrange)
             .make()
 
         let textNode = LayoutNode(sizeProvider: titleString, config: nil) { (label: UILabel) in

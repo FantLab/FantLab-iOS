@@ -1,5 +1,6 @@
 import Foundation
 import UIKit
+import ALLKit
 import FantLabModels
 import FantLabTextUI
 import FantLabWorkModule
@@ -12,10 +13,14 @@ private final class RootNavigationController: UINavigationController {
     }
 }
 
-final class AppRouter: WorkModuleRouter {
+final class AppRouter: WorkModuleRouter, TextUIModuleRouter {
     let rootNavigationController: UINavigationController = RootNavigationController()
 
     // MARK: -
+
+    func open(url: URL) {
+        print(url)
+    }
 
     func push(viewController: UIViewController) {
         rootNavigationController.pushViewController(viewController, animated: true)
@@ -31,8 +36,14 @@ final class AppRouter: WorkModuleRouter {
         print(id, entityName)
     }
 
-    func showInteractiveText(_ text: String, title: String) {
-        let vc = FLTextViewController(string: text)
+
+    func showInteractiveText(_ text: String, title: String, headerListItems: [ListItem]) {
+        let vc = TextUIModuleFactory.makeModule(
+            string: text,
+            customHeaderListItems: headerListItems,
+            router: self
+        )
+
         vc.title = title
 
         rootNavigationController.pushViewController(vc, animated: true)
