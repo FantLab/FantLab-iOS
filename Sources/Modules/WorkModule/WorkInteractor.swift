@@ -94,7 +94,7 @@ final class WorkInteractor {
 
         reviewsState.value = .loading
 
-        let request = NetworkClient.shared.perform(request: GetWorkReviewsNetworkRequest(workId: workId, page: 0, sort: .date))
+        let request = NetworkClient.shared.perform(request: GetWorkReviewsNetworkRequest(workId: workId, page: 0, sort: .rating))
 
         request
             .subscribe(

@@ -71,13 +71,13 @@ final class SearchViewController: ListViewController, UISearchResultsUpdating {
                 layoutSpec: SearchResultsWorkLayoutSpec(model: workModel)
             )
 
-            item.didSelect = { [weak self] _ in
+            item.didSelect = { [weak self] _, _ in
                 self?.openWork?(workModel.id)
             }
 
             items.append(item)
 
-            items.append(ListItem(id: id + "_sep", layoutSpec: ItemSeparatorLayoutSpec()))
+            items.append(ListItem(id: id + "_sep", layoutSpec: ItemSeparatorLayoutSpec(model: Colors.separatorColor)))
         }
 
         return items
@@ -93,7 +93,7 @@ private final class SearchResultsWorkLayoutSpec: ModelLayoutSpec<SearchResultsMo
 
         let textNode = LayoutNode(sizeProvider: string, config: { node in
             node.margin(all: 16)
-        }) { (label: UILabel) in
+        }) { (label: UILabel, _) in
             label.numberOfLines = 0
             label.attributedText = string
         }

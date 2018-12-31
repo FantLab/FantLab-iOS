@@ -27,7 +27,7 @@ final class WorkRatingLayoutSpec: ModelLayoutSpec<WorkModel> {
             .foregroundColor(UIColor.lightGray)
             .make()
 
-        let ratingNode = LayoutNode(sizeProvider: ratingString, config: nil) { (label: UILabel) in
+        let ratingNode = LayoutNode(sizeProvider: ratingString, config: nil) { (label: UILabel, _) in
             label.numberOfLines = 0
             label.attributedText = ratingString
         }
@@ -36,11 +36,11 @@ final class WorkRatingLayoutSpec: ModelLayoutSpec<WorkModel> {
             node.marginLeft = 8
             node.marginTop = 3
             node.flex = 1
-        }) { (label: UILabel) in
+        }) { (label: UILabel, _) in
             label.attributedText = starString
         }
 
-        let marksNode = LayoutNode(sizeProvider: marksString, config: nil) { (label: UILabel) in
+        let marksNode = LayoutNode(sizeProvider: marksString, config: nil) { (label: UILabel, _) in
             label.numberOfLines = 0
             label.attributedText = marksString
         }

@@ -9,7 +9,7 @@ final class ImageLoadingLayoutSpec: ModelLayoutSpec<(URL, ((UIImage) -> Void)?)>
         let spinnerNode = LayoutNode(config: { node in
             node.width = 32
             node.height = 32
-        }) { (view: UIActivityIndicatorView) in
+        }) { (view: UIActivityIndicatorView, _) in
             view.style = .gray
             view.startAnimating()
         }
@@ -18,7 +18,7 @@ final class ImageLoadingLayoutSpec: ModelLayoutSpec<(URL, ((UIImage) -> Void)?)>
             node.alignItems = .center
             node.justifyContent = .center
             node.height = 48
-        }) { (imageView: UIImageView) in
+        }) { (imageView: UIImageView, _) in
             imageView.yy_setImage(with: model.0, placeholder: nil, options: .avoidSetImage, completion: { (image, _, _, _, _) in
                 image.flatMap {
                     model.1?($0)
@@ -40,7 +40,7 @@ final class ImageLayoutSpec: ModelLayoutSpec<UIImage> {
                 node.width = 100%
                 node.aspectRatio = Float(model.size.width / model.size.height)
             }
-        }) { (imageView: UIImageView) in
+        }) { (imageView: UIImageView, _) in
             imageView.clipsToBounds = true
             imageView.image = model
         }

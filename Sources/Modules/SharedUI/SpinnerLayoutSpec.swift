@@ -7,7 +7,7 @@ public final class SpinnerLayoutSpec: LayoutSpec {
         let spinnerNode = LayoutNode(config: { node in
             node.width = 32
             node.height = 32
-        }) { (view: UIActivityIndicatorView) in
+        }) { (view: UIActivityIndicatorView, _) in
             view.style = .gray
             view.startAnimating()
         }

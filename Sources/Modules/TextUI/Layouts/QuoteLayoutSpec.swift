@@ -6,7 +6,7 @@ final class QuoteLayoutSpec: ModelLayoutSpec<NSAttributedString> {
     override func makeNodeFrom(model: NSAttributedString, sizeConstraints: SizeConstraints) -> LayoutNode {
         let drawing = model.drawing()
 
-        let textNode = LayoutNode(sizeProvider: drawing, config: nil) { (label: AsyncLabel) in
+        let textNode = LayoutNode(sizeProvider: drawing, config: nil) { (label: AsyncLabel, _) in
             label.stringDrawing = drawing
         }
 

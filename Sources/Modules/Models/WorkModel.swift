@@ -110,6 +110,42 @@ public final class WorkModel {
         }
     }
 
+    public final class AwardModel {
+        public let id: Int
+        public let name: String
+        public let rusName: String
+        public let nominationId: Int
+        public let nominationName: String
+        public let isWin: Bool
+        public let isOpen: Bool
+        public let contestId: Int
+        public let contestYear: Int
+        public let iconURL: URL?
+
+        public init(id: Int,
+                    name: String,
+                    rusName: String,
+                    nominationId: Int,
+                    nominationName: String,
+                    isWin: Bool,
+                    isOpen: Bool,
+                    contestId: Int,
+                    contestYear: Int,
+                    iconURL: URL?) {
+
+            self.id = id
+            self.name = name
+            self.rusName = rusName
+            self.nominationId = nominationId
+            self.nominationName = nominationName
+            self.isWin = isWin
+            self.isOpen = isOpen
+            self.contestId = contestId
+            self.contestYear = contestYear
+            self.iconURL = iconURL
+        }
+    }
+
     public let id: Int
     public let name: String
     public let origName: String
@@ -128,6 +164,7 @@ public final class WorkModel {
     public let children: [ChildWorkModel]
     public let parents: [[ParentWorkModel]]
     public let classificatory: [GenreGroupModel]
+    public let awards: [AwardModel]
 
     public init(id: Int,
                 name: String,
@@ -146,7 +183,8 @@ public final class WorkModel {
                 authors: [AuthorModel],
                 children: [ChildWorkModel],
                 parents: [[ParentWorkModel]],
-                classificatory: [GenreGroupModel]) {
+                classificatory: [GenreGroupModel],
+                awards: [AwardModel]) {
 
         self.id = id
         self.name = name
@@ -166,5 +204,6 @@ public final class WorkModel {
         self.children = children
         self.parents = parents
         self.classificatory = classificatory
+        self.awards = awards
     }
 }

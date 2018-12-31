@@ -51,6 +51,15 @@ final class WorkContentBuilder {
                                    tabIndex: TabIndex) -> [ListItem] {
         let workId = String(data.work.id)
 
+        let hasRating = data.work.rating > 0 && data.work.votes > 0
+        let hasDescription = !data.work.descriptionText.isEmpty || !data.work.notes.isEmpty
+        let hasClassification = !data.work.classificatory.isEmpty
+        let hasAwards = !data.work.awards.isEmpty
+        let parentsCount = data.work.parents.compactMap({ $0.count }).reduce(0, +)
+        let childrenCount = data.contentRoot.count
+        let hasReviews = data.work.reviewsCount > 0
+        let hasAnalogs = !data.analogs.isEmpty
+
         var items: [ListItem] = []
 
         // header
@@ -61,7 +70,7 @@ final class WorkContentBuilder {
                 layoutSpec: WorkHeaderLayoutSpec(model: data.work)
             )
 
-            item.didSelect = { [weak self] _ in
+            item.didSelect = { [weak self] _, _ in
                 self?.onHeaderTap?(data.work)
             }
 
@@ -69,8 +78,6 @@ final class WorkContentBuilder {
         }
 
         // rating
-
-        let hasRating = data.work.rating > 0 && data.work.votes > 0
 
         if hasRating {
             let item = ListItem(
@@ -86,11 +93,6 @@ final class WorkContentBuilder {
         var sections: [SectionModel] = []
 
         do {
-            let hasDescription = !data.work.descriptionText.isEmpty || !data.work.notes.isEmpty
-            let hasClassification = !data.work.classificatory.isEmpty
-            let parentsCount = data.work.parents.compactMap({ $0.count }).reduce(0, +)
-            let childrenCount = data.contentRoot.count
-
             if hasDescription || hasClassification {
                 let section = SectionModel(name: "Обзор", count: 0) {
                     if hasDescription {
@@ -99,7 +101,7 @@ final class WorkContentBuilder {
                             layoutSpec: WorkDescriptionLayoutSpec(model: data.work)
                         )
 
-                        item.didSelect = { [weak self] cell in
+                        item.didSelect = { [weak self] cell, _ in
                             CellSelection.scale(cell: cell, action: {
                                 self?.onDescriptionTap?(data.work)
                             })
@@ -112,7 +114,7 @@ final class WorkContentBuilder {
                         if hasDescription {
                             items.append(ListItem(
                                 id: workId + "_classification_separator",
-                                layoutSpec: ItemSeparatorLayoutSpec()
+                                layoutSpec: ItemSeparatorLayoutSpec(model: Colors.separatorColor)
                             ))
                         }
 
@@ -126,39 +128,14 @@ final class WorkContentBuilder {
                 sections.append(section)
             }
 
-            if parentsCount > 0 {
-                let section = SectionModel(name: "Входит в", count: parentsCount) {
-                    data.work.parents.forEach { parents in
-                        parents.enumerated().forEach({ (index, parentModel) in
-                            let itemId = workId + "_parent_" + String(parentModel.id)
+            if hasAwards {
+                let section = SectionModel(name: "Премии", count: data.work.awards.count) {
+                    let item = ListItem(
+                        id: workId + "_awards",
+                        layoutSpec: WorkAwardsLayoutSpec(model: data.work.awards)
+                    )
 
-                            let item = ListItem(
-                                id: itemId,
-                                layoutSpec: WorkParentModelLayoutSpec(model: WorkParentModelLayoutModel(
-                                    work: parentModel,
-                                    level: index,
-                                    showArrow: parentModel.id > 0
-                                ))
-                            )
-
-                            if parentModel.id > 0 {
-                                item.didSelect = { [weak self] cell in
-                                    CellSelection.alpha(cell: cell, action: {
-                                        self?.onParentWorkTap?(parentModel.id)
-                                    })
-                                }
-                            }
-
-                            items.append(item)
-
-                            items.append(ListItem(
-                                id: itemId + "_separator",
-                                layoutSpec: ItemSeparatorLayoutSpec()
-                            ))
-                        })
-                    }
-
-                    items.removeLast()
+                    items.append(item)
                 }
 
                 sections.append(section)
@@ -192,7 +169,7 @@ final class WorkContentBuilder {
                         )
 
                         if work.id > 0 {
-                            item.didSelect = { [weak self] cell in
+                            item.didSelect = { [weak self] cell, _ in
                                 CellSelection.alpha(cell: cell, action: {
                                     self?.onChildWorkTap?(work.id)
                                 })
@@ -203,8 +180,46 @@ final class WorkContentBuilder {
 
                         items.append(ListItem(
                             id: nodeId + "_separator",
-                            layoutSpec: ItemSeparatorLayoutSpec()
+                            layoutSpec: ItemSeparatorLayoutSpec(model: Colors.separatorColor)
                         ))
+                    }
+
+                    items.removeLast()
+                }
+
+                sections.append(section)
+            }
+
+            if parentsCount > 0 {
+                let section = SectionModel(name: "Входит в", count: parentsCount) {
+                    data.work.parents.forEach { parents in
+                        parents.enumerated().forEach({ (index, parentModel) in
+                            let itemId = workId + "_parent_" + String(parentModel.id)
+
+                            let item = ListItem(
+                                id: itemId,
+                                layoutSpec: WorkParentModelLayoutSpec(model: WorkParentModelLayoutModel(
+                                    work: parentModel,
+                                    level: index,
+                                    showArrow: parentModel.id > 0
+                                ))
+                            )
+
+                            if parentModel.id > 0 {
+                                item.didSelect = { [weak self] cell, _ in
+                                    CellSelection.alpha(cell: cell, action: {
+                                        self?.onParentWorkTap?(parentModel.id)
+                                    })
+                                }
+                            }
+
+                            items.append(item)
+
+                            items.append(ListItem(
+                                id: itemId + "_separator",
+                                layoutSpec: ItemSeparatorLayoutSpec(model: Colors.separatorColor)
+                            ))
+                        })
                     }
 
                     items.removeLast()
@@ -222,55 +237,48 @@ final class WorkContentBuilder {
 
         // main tabs
 
-        let hasTabs: Bool
+        let hasTabs = hasReviews || hasAnalogs
 
-        do {
-            let hasReviews = data.work.reviewsCount > 0
-            let hasAnalogs = !data.analogs.isEmpty
+        if hasTabs {
+            var tabs: [WorkTabLayoutModel] = []
 
-            hasTabs = hasReviews || hasAnalogs
+            tabs.append(WorkTabLayoutModel(
+                name: sections[0].name,
+                count: sections[0].count,
+                isSelected: tabIndex == .info,
+                action: ({ [weak self] in
+                    self?.onTabTap?(.info)
+                })
+            ))
 
-            if hasTabs {
-                var tabs: [WorkTabLayoutModel] = []
-
+            if hasReviews {
                 tabs.append(WorkTabLayoutModel(
-                    name: sections[0].name,
-                    count: sections[0].count,
-                    isSelected: tabIndex == .info,
+                    name: "Отзывы",
+                    count: data.work.reviewsCount,
+                    isSelected: tabIndex == .reviews,
                     action: ({ [weak self] in
-                        self?.onTabTap?(.info)
+                        self?.onTabTap?(.reviews)
                     })
                 ))
-
-                if hasReviews {
-                    tabs.append(WorkTabLayoutModel(
-                        name: "Отзывы",
-                        count: data.work.reviewsCount,
-                        isSelected: tabIndex == .reviews,
-                        action: ({ [weak self] in
-                            self?.onTabTap?(.reviews)
-                        })
-                    ))
-                }
-
-                if hasAnalogs {
-                    tabs.append(WorkTabLayoutModel(
-                        name: "Похожие",
-                        count: data.analogs.count,
-                        isSelected: tabIndex == .analogs,
-                        action: ({ [weak self] in
-                            self?.onTabTap?(.analogs)
-                        })
-                    ))
-                }
-
-                let item = ListItem(
-                    id: workId + "_tabs_" + tabIndex.rawValue,
-                    layoutSpec: WorkTabsLayoutSpec(model: tabs)
-                )
-
-                items.append(item)
             }
+
+            if hasAnalogs {
+                tabs.append(WorkTabLayoutModel(
+                    name: "Похожие",
+                    count: data.analogs.count,
+                    isSelected: tabIndex == .analogs,
+                    action: ({ [weak self] in
+                        self?.onTabTap?(.analogs)
+                    })
+                ))
+            }
+
+            let item = ListItem(
+                id: workId + "_tabs_" + tabIndex.rawValue,
+                layoutSpec: WorkTabsLayoutSpec(model: tabs)
+            )
+
+            items.append(item)
         }
 
         switch tabIndex {
@@ -281,7 +289,7 @@ final class WorkContentBuilder {
                 if index > 0 || !hasTabs {
                     items.append(ListItem(
                         id: sectionId + "_separator",
-                        layoutSpec: EmptySpaceLayoutSpec(model: (Colors.perfectGray, 8))
+                        layoutSpec: EmptySpaceLayoutSpec(model: (Colors.perfectGray, 10))
                     ))
 
                     items.append(ListItem(
@@ -314,7 +322,7 @@ final class WorkContentBuilder {
                         layoutSpec: WorkReviewTextLayoutSpec(model: review)
                     )
 
-                    textItem.didSelect = { [weak self] cell in
+                    textItem.didSelect = { [weak self] cell, _ in
                         CellSelection.scale(cell: cell, action: {
                             self?.onReviewTap?(review)
                         })
@@ -325,7 +333,7 @@ final class WorkContentBuilder {
 
                     items.append(ListItem(
                         id: itemId + "_separator",
-                        layoutSpec: ItemSeparatorLayoutSpec()
+                        layoutSpec: ItemSeparatorLayoutSpec(model: Colors.separatorColor)
                     ))
                 }
 
@@ -335,7 +343,7 @@ final class WorkContentBuilder {
                         layoutSpec: WorkShowAllReviewsLayoutSpec()
                     )
 
-                    item.didSelect = { [weak self] cell in
+                    item.didSelect = { [weak self] cell, _ in
                         CellSelection.scale(cell: cell, action: {
                             self?.onShowAllReviewsTap?(data.work)
                         })
@@ -353,7 +361,7 @@ final class WorkContentBuilder {
                     layoutSpec: WorkAnalogLayoutSpec(model: analog)
                 )
 
-                item.didSelect = { [weak self] cell in
+                item.didSelect = { [weak self] cell, _ in
                     CellSelection.scale(cell: cell, action: {
                         self?.onWorkAnalogTap?(analog.id)
                     })
@@ -363,7 +371,7 @@ final class WorkContentBuilder {
 
                 items.append(ListItem(
                     id: itemId + "_separator",
-                    layoutSpec: ItemSeparatorLayoutSpec()
+                    layoutSpec: ItemSeparatorLayoutSpec(model: Colors.separatorColor)
                 ))
             }
         }

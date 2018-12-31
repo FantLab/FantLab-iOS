@@ -18,12 +18,12 @@ final class CollapsedHiddenStringLayoutSpec: ModelLayoutSpec<String> {
         let nameTextNode = LayoutNode(sizeProvider: nameString, config: { node in
             node.marginBottom = 4
             node.marginLeft = 8
-        }) { (label: UILabel) in
+        }) { (label: UILabel, _) in
             label.numberOfLines = 0
             label.attributedText = nameString
         }
 
-        let showContentNode = LayoutNode(sizeProvider: showContentString, config: nil) { (label: UILabel) in
+        let showContentNode = LayoutNode(sizeProvider: showContentString, config: nil) { (label: UILabel, _) in
             label.numberOfLines = 0
             label.attributedText = showContentString
         }
@@ -33,7 +33,7 @@ final class CollapsedHiddenStringLayoutSpec: ModelLayoutSpec<String> {
             node.flexDirection = .column
             node.alignItems = .center
             node.alignSelf = .stretch
-        }) { (view: UIView) in
+        }) { (view: UIView, _) in
             view.layer.borderWidth = 1
             view.layer.borderColor = UIColor.lightGray.cgColor
             view.backgroundColor = Colors.perfectGray
@@ -62,12 +62,12 @@ final class ExpandedHiddenStringLayoutSpec: ModelLayoutSpec<(NSAttributedString,
         let nameTextNode = LayoutNode(sizeProvider: nameString, config: { node in
             node.marginBottom = 4
             node.marginLeft = 8
-        }) { (label: UILabel) in
+        }) { (label: UILabel, _) in
             label.numberOfLines = 0
             label.attributedText = nameString
         }
 
-        let textNode = LayoutNode(sizeProvider: drawing, config: nil) { (label: AsyncLabel) in
+        let textNode = LayoutNode(sizeProvider: drawing, config: nil) { (label: AsyncLabel, _) in
             label.stringDrawing = drawing
         }
 
@@ -75,7 +75,7 @@ final class ExpandedHiddenStringLayoutSpec: ModelLayoutSpec<(NSAttributedString,
             node.padding(all: 16)
             node.flexDirection = .column
             node.alignSelf = .stretch
-        }) { (view: UIView) in
+        }) { (view: UIView, _) in
             view.layer.borderWidth = 1
             view.layer.borderColor = UIColor.lightGray.cgColor
             view.backgroundColor = Colors.perfectGray

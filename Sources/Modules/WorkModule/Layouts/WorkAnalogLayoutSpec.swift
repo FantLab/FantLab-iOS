@@ -36,28 +36,25 @@ final class WorkAnalogLayoutSpec: ModelLayoutSpec<WorkAnalogModel> {
             if model.rating > 0 && model.votes > 0 {
                 let ratingColor = RatingColorRule.colorFor(rating: model.rating)
 
-                let ratingString = String(model.rating).attributed()
-                    .font(Fonts.system.medium(size: 13))
-                    .foregroundColor(ratingColor)
-                    .alignment(.center)
-                    .makeMutable()
-
-                let votesString = ("\n" + String(model.votes)).attributed()
-                    .font(Fonts.system.regular(size: 10))
-                    .foregroundColor(UIColor.lightGray)
-                    .alignment(.center)
-                    .baselineOffset(-2)
-                    .make()
-
-                ratingString.append(votesString)
-
-                detailString = ratingString
+                detailString =
+                    String(model.rating).attributed()
+                        .font(Fonts.system.medium(size: 13))
+                        .foregroundColor(ratingColor)
+                        .alignment(.center)
+                        .make()
+                    +
+                    ("\n" + String(model.votes)).attributed()
+                        .font(Fonts.system.regular(size: 10))
+                        .foregroundColor(UIColor.lightGray)
+                        .alignment(.center)
+                        .baselineOffset(-2)
+                        .make()
             } else {
                 detailString = nil
             }
         }
 
-        let nameNode = LayoutNode(sizeProvider: nameString, config: nil) { (label: UILabel) in
+        let nameNode = LayoutNode(sizeProvider: nameString, config: nil) { (label: UILabel, _) in
             label.numberOfLines = 0
             label.attributedText = nameString
         }
@@ -65,7 +62,7 @@ final class WorkAnalogLayoutSpec: ModelLayoutSpec<WorkAnalogModel> {
         let infoNode = LayoutNode(sizeProvider: infoString, config: { node in
             node.marginTop = 4
             node.isHidden = infoString == nil
-        }) { (label: UILabel) in
+        }) { (label: UILabel, _) in
             label.numberOfLines = 0
             label.attributedText = infoString
         }
@@ -73,7 +70,7 @@ final class WorkAnalogLayoutSpec: ModelLayoutSpec<WorkAnalogModel> {
         let authorNode = LayoutNode(sizeProvider: authorString, config: { node in
             node.marginTop = 12
             node.isHidden = authorString == nil
-        }) { (label: UILabel) in
+        }) { (label: UILabel, _) in
             label.numberOfLines = 0
             label.attributedText = authorString
         }
@@ -89,14 +86,14 @@ final class WorkAnalogLayoutSpec: ModelLayoutSpec<WorkAnalogModel> {
         let coverNode = LayoutNode(config: { node in
             node.height = 80
             node.width = 60
-        }) { (view: UIImageView) in
+        }) { (view: UIImageView, _) in
             view.clipsToBounds = true
             view.contentMode = .scaleAspectFit
 
             view.yy_setImage(with: model.imageURL, placeholder: UIImage(named: "not_found_cover"), options: .setImageWithFadeAnimation, completion: nil)
         }
 
-        let detailTextNode = LayoutNode(sizeProvider: detailString, config: nil) { (label: UILabel) in
+        let detailTextNode = LayoutNode(sizeProvider: detailString, config: nil) { (label: UILabel, _) in
             label.numberOfLines = 0
             label.attributedText = detailString
         }
@@ -111,7 +108,7 @@ final class WorkAnalogLayoutSpec: ModelLayoutSpec<WorkAnalogModel> {
         let arrowNode = LayoutNode(config: { node in
             node.width = 10
             node.height = 10
-        }) { (view: UIImageView) in
+        }) { (view: UIImageView, _) in
             view.contentMode = .scaleAspectFit
             view.tintColor = UIColor.lightGray
             view.image = UIImage(named: "arrow_right")?.withRenderingMode(.alwaysTemplate)

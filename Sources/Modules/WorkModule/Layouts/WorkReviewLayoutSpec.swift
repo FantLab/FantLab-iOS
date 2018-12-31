@@ -25,21 +25,24 @@ final class WorkReviewHeaderLayoutSpec: ModelLayoutSpec<WorkReviewModel> {
         if model.mark > 0 {
             let markColor = RatingColorRule.colorFor(rating: Float(model.mark))
 
-            let mark = String(model.mark).attributed()
-                .font(Fonts.system.bold(size: 13))
-                .foregroundColor(markColor)
-                .makeMutable()
-
             if model.votes > 0 {
-                let votes = " / +\(model.votes)".attributed()
-                    .font(Fonts.system.regular(size: 13))
-                    .foregroundColor(UIColor.lightGray)
+                markString =
+                    String(model.mark).attributed()
+                        .font(Fonts.system.bold(size: 15))
+                        .foregroundColor(markColor)
+                        .make()
+                    +
+                    " +\(model.votes)".attributed()
+                        .font(Fonts.system.regular(size: 11))
+                        .foregroundColor(UIColor.lightGray)
+                        .baselineOffset(4)
+                        .make()
+            } else {
+                markString = String(model.mark).attributed()
+                    .font(Fonts.system.bold(size: 15))
+                    .foregroundColor(markColor)
                     .make()
-
-                mark.append(votes)
             }
-
-            markString = mark
         } else {
             markString = nil
         }
@@ -48,7 +51,7 @@ final class WorkReviewHeaderLayoutSpec: ModelLayoutSpec<WorkReviewModel> {
             node.width = 32
             node.height = 32
             node.marginRight = 12
-        }) { (view: UIImageView) in
+        }) { (view: UIImageView, _) in
             view.layer.cornerRadius = 4
             view.layer.masksToBounds = true
             view.contentMode = .scaleAspectFill
@@ -57,12 +60,12 @@ final class WorkReviewHeaderLayoutSpec: ModelLayoutSpec<WorkReviewModel> {
 
         let userNameNode = LayoutNode(sizeProvider: userNameString, config: { node in
             node.marginBottom = 2
-        }) { (label: UILabel) in
+        }) { (label: UILabel, _) in
             label.numberOfLines = 0
             label.attributedText = userNameString
         }
 
-        let dateNode = LayoutNode(sizeProvider: dateString, config: nil) { (label: UILabel) in
+        let dateNode = LayoutNode(sizeProvider: dateString, config: nil) { (label: UILabel, _) in
             label.attributedText = dateString
         }
 
@@ -75,7 +78,7 @@ final class WorkReviewHeaderLayoutSpec: ModelLayoutSpec<WorkReviewModel> {
         let markNode = LayoutNode(sizeProvider: markString, config: { node in
             node.marginLeft = 12
             node.isHidden = markString == nil
-        }) { (label: UILabel) in
+        }) { (label: UILabel, _) in
             label.numberOfLines = 0
             label.attributedText = markString
         }
@@ -83,7 +86,7 @@ final class WorkReviewHeaderLayoutSpec: ModelLayoutSpec<WorkReviewModel> {
         let contentNode = LayoutNode(children: [userAvatarNode, userStackNode, markNode], config: { node in
             node.alignItems = .center
             node.flexDirection = .row
-            node.padding(top: 16, left: 16, bottom: 16, right: 16)
+            node.padding(top: 16, left: 16, bottom: nil, right: 16)
         })
 
         return contentNode
@@ -105,12 +108,12 @@ final class WorkReviewTextLayoutSpec: ModelLayoutSpec<WorkReviewModel> {
 
         let textNode = LayoutNode(sizeProvider: text, config: { node in
             node.maxHeight = 120
-        }) { (label: AsyncLabel) in
+        }) { (label: AsyncLabel, _) in
             label.stringDrawing = text
         }
 
         let contentNode = LayoutNode(children: [textNode], config: { node in
-            node.padding(top: 8, left: 16, bottom: 16, right: 16)
+            node.padding(top: 16, left: 16, bottom: 16, right: 16)
         })
 
         return contentNode

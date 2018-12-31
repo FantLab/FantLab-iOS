@@ -35,7 +35,7 @@ final class WorkGenresLayoutSpec: ModelLayoutSpec<WorkModel> {
 
             let titleNode = LayoutNode(sizeProvider: titleString, config: { node in
                 node.width = 40%
-            }) { (label: UILabel) in
+            }) { (label: UILabel, _) in
                 label.numberOfLines = 0
                 label.attributedText = titleString
             }
@@ -43,7 +43,7 @@ final class WorkGenresLayoutSpec: ModelLayoutSpec<WorkModel> {
             let genresNode = LayoutNode(sizeProvider: genresString, config: { node in
                 node.marginLeft = 16
                 node.width = 55%
-            }) { (label: UILabel) in
+            }) { (label: UILabel, _) in
                 label.numberOfLines = 0
                 label.attributedText = genresString
             }
@@ -60,7 +60,7 @@ final class WorkGenresLayoutSpec: ModelLayoutSpec<WorkModel> {
         let contentNode = LayoutNode(children: textStackNodes, config: { node in
             node.flexDirection = .column
             node.alignItems = .flexStart
-            node.padding(top: 8, left: 16, bottom: 24, right: 16)
+            node.padding(top: nil, left: 16, bottom: 16, right: 16)
         })
 
         return contentNode

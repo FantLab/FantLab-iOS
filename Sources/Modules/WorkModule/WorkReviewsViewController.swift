@@ -39,7 +39,7 @@ final class WorkReviewsViewController: ListViewController {
 
         do {
             sortSelectionControl.backgroundColor = UIColor.white
-            sortSelectionControl.selectedSegmentIndex = 1
+            sortSelectionControl.selectedSegmentIndex = 2
             view.addSubview(sortSelectionControl)
             sortSelectionControl.pinEdges(to: view.safeAreaLayoutGuide, top: 8, left: 16, bottom: .nan, right: 16)
         }
@@ -118,21 +118,21 @@ final class WorkReviewsViewController: ListViewController {
                 layoutSpec: WorkReviewTextLayoutSpec(model: review)
             )
 
-            textItem.didSelect = { [weak self] cell in
+            textItem.didSelect = { [weak self] cell, _ in
                 CellSelection.scale(cell: cell, action: {
                     self?.open(review: review)
                 })
             }
 
             if index == state.reviews.endIndex - 1 {
-                textItem.willDisplay = { [weak self] _ in
+                textItem.willDisplay = { [weak self] _, _ in
                     self?.interactor.loadNextPage()
                 }
             }
 
             let separatorItem = ListItem(
-                id: String(review.id) + "_separator",
-                layoutSpec: ItemSeparatorLayoutSpec()
+                id: itemId + "_separator",
+                layoutSpec: ItemSeparatorLayoutSpec(model: Colors.separatorColor)
             )
 
             return [headerItem, textItem, separatorItem]

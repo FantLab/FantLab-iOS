@@ -1,14 +1,14 @@
 PODS:
-  - ALLKit (0.1.6):
-    - ALLKit/ListKit (= 0.1.6)
-  - ALLKit/Diff (0.1.6)
-  - ALLKit/Layout (0.1.6):
+  - ALLKit (0.2):
+    - ALLKit/ListKit (= 0.2)
+  - ALLKit/Diff (0.2)
+  - ALLKit/Layout (0.2):
     - Yoga (= 1.6)
-  - ALLKit/ListKit (0.1.6):
+  - ALLKit/ListKit (0.2):
     - ALLKit/Diff
     - ALLKit/Layout
     - ALLKit/Support
-  - ALLKit/Support (0.1.6):
+  - ALLKit/Support (0.2):
     - ALLKit/Layout
   - Crashlytics (3.11.1):
     - Fabric (~> 1.8.1)
@@ -26,7 +26,7 @@ PODS:
     - YYImage
 
 DEPENDENCIES:
-  - ALLKit (from `https://github.com/geor-kasapidi/ALLKit`, tag `v0.1.6`)
+  - ALLKit (from `https://github.com/geor-kasapidi/ALLKit`, commit `f4b97d421648447e91a54423ac89c90092863ad7`)
   - Crashlytics
   - Fabric
   - RxSwift (= 4.4.0)
@@ -45,16 +45,16 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   ALLKit:
+    :commit: f4b97d421648447e91a54423ac89c90092863ad7
     :git: https://github.com/geor-kasapidi/ALLKit
-    :tag: v0.1.6
 
 CHECKOUT OPTIONS:
   ALLKit:
+    :commit: f4b97d421648447e91a54423ac89c90092863ad7
     :git: https://github.com/geor-kasapidi/ALLKit
-    :tag: v0.1.6
 
 SPEC CHECKSUMS:
-  ALLKit: b88e16af5fc39cf81a6a2555e1e846befd175696
+  ALLKit: b603d0bf4a18c79270b386004f18df181f64bf04
   Crashlytics: ca7ab4bc304aa216bdc2e4c1a96389ee77252203
   Fabric: d2b22f443ba195d8a7cc204da230977c72733b40
   RxAtomic: eacf60db868c96bfd63320e28619fe29c179656f
@@ -64,6 +64,6 @@ SPEC CHECKSUMS:
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
   YYWebImage: 5f7f36aee2ae293f016d418c7d6ba05c4863e928
 
-PODFILE CHECKSUM: 71ec8899fb1316b9339da7c176204a146fd0e5b8
+PODFILE CHECKSUM: 064f43bd45121c4f6abc46b4c678fda015ecbd6f
 
 COCOAPODS: 1.5.3

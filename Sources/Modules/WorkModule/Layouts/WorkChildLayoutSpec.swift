@@ -47,28 +47,25 @@ final class WorkChildLayoutSpec: ModelLayoutSpec<WorkChildLayoutModel> {
             } else if work.rating > 0 && work.votes > 0 {
                 let ratingColor = RatingColorRule.colorFor(rating: work.rating)
 
-                let ratingString = String(work.rating).attributed()
-                    .font(Fonts.system.medium(size: 13))
-                    .foregroundColor(ratingColor)
-                    .alignment(.center)
-                    .makeMutable()
-
-                let votesString = ("\n" + String(work.votes)).attributed()
-                    .font(Fonts.system.regular(size: 10))
-                    .foregroundColor(UIColor.lightGray)
-                    .alignment(.center)
-                    .baselineOffset(-2)
-                    .make()
-
-                ratingString.append(votesString)
-
-                detailString = ratingString
+                detailString =
+                    String(work.rating).attributed()
+                        .font(Fonts.system.medium(size: 13))
+                        .foregroundColor(ratingColor)
+                        .alignment(.center)
+                        .make()
+                    +
+                    ("\n" + String(work.votes)).attributed()
+                        .font(Fonts.system.regular(size: 10))
+                        .foregroundColor(UIColor.lightGray)
+                        .alignment(.center)
+                        .baselineOffset(-2)
+                        .make()
             } else {
                 detailString = nil
             }
         }
 
-        let titleNode = LayoutNode(sizeProvider: titleString, config: nil) { (label: UILabel) in
+        let titleNode = LayoutNode(sizeProvider: titleString, config: nil) { (label: UILabel, _) in
             label.numberOfLines = 0
             label.attributedText = titleString
         }
@@ -76,12 +73,12 @@ final class WorkChildLayoutSpec: ModelLayoutSpec<WorkChildLayoutModel> {
         let subtitleNode = LayoutNode(sizeProvider: subtitleString, config: { node in
             node.marginTop = 2
             node.isHidden = subtitleString == nil
-        }) { (label: UILabel) in
+        }) { (label: UILabel, _) in
             label.numberOfLines = 0
             label.attributedText = subtitleString
         }
 
-        let detailTextNode = LayoutNode(sizeProvider: detailString, config: nil) { (label: UILabel) in
+        let detailTextNode = LayoutNode(sizeProvider: detailString, config: nil) { (label: UILabel, _) in
             label.numberOfLines = 0
             label.attributedText = detailString
         }
@@ -111,7 +108,7 @@ final class WorkChildLayoutSpec: ModelLayoutSpec<WorkChildLayoutModel> {
         let rightArrowIconNode = LayoutNode(config: { node in
             node.width = 10
             node.height = 10
-        }) { (view: UIImageView) in
+        }) { (view: UIImageView, _) in
             view.contentMode = .scaleAspectFit
             view.tintColor = UIColor.lightGray
             view.image = UIImage(named: "arrow_right")?.withRenderingMode(.alwaysTemplate)
@@ -125,7 +122,7 @@ final class WorkChildLayoutSpec: ModelLayoutSpec<WorkChildLayoutModel> {
                 node.marginRight = 10
                 node.width = 8
                 node.height = 8
-            }) { (view: UIImageView) in
+            }) { (view: UIImageView, _) in
                 view.contentMode = .scaleAspectFit
                 view.tintColor = UIColor.lightGray
                 view.image = (model.isExpanded ? UIImage(named: "arrow_up") : UIImage(named: "arrow_down"))?.withRenderingMode(.alwaysTemplate)
@@ -136,7 +133,7 @@ final class WorkChildLayoutSpec: ModelLayoutSpec<WorkChildLayoutModel> {
                 node.marginRight = 11
                 node.width = 6
                 node.height = 6
-            }) { (view: UIImageView) in
+            }) { (view: UIImageView, _) in
                 view.contentMode = .scaleAspectFit
                 view.tintColor = UIColor.black
                 view.image = WorkTypeIcons.iconFor(workType: model.work.workTypeKey)?.withRenderingMode(.alwaysTemplate)
@@ -159,7 +156,7 @@ final class WorkChildLayoutSpec: ModelLayoutSpec<WorkChildLayoutModel> {
                 node.left = 0
                 node.bottom = 0
                 node.width = 50%
-            }) { (view: UIView) in
+            }) { (view: UIView, _) in
                 view.all_addGestureRecognizer({ (_: UITapGestureRecognizer) in
                     expandCollapseAction()
                 })

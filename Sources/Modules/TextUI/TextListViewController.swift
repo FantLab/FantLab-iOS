@@ -157,7 +157,7 @@ final class TextListViewController: ListViewController {
                         layoutSpec: CollapsedHiddenStringLayoutSpec(model: name)
                     )
 
-                    item.didSelect = { [weak self] cell in
+                    item.didSelect = { [weak self] cell, _ in
                         CellSelection.scale(cell: cell, action: {
                             self?.hiddenTextSubject.onNext(index)
                         })

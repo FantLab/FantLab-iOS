@@ -10,7 +10,7 @@ final class WorkShowAllReviewsLayoutSpec: LayoutSpec {
             .foregroundColor(Colors.flOrange)
             .make()
 
-        let textNode = LayoutNode(sizeProvider: titleString, config: nil) { (label: UILabel) in
+        let textNode = LayoutNode(sizeProvider: titleString, config: nil) { (label: UILabel, _) in
             label.numberOfLines = 0
             label.attributedText = titleString
         }

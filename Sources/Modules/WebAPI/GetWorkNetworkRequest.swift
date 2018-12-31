@@ -76,7 +76,23 @@ public final class GetWorkNetworkRequest: NetworkRequest {
                         parseGenre(json: $0)
                     })
                 )
-            })
+            }),
+            awards: json["awards"]["win"].jsonArray.map(parseAward) + json["awards"]["nom"].jsonArray.map(parseAward)
+        )
+    }
+
+    private func parseAward(json: JSON) -> WorkModel.AwardModel {
+        return WorkModel.AwardModel(
+            id: json["award_id"].intValue,
+            name: json["award_name"].stringValue,
+            rusName: json["award_rusname"].stringValue,
+            nominationId: json["nomination_id"].intValue,
+            nominationName: json["nomination_rusname"].string ?? json["nomination_name"].stringValue,
+            isWin: json["cw_is_winner"].boolValue,
+            isOpen: json["award_is_opened"].boolValue,
+            contestId: json["contest_id"].intValue,
+            contestYear: json["contest_year"].intValue,
+            iconURL: URL.from(string: json["award_icon"].stringValue)
         )
     }
 

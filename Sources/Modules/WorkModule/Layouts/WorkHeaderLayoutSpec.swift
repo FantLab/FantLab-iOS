@@ -59,7 +59,7 @@ final class WorkHeaderLayoutSpec: ModelLayoutSpec<WorkModel> {
             node.width = 100
             node.height = 120
             node.marginLeft = 16
-        }) { (view: UIImageView) in
+        }) { (view: UIImageView, _) in
             view.clipsToBounds = true
             view.contentMode = .scaleAspectFit
 
@@ -68,7 +68,7 @@ final class WorkHeaderLayoutSpec: ModelLayoutSpec<WorkModel> {
 
         let nameNode = LayoutNode(sizeProvider: nameString, config: { node in
 
-        }) { (label: UILabel) in
+        }) { (label: UILabel, _) in
             label.numberOfLines = 0
             label.attributedText = nameString
         }
@@ -76,21 +76,21 @@ final class WorkHeaderLayoutSpec: ModelLayoutSpec<WorkModel> {
         let origNameNode = LayoutNode(sizeProvider: origNameString, config: { node in
             node.marginTop = 4
             node.isHidden = origNameString == nil
-        }) { (label: UILabel) in
+        }) { (label: UILabel, _) in
             label.numberOfLines = 0
             label.attributedText = origNameString
         }
 
         let infoNode = LayoutNode(sizeProvider: infoString, config: { node in
             node.marginTop = 8
-        }) { (label: UILabel) in
+        }) { (label: UILabel, _) in
             label.numberOfLines = 0
             label.attributedText = infoString
         }
 
         let authorNode = LayoutNode(sizeProvider: authorString, config: { node in
             node.marginTop = 16
-        }) { (label: UILabel) in
+        }) { (label: UILabel, _) in
             label.numberOfLines = 0
             label.attributedText = authorString
         }

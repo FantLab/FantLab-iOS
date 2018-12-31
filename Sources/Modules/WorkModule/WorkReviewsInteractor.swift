@@ -22,7 +22,7 @@ final class WorkReviewsInteractor {
     private let state = ObservableValue(State(
         reviews: [],
         listIsFull: false,
-        sort: .date,
+        sort: .rating,
         page: 0,
         status: .idle
     ))

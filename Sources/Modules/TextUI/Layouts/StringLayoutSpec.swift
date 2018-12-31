@@ -57,7 +57,7 @@ struct StringLayoutModel {
 
 final class StringLayoutSpec: ModelLayoutSpec<StringLayoutModel> {
     override func makeNodeFrom(model: StringLayoutModel, sizeConstraints: SizeConstraints) -> LayoutNode {
-        let textNode = LayoutNode(sizeProvider: model.string, config: nil) { (view: TextViewContainer) in
+        let textNode = LayoutNode(sizeProvider: model.string, config: nil) { (view: TextViewContainer, _) in
             view.textView.linkTextAttributes = model.linkAttributes
             view.textView.attributedText = model.string
             view.openURL = model.openURL

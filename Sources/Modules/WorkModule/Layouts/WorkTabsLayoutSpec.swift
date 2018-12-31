@@ -15,7 +15,7 @@ final class WorkTabsLayoutSpec: ModelLayoutSpec<[WorkTabLayoutModel]> {
     override func makeNodeFrom(model: [WorkTabLayoutModel], sizeConstraints: SizeConstraints) -> LayoutNode {
         var tabNodes: [LayoutNode] = []
 
-        let tabWidth = (1.0 / Float(max(model.count, 2))) * 100
+        let tabWidth = (1.0 / Float(max(model.count, 1))) * 100
 
         let backgroundColor: UIColor = Colors.perfectGray
 
@@ -27,7 +27,7 @@ final class WorkTabsLayoutSpec: ModelLayoutSpec<[WorkTabLayoutModel]> {
                 .lineBreakMode(.byTruncatingTail)
                 .make()
 
-            let nameNode = LayoutNode(sizeProvider: nameString, config: nil) { (label: UILabel) in
+            let nameNode = LayoutNode(sizeProvider: nameString, config: nil) { (label: UILabel, _) in
                 label.attributedText = nameString
             }
 
@@ -42,7 +42,7 @@ final class WorkTabsLayoutSpec: ModelLayoutSpec<[WorkTabLayoutModel]> {
                 countNode = LayoutNode(sizeProvider: countString, config: { node in
                     node.marginLeft = 3
                     node.marginBottom = 4
-                }) { (label: UILabel) in
+                }) { (label: UILabel, _) in
                     label.attributedText = countString
                 }
             } else {
@@ -53,8 +53,8 @@ final class WorkTabsLayoutSpec: ModelLayoutSpec<[WorkTabLayoutModel]> {
                 node.flexDirection = .row
                 node.alignItems = .center
                 node.flex = 1
-                node.marginLeft = 8
-                node.marginRight = 8
+                node.marginLeft = 16
+                node.marginRight = 16
             })
 
             let selectionLineNode: LayoutNode?
@@ -66,7 +66,7 @@ final class WorkTabsLayoutSpec: ModelLayoutSpec<[WorkTabLayoutModel]> {
                     node.left = 0
                     node.bottom = 0
                     node.right = 0
-                }) { (view: UIView) in
+                }) { (view: UIView, _) in
                     view.backgroundColor = Colors.flOrange
                 }
             } else {
@@ -79,7 +79,7 @@ final class WorkTabsLayoutSpec: ModelLayoutSpec<[WorkTabLayoutModel]> {
                 node.justifyContent = .center
                 node.paddingTop = 12
                 node.paddingBottom = 12
-            }) { (view: UIView) in
+            }) { (view: UIView, _) in
                 view.all_addGestureRecognizer({ (_: UITapGestureRecognizer) in
                     tab.action()
                 })
@@ -90,9 +90,9 @@ final class WorkTabsLayoutSpec: ModelLayoutSpec<[WorkTabLayoutModel]> {
 
         let tabsNode = LayoutNode(children: tabNodes, config: { node in
             node.flexDirection = .row
-            node.marginBottom = 8
             node.marginTop = 8
-        }) { (view: UIView) in
+            node.marginBottom = 8
+        }) { (view: UIView, _) in
             view.backgroundColor = backgroundColor
             view.superview?.sendSubviewToBack(view)
         }
