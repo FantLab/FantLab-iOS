@@ -20,20 +20,20 @@ public final class GetWorkAnalogsNetworkRequest: NetworkRequest {
             throw NetworkError.invalidJSON
         }
 
-        return json.jsonArray.map {
+        return json.array.map {
             return WorkAnalogModel(
-                id: $0["id"].intValue,
-                name: $0["name"].stringValue,
-                nameOrig: $0["name_orig"].stringValue,
-                workType: $0["name_type"].stringValue,
-                imageURL: URL.from(string: $0["image"].stringValue),
-                year: $0["year"].intValue,
-                authors: $0["creators"]["authors"].jsonArray.map({
-                    $0["name"].string ?? $0["name_orig"].stringValue
+                id: $0.id.intValue,
+                name: $0.name.stringValue,
+                nameOrig: $0.name_orig.stringValue,
+                workType: $0.name_type.stringValue,
+                imageURL: URL.from(string: $0.image.stringValue),
+                year: $0.year.intValue,
+                authors: $0.creators.authors.array.map({
+                    $0.name.string ?? $0.name_orig.stringValue
                 }),
-                rating: $0["stat"]["rating"].floatValue,
-                votes: $0["stat"]["voters"].intValue,
-                reviewsCount: $0["stat"]["responses"].intValue
+                rating: $0.stat.rating.floatValue,
+                votes: $0.stat.voters.intValue,
+                reviewsCount: $0.stat.responses.intValue
             )
         }
     }

@@ -50,34 +50,15 @@ final class WorkAwardsLayoutSpec: ModelLayoutSpec<[WorkModel.AwardModel]> {
     }
 }
 
-private final class WorkAwardLayoutSpec: ModelLayoutSpec<WorkModel.AwardModel> {
+final class WorkAwardTitleLayoutSpec: ModelLayoutSpec<WorkModel.AwardModel> {
     override func makeNodeFrom(model: WorkModel.AwardModel, sizeConstraints: SizeConstraints) -> LayoutNode {
         let nameString: NSAttributedString
-        let nominationString: NSAttributedString?
-        let winString: NSAttributedString
 
         do {
             nameString = (model.rusName.nilIfEmpty ?? model.name).attributed()
-                .font(Fonts.system.medium(size: 13))
+                .font(Fonts.system.medium(size: 15))
                 .foregroundColor(UIColor.black)
                 .make()
-
-            nominationString = model.nominationName.nilIfEmpty?.attributed()
-                .font(Fonts.system.regular(size: 11))
-                .foregroundColor(UIColor.lightGray)
-                .make()
-
-            if model.isWin {
-                winString = "Лауреат".attributed()
-                    .font(Fonts.system.bold(size: 8))
-                    .foregroundColor(Colors.flBlue)
-                    .make()
-            } else {
-                winString = "Номинант".attributed()
-                    .font(Fonts.system.bold(size: 8))
-                    .foregroundColor(UIColor.lightGray)
-                    .make()
-            }
         }
 
         let iconNode = LayoutNode(config: { node in
@@ -88,36 +69,66 @@ private final class WorkAwardLayoutSpec: ModelLayoutSpec<WorkModel.AwardModel> {
             imageView.yy_setImage(with: model.iconURL, options: .setImageWithFadeAnimation)
         }
 
-        let winNode = LayoutNode(sizeProvider: winString, config: { node in
-            node.marginLeft = 12
-        }) { (label: UILabel, _) in
-            label.attributedText = winString
-        }
-
-        let topNode = LayoutNode(children: [iconNode, winNode], config: { node in
-            node.flexDirection = .row
-            node.alignItems = .center
-        })
-
         let nameNode = LayoutNode(sizeProvider: nameString, config: { node in
-            node.marginTop = 8
+            node.marginLeft = 16
+            node.flex = 1
         }) { (label: UILabel, _) in
             label.numberOfLines = 0
             label.attributedText = nameString
         }
 
-        let nominationNode = LayoutNode(sizeProvider: nominationString, config: { node in
-            node.marginTop = 8
-            node.isHidden = nominationString == nil
-        }) { (label: UILabel, _) in
-            label.numberOfLines = 0
-            label.attributedText = nominationString
+        let topNode = LayoutNode(children: [iconNode, nameNode], config: { node in
+            node.flexDirection = .row
+            node.alignItems = .center
+        })
+
+        let contentNode = LayoutNode(children: [topNode], config: { node in
+            node.flexDirection = .column
+            node.padding(all: 16)
+        })
+
+        return contentNode
+    }
+}
+
+final class WorkAwardContestLayoutSpec: ModelLayoutSpec<WorkModel.AwardModel.ContestModel> {
+    override func makeNodeFrom(model: WorkModel.AwardModel.ContestModel, sizeConstraints: SizeConstraints) -> LayoutNode {
+        let nameString = [String(model.year), model.name].compactAndJoin(" - ").attributed()
+            .font(Fonts.system.regular(size: 13))
+            .foregroundColor(UIColor.gray)
+            .make()
+
+        let winString: NSAttributedString
+
+        if model.isWin {
+            winString = "★".attributed()
+                .font(Fonts.system.regular(size: 13))
+                .foregroundColor(Colors.ratingColor)
+                .make()
+        } else {
+            winString = "☆".attributed()
+                .font(Fonts.system.regular(size: 13))
+                .foregroundColor(UIColor.lightGray)
+                .make()
         }
 
-        let contentNode = LayoutNode(children: [topNode, nameNode, nominationNode], config: { node in
-            node.flexDirection = .column
+        let nameNode = LayoutNode(sizeProvider: nameString, config: { node in
+            node.flex = 1
+        }) { (label: UILabel, _) in
+            label.numberOfLines = 0
+            label.attributedText = nameString
+        }
+
+        let winNode = LayoutNode(sizeProvider: winString, config: { node in
+            node.marginLeft = 24
+        }) { (label: UILabel, _) in
+            label.attributedText = winString
+        }
+
+        let contentNode = LayoutNode(children: [nameNode, winNode], config: { node in
+            node.flexDirection = .row
             node.alignItems = .center
-            node.padding(all: 8)
+            node.padding(top: nil, left: 56, bottom: 16, right: 16)
         })
 
         return contentNode

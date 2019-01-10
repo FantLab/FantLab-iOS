@@ -1,5 +1,6 @@
 import Foundation
 
+@dynamicMemberLookup
 public class JSON: CustomDebugStringConvertible, CustomStringConvertible {
     private let object: Any?
 
@@ -34,6 +35,36 @@ public class JSON: CustomDebugStringConvertible, CustomStringConvertible {
 
     // MARK: -
 
+    public func exists() -> Bool {
+        return object != nil
+    }
+
+    public var array: [JSON] {
+        return (object as? [Any])?.map({ JSON($0) }) ?? []
+    }
+
+    public var keys: [String] {
+        return (object as? [String: Any])?.keys.sorted() ?? []
+    }
+
+    // MARK: -
+
+    public subscript(_ index: Int) -> JSON {
+        return JSON((object as? [Any])?[safe: index])
+    }
+
+    public subscript(_ key: String) -> JSON {
+        return JSON((object as? [String: Any])?[key])
+    }
+
+    // MARK: - dynamicMemberLookup
+
+    public subscript(dynamicMember key: String) -> JSON {
+        return self[key]
+    }
+
+    // MARK: -
+
     public var string: String? {
         return object as? String
     }
@@ -56,30 +87,6 @@ public class JSON: CustomDebugStringConvertible, CustomStringConvertible {
 
     public var double: Double? {
         return (object as? NSNumber)?.doubleValue ?? (object as? NSString)?.doubleValue
-    }
-
-    public func exists() -> Bool {
-        return object != nil
-    }
-
-    // MARK: -
-
-    public subscript(index: Int) -> JSON {
-        return JSON((object as? [Any])?[safe: index])
-    }
-
-    public subscript(key: String) -> JSON {
-        return JSON((object as? [String: Any])?[key])
-    }
-
-    // MARK: -
-
-    public var jsonArray: [JSON] {
-        return (object as? [Any])?.map({ JSON($0) }) ?? []
-    }
-
-    public var sortedKeys: [String] {
-        return (object as? [String: Any])?.keys.sorted() ?? []
     }
 }
 

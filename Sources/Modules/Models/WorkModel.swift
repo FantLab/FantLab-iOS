@@ -111,38 +111,44 @@ public final class WorkModel {
     }
 
     public final class AwardModel {
+        public final class ContestModel {
+            public let id: Int
+            public let year: Int
+            public let name: String
+            public let isWin: Bool
+
+            public init(id: Int,
+                        year: Int,
+                        name: String,
+                        isWin: Bool) {
+
+                self.id = id
+                self.year = year
+                self.name = name
+                self.isWin = isWin
+            }
+        }
+
         public let id: Int
         public let name: String
         public let rusName: String
-        public let nominationId: Int
-        public let nominationName: String
-        public let isWin: Bool
         public let isOpen: Bool
-        public let contestId: Int
-        public let contestYear: Int
         public let iconURL: URL?
+        public let contests: [ContestModel]
 
         public init(id: Int,
                     name: String,
                     rusName: String,
-                    nominationId: Int,
-                    nominationName: String,
-                    isWin: Bool,
                     isOpen: Bool,
-                    contestId: Int,
-                    contestYear: Int,
-                    iconURL: URL?) {
+                    iconURL: URL?,
+                    contests: [ContestModel]) {
 
             self.id = id
             self.name = name
             self.rusName = rusName
-            self.nominationId = nominationId
-            self.nominationName = nominationName
-            self.isWin = isWin
             self.isOpen = isOpen
-            self.contestId = contestId
-            self.contestYear = contestYear
             self.iconURL = iconURL
+            self.contests = contests
         }
     }
 

@@ -19,7 +19,7 @@ final class WorkRatingLayoutSpec: ModelLayoutSpec<WorkModel> {
 
         let starString = starText.attributed()
             .font(Fonts.system.regular(size: 13))
-            .foregroundColor(UIColor(rgb: 0xFD8949))
+            .foregroundColor(Colors.ratingColor)
             .make()
 
         let marksString = RussianPluralRule.format(value: model.votes, format: .marks, separator: " ").attributed()

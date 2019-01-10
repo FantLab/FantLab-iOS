@@ -86,6 +86,10 @@ final class WorkViewController: ImageBackedListViewController {
             contentBuilder.onWorkAnalogTap = { [weak self] workId in
                 self?.router.openWork(id: workId)
             }
+
+            contentBuilder.onAwardsTap = { [weak self] work in
+                self?.openAwards(work: work)
+            }
         }
 
         // image background
@@ -133,6 +137,12 @@ final class WorkViewController: ImageBackedListViewController {
     }
 
     // MARK: -
+
+    private func openAwards(work model: WorkModel) {
+        let vc = WorkAwardListViewController(awards: model.awards)
+
+        navigationController?.pushViewController(vc, animated: true)
+    }
 
     private func openAuthors(work model: WorkModel) {
         let openAuthors = model.authors.filter({ $0.isOpened })

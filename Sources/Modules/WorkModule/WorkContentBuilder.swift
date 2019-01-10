@@ -28,6 +28,7 @@ final class WorkContentBuilder {
     var onReviewTap: ((WorkReviewModel) -> Void)?
     var onShowAllReviewsTap: ((WorkModel) -> Void)?
     var onWorkAnalogTap: ((Int) -> Void)?
+    var onAwardsTap: ((WorkModel) -> Void)?
 
     // MARK: -
 
@@ -134,6 +135,12 @@ final class WorkContentBuilder {
                         id: workId + "_awards",
                         layoutSpec: WorkAwardsLayoutSpec(model: data.work.awards)
                     )
+
+                    item.didSelect = { [weak self] cell, _ in
+                        CellSelection.scale(cell: cell, action: {
+                            self?.onAwardsTap?(data.work)
+                        })
+                    }
 
                     items.append(item)
                 }

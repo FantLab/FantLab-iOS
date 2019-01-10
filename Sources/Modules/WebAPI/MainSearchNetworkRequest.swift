@@ -21,10 +21,10 @@ public final class MainSearchNetworkRequest: NetworkRequest {
             throw NetworkError.invalidJSON
         }
 
-        let works = json["works"].jsonArray.map {
+        let works = json.works.array.map {
             SearchResultsModel.WorkModel(
-                id: $0["id"].intValue,
-                name: $0["name"].stringValue.nilIfEmpty ?? $0["name_orig"].stringValue
+                id: $0.id.intValue,
+                name: $0.name.stringValue.nilIfEmpty ?? $0.name_orig.stringValue
             )
         }
 
