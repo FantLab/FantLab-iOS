@@ -61,6 +61,10 @@ final class WorkInteractor {
 
     // MARK: -
 
+    var workURL: URL? {
+        return URL(string: "https://\(Hosts.portal)/work\(workId)")
+    }
+
     func loadWork() {
         if reviewsState.value.isLoading || reviewsState.value.isIdle {
             return

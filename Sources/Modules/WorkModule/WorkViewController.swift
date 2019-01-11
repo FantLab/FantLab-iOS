@@ -134,6 +134,12 @@ final class WorkViewController: ImageBackedListViewController {
 
             interactor.loadWork()
         }
+
+        // share
+
+        do {
+            navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(share))
+        }
     }
 
     // MARK: -
@@ -207,5 +213,16 @@ final class WorkViewController: ImageBackedListViewController {
                     model.notes].compactAndJoin("\n\n")
 
         router.showInteractiveText(text, title: "Описание", headerListItems: [])
+    }
+
+    @objc
+    private func share() {
+        guard let url = interactor.workURL else {
+            return
+        }
+
+        let vc = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+
+        present(vc, animated: true, completion: nil)
     }
 }
