@@ -26,7 +26,7 @@ PODS:
     - YYImage
 
 DEPENDENCIES:
-  - ALLKit (from `https://github.com/geor-kasapidi/ALLKit`, commit `f4b97d421648447e91a54423ac89c90092863ad7`)
+  - ALLKit (from `https://github.com/geor-kasapidi/ALLKit`, commit `c8067d9a446a9f66b95982df69fcc6ec8ceb7bb4`)
   - Crashlytics
   - Fabric
   - RxSwift (= 4.4.0)
@@ -45,12 +45,12 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   ALLKit:
-    :commit: f4b97d421648447e91a54423ac89c90092863ad7
+    :commit: c8067d9a446a9f66b95982df69fcc6ec8ceb7bb4
     :git: https://github.com/geor-kasapidi/ALLKit
 
 CHECKOUT OPTIONS:
   ALLKit:
-    :commit: f4b97d421648447e91a54423ac89c90092863ad7
+    :commit: c8067d9a446a9f66b95982df69fcc6ec8ceb7bb4
     :git: https://github.com/geor-kasapidi/ALLKit
 
 SPEC CHECKSUMS:
@@ -64,6 +64,6 @@ SPEC CHECKSUMS:
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
   YYWebImage: 5f7f36aee2ae293f016d418c7d6ba05c4863e928
 
-PODFILE CHECKSUM: 064f43bd45121c4f6abc46b4c678fda015ecbd6f
+PODFILE CHECKSUM: 73442ee439b341eea9f0c204a805b3ac3917a849
 
 COCOAPODS: 1.5.3
