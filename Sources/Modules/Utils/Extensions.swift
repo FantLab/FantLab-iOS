@@ -29,6 +29,20 @@ extension String {
     public var nilIfEmpty: String? {
         return isEmpty ? nil : self
     }
+
+    public var maybeHasContent: Bool {
+        if count < 10 {
+            return contains(where: {
+                if let unicodeScalar = $0.unicodeScalars.first {
+                    return CharacterSet.alphanumerics.contains(unicodeScalar)
+                }
+
+                return false
+            })
+        }
+
+        return true
+    }
 }
 
 extension Array where Element == String {

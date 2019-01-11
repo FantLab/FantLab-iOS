@@ -45,7 +45,9 @@ final class FLPlainStringBuilder {
             node.children.forEach { child in
                 switch child {
                 case .string(let value):
-                    string.append(value)
+                    if value.maybeHasContent {
+                        string.append(value)
+                    }
                 case .lineBreak:
                     insertLineBreak(&string)
                 case .node(let node):

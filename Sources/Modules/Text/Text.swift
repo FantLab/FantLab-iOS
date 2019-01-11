@@ -171,7 +171,9 @@ private final class FLTextBuilder {
             node.children.forEach { child in
                 switch child {
                 case .string(let string):
-                    textData.string.append(string)
+                    if string.maybeHasContent {
+                        textData.string.append(string)
+                    }
                 case .lineBreak:
                     textData.lineBreaks.append((nil, textData.string.endIndex))
                 case .node(let node):
