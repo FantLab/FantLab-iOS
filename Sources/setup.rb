@@ -168,3 +168,9 @@ def patch_modules(project_name)
 
 	project.save()
 end
+
+if install_modules('Modules', 'Modules.yaml', '11.0')
+	system('bundle exec pod install')
+
+	patch_modules('Modules')
+end
