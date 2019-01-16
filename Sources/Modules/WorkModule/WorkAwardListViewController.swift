@@ -21,7 +21,7 @@ final class WorkAwardListViewController: ListViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = "Награды (\(awards.count))"
+        title = "Премии (\(awards.count))"
 
         DispatchQueue.global().async { [weak self] in
             let items = (self?.awards ?? []).enumerated().flatMap({ (i, award) -> [ListItem] in

@@ -34,7 +34,7 @@ extension String {
         if count < 10 {
             return contains(where: {
                 if let unicodeScalar = $0.unicodeScalars.first {
-                    return CharacterSet.alphanumerics.contains(unicodeScalar)
+                    return CharacterSet.whitespacesAndNewlines.inverted.contains(unicodeScalar)
                 }
 
                 return false
