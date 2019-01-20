@@ -2,33 +2,22 @@ FantLabApp:
   display_name: App
   sources: Modules/App
   dependencies:
-    - FantLabWorkModule
-    - FantLabStyle
-  system_frameworks:
-    - Foundation
-    - UIKit
-FantLabWorkModule:
-  display_name: WorkModule
-  sources: Modules/WorkModule
-  dependencies:
     - FantLabStyle
     - FantLabUtils
     - FantLabModels
     - FantLabText
     - FantLabWebAPI
-    - FantLabTextUI
-    - FantLabSharedUI
+    - FantLabBaseUI
+    - FantLabLayoutSpecs
   system_frameworks:
     - Foundation
     - UIKit
-FantLabTextUI:
-  display_name: TextUI
-  sources: Modules/TextUI
+FantLabBaseUI:
+  display_name: BaseUI
+  sources: Modules/BaseUI
   dependencies:
     - FantLabUtils
     - FantLabStyle
-    - FantLabText
-    - FantLabSharedUI
   system_frameworks:
     - Foundation
     - UIKit
@@ -40,12 +29,14 @@ FantLabText:
   system_frameworks:
     - Foundation
     - UIKit
-FantLabSharedUI:
-  display_name: SharedUI
-  sources: Modules/SharedUI
+FantLabLayoutSpecs:
+  display_name: LayoutSpecs
+  sources: Modules/LayoutSpecs
   dependencies:
     - FantLabUtils
     - FantLabStyle
+    - FantLabModels
+    - FantLabText
   system_frameworks:
     - Foundation
     - UIKit

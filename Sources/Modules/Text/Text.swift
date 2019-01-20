@@ -8,6 +8,7 @@ public final class FLText {
         case hidden(string: NSAttributedString, name: String)
         case quote(NSAttributedString)
         case image(URL)
+        case photo(Int)
         case video(URL)
     }
 
@@ -83,6 +84,8 @@ private final class FLTextBuilder {
             if textData.lineBreaks.count == 2 {
                 items.append(.string(mutableString))
             } else {
+                var photoIndex: Int = 0
+
                 zip(textData.lineBreaks.dropLast(), textData.lineBreaks.dropFirst()).forEach { (x, y) in
                     let nsRange = (x.index..<y.index).nsRange
                     let string = mutableString.attributedSubstring(from: nsRange)
@@ -91,8 +94,14 @@ private final class FLTextBuilder {
                         items.append(.string(string))
                     }
 
-                    if let node = y.node, let item = makeTextItemFromTag(node: node, decorator: decorator) {
-                        items.append(item)
+                    if let node = y.node {
+                        if node.tag.name == "photo" {
+                            photoIndex += 1
+                        }
+
+                        if let item = makeTextItemFromTag(node: node, decorator: decorator, photoIndex: photoIndex) {
+                            items.append(item)
+                        }
                     }
                 }
             }
@@ -101,7 +110,7 @@ private final class FLTextBuilder {
         return items
     }
 
-    private static func makeTextItemFromTag(node: FLTagNode, decorator: TextDecorator) -> FLText.Item? {
+    private static func makeTextItemFromTag(node: FLTagNode, decorator: TextDecorator, photoIndex: Int) -> FLText.Item? {
         let string = FLPlainStringBuilder.makeStringFrom(node: node, tagReplacements: [:])
 
         switch node.tag.name {
@@ -111,6 +120,8 @@ private final class FLTextBuilder {
             }
 
             return nil
+        case "photo":
+            return .photo(photoIndex)
         case "video":
             if let url = URL(string: node.tag.value) {
                 return .video(url)
@@ -157,7 +168,7 @@ private final class FLTextBuilder {
 
     private struct LineBreakTags {
         static let empty = ["br", "hr"]
-        static let withContent = ["img", "video", "h", "spoiler", "q"]
+        static let withContent = ["img", "photo", "video", "h", "spoiler", "q"]
     }
 
     private static func traverse(node: FLTagNode, textData: TextData) {

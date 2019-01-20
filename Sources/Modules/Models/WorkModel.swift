@@ -19,51 +19,6 @@ public final class WorkModel {
         }
     }
 
-    public final class ChildWorkModel {
-        public let id: Int
-        public let name: String
-        public let origName: String
-        public let nameBonus: String
-        public let rating: Float
-        public let votes: Int
-        public let workType: String
-        public let workTypeKey: String
-        public let publishStatus: String
-        public let isPublished: Bool
-        public let year: Int
-        public let deepLevel: Int
-        public let plus: Bool
-
-        public init(id: Int,
-                    name: String,
-                    origName: String,
-                    nameBonus: String,
-                    rating: Float,
-                    votes: Int,
-                    workType: String,
-                    workTypeKey: String,
-                    publishStatus: String,
-                    isPublished: Bool,
-                    year: Int,
-                    deepLevel: Int,
-                    plus: Bool) {
-
-            self.id = id
-            self.name = name
-            self.origName = origName
-            self.nameBonus = nameBonus
-            self.rating = rating
-            self.votes = votes
-            self.workType = workType
-            self.workTypeKey = workTypeKey
-            self.publishStatus = publishStatus
-            self.isPublished = isPublished
-            self.year = year
-            self.deepLevel = deepLevel
-            self.plus = plus
-        }
-    }
-
     public final class ParentWorkModel {
         public let id: Int
         public let name: String
@@ -110,48 +65,6 @@ public final class WorkModel {
         }
     }
 
-    public final class AwardModel {
-        public final class ContestModel {
-            public let id: Int
-            public let year: Int
-            public let name: String
-            public let isWin: Bool
-
-            public init(id: Int,
-                        year: Int,
-                        name: String,
-                        isWin: Bool) {
-
-                self.id = id
-                self.year = year
-                self.name = name
-                self.isWin = isWin
-            }
-        }
-
-        public let id: Int
-        public let name: String
-        public let rusName: String
-        public let isOpen: Bool
-        public let iconURL: URL?
-        public let contests: [ContestModel]
-
-        public init(id: Int,
-                    name: String,
-                    rusName: String,
-                    isOpen: Bool,
-                    iconURL: URL?,
-                    contests: [ContestModel]) {
-
-            self.id = id
-            self.name = name
-            self.rusName = rusName
-            self.isOpen = isOpen
-            self.iconURL = iconURL
-            self.contests = contests
-        }
-    }
-
     public let id: Int
     public let name: String
     public let origName: String
@@ -167,10 +80,10 @@ public final class WorkModel {
     public let notes: String
     public let linguisticAnalysis: [String]
     public let authors: [AuthorModel]
-    public let children: [ChildWorkModel]
+    public let children: ChildWorkList
     public let parents: [[ParentWorkModel]]
     public let classificatory: [GenreGroupModel]
-    public let awards: [AwardModel]
+    public let awards: [AwardPreviewModel]
 
     public init(id: Int,
                 name: String,
@@ -187,10 +100,10 @@ public final class WorkModel {
                 notes: String,
                 linguisticAnalysis: [String],
                 authors: [AuthorModel],
-                children: [ChildWorkModel],
+                children: ChildWorkList,
                 parents: [[ParentWorkModel]],
                 classificatory: [GenreGroupModel],
-                awards: [AwardModel]) {
+                awards: [AwardPreviewModel]) {
 
         self.id = id
         self.name = name

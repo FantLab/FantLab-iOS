@@ -15,7 +15,7 @@ private protocol CharacterHandler {
 
 private struct Consts {
     static let singleHTMLTags: Set<String> = ["img", "hr", "br"]
-    static let singleBBTags: Set<String> = ["*", "video"]
+    static let singleBBTags: Set<String> = ["*", "photo", "video"]
 }
 
 private final class HTMLTagCharacterHandler: CharacterHandler {

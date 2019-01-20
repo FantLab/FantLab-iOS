@@ -24,19 +24,6 @@ public final class GetWorkReviewsNetworkRequest: NetworkRequest {
             throw NetworkError.invalidJSON
         }
 
-        return json.items.array.map {
-            WorkReviewModel(
-                id: $0.response_id.intValue,
-                date: Date.from(string: $0.response_date.stringValue, format: "yyyy-MM-dd HH:mm:ss"),
-                text: $0.response_text.stringValue,
-                votes: $0.response_votes.intValue,
-                mark: $0.mark.intValue,
-                user: WorkReviewModel.UserModel(
-                    id: $0.user_id.intValue,
-                    name: $0.user_name.stringValue,
-                    avatar: URL.from(string: $0.user_avatar.stringValue)
-                )
-            )
-        }
+        return JSONConverter.makeWorkReviewsFrom(json: json)
     }
 }

@@ -2,11 +2,12 @@ import Foundation
 import UIKit
 import RxSwift
 import ALLKit
-import FantLabSharedUI
 import FantLabWebAPI
 import FantLabModels
 import FantLabUtils
 import FantLabStyle
+import FantLabBaseUI
+import FantLabLayoutSpecs
 
 final class SearchViewController: ListViewController, UISearchResultsUpdating {
     private let searchSubject = PublishSubject<String>()
@@ -14,8 +15,6 @@ final class SearchViewController: ListViewController, UISearchResultsUpdating {
     deinit {
         searchSubject.onCompleted()
     }
-
-    var openWork: ((Int) -> Void)?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,7 +38,7 @@ final class SearchViewController: ListViewController, UISearchResultsUpdating {
         do {
             searchSubject
                 .debounce(0.5, scheduler: MainScheduler.instance)
-                .flatMapLatest({ searchText -> Observable<SearchResultsModel> in
+                .flatMapLatest({ searchText -> Observable<[WorkPreviewModel]> in
                     return NetworkClient.shared.perform(request: MainSearchNetworkRequest(searchText: searchText))
                 })
                 .observeOn(SerialDispatchQueueScheduler(qos: .default))
@@ -60,19 +59,21 @@ final class SearchViewController: ListViewController, UISearchResultsUpdating {
 
     // MARK: -
 
-    private func makeListItemsFrom(searchResults: SearchResultsModel) -> [ListItem] {
+    private func makeListItemsFrom(searchResults: [WorkPreviewModel]) -> [ListItem] {
         var items: [ListItem] = []
 
-        searchResults.works.forEach { workModel in
+        searchResults.forEach { workModel in
             let id = String(workModel.id)
 
             let item = ListItem(
                 id: id,
-                layoutSpec: SearchResultsWorkLayoutSpec(model: workModel)
+                layoutSpec: WorkPreviewLayoutSpec(model: workModel)
             )
 
-            item.didSelect = { [weak self] _, _ in
-                self?.openWork?(workModel.id)
+            item.didSelect = { [weak self] cell, _ in
+                CellSelection.scale(cell: cell, action: {
+                    self?.openWork(id: workModel.id)
+                })
             }
 
             items.append(item)
@@ -82,22 +83,10 @@ final class SearchViewController: ListViewController, UISearchResultsUpdating {
 
         return items
     }
-}
 
-private final class SearchResultsWorkLayoutSpec: ModelLayoutSpec<SearchResultsModel.WorkModel> {
-    override func makeNodeFrom(model: SearchResultsModel.WorkModel, sizeConstraints: SizeConstraints) -> LayoutNode {
-        let string = model.name.attributed()
-            .font(Fonts.system.medium(size: 15))
-            .foregroundColor(UIColor.black)
-            .make()
+    private func openWork(id: Int) {
+        let vc = WorkViewController(workId: id)
 
-        let textNode = LayoutNode(sizeProvider: string, config: { node in
-            node.margin(all: 16)
-        }) { (label: UILabel, _) in
-            label.numberOfLines = 0
-            label.attributedText = string
-        }
-
-        return LayoutNode(children: [textNode])
+        navigationController?.pushViewController(vc, animated: true)
     }
 }

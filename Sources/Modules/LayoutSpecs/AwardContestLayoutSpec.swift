@@ -1,0 +1,53 @@
+import Foundation
+import UIKit
+import ALLKit
+import YYWebImage
+import FantLabModels
+import FantLabUtils
+import FantLabStyle
+
+public final class AwardContestLayoutSpec: ModelLayoutSpec<AwardPreviewModel.ContestModel> {
+    public override func makeNodeFrom(model: AwardPreviewModel.ContestModel, sizeConstraints: SizeConstraints) -> LayoutNode {
+        let workNameText = model.workName.nilIfEmpty.flatMap({ "«" + $0 + "»" }) ?? ""
+
+        let nameString = [String(model.year), model.name, workNameText].compactAndJoin(" - ").attributed()
+            .font(Fonts.system.regular(size: 13))
+            .foregroundColor(UIColor.gray)
+            .make()
+
+        let winString: NSAttributedString
+
+        if model.isWin {
+            winString = "★".attributed()
+                .font(Fonts.system.regular(size: 13))
+                .foregroundColor(Colors.ratingColor)
+                .make()
+        } else {
+            winString = "☆".attributed()
+                .font(Fonts.system.regular(size: 13))
+                .foregroundColor(UIColor.lightGray)
+                .make()
+        }
+
+        let nameNode = LayoutNode(sizeProvider: nameString, config: { node in
+            node.flex = 1
+        }) { (label: UILabel, _) in
+            label.numberOfLines = 0
+            label.attributedText = nameString
+        }
+
+        let winNode = LayoutNode(sizeProvider: winString, config: { node in
+            node.marginLeft = 24
+        }) { (label: UILabel, _) in
+            label.attributedText = winString
+        }
+
+        let contentNode = LayoutNode(children: [nameNode, winNode], config: { node in
+            node.flexDirection = .row
+            node.alignItems = .center
+            node.padding(top: nil, left: 56, bottom: 16, right: 16)
+        })
+
+        return contentNode
+    }
+}

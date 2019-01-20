@@ -2,9 +2,7 @@ import UIKit
 import Fabric
 import Crashlytics
 import FantLabStyle
-import FantLabTextUI
-import FantLabSharedUI
-import FantLabWorkModule
+import FantLabBaseUI
 
 public func runApp() {
     UIApplicationMain(CommandLine.argc,
@@ -15,15 +13,15 @@ public func runApp() {
 
 private final class Application: UIApplication {}
 
-private final class AppDelegate: UIResponder, UIApplicationDelegate {
+private final class AppDelegate: UIResponder, UIApplicationDelegate, UINavigationControllerDelegate {
     var window: UIWindow?
-
-    private let router = AppRouter()
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         window = UIWindow()
+        let rootNC = UINavigationController()
+        rootNC.delegate = self
+        
         do {
-            let rootNC = router.rootNavigationController
             let imageVC = ImageBackgroundViewController()
             imageVC.addChild(rootNC)
             imageVC.contentView.addSubview(rootNC.view)
@@ -42,13 +40,12 @@ private final class AppDelegate: UIResponder, UIApplicationDelegate {
         Fabric.with([Crashlytics.self])
         #endif
 
-        let searchController = SearchViewController()
-        searchController.openWork = { [weak self] workId in
-            self?.router.openWork(id: workId)
-        }
-
-        router.rootNavigationController.pushViewController(searchController, animated: true)
+        rootNC.pushViewController(SearchViewController(), animated: true)
 
         return true
+    }
+
+    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+        viewController.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
     }
 }

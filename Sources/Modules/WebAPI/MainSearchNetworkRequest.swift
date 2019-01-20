@@ -3,7 +3,7 @@ import FantLabUtils
 import FantLabModels
 
 public final class MainSearchNetworkRequest: NetworkRequest {
-    public typealias ModelType = SearchResultsModel
+    public typealias ModelType = [WorkPreviewModel]
 
     private let searchText: String
 
@@ -16,18 +16,11 @@ public final class MainSearchNetworkRequest: NetworkRequest {
         return URLRequest(url: URL(string: "https://\(Hosts.api)/search-txt?q=\(text)")!)
     }
 
-    public func parse(response: URLResponse, data: Data) throws -> SearchResultsModel {
+    public func parse(response: URLResponse, data: Data) throws -> [WorkPreviewModel] {
         guard let json = JSON(jsonData: data) else {
             throw NetworkError.invalidJSON
         }
 
-        let works = json.works.array.map {
-            SearchResultsModel.WorkModel(
-                id: $0.id.intValue,
-                name: $0.name.stringValue.nilIfEmpty ?? $0.name_orig.stringValue
-            )
-        }
-
-        return SearchResultsModel(works: works)
+        return JSONConverter.makeWorkPreviewsFrom(json: json.works)
     }
 }

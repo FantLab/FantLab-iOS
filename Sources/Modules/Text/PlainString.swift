@@ -20,6 +20,7 @@ struct TagReplacements {
         "br": .lineBreak,
         "hr": .lineBreak,
         "img": .string("ИЗОБРАЖЕНИЕ"),
+        "photo": .string("ИЗОБРАЖЕНИЕ"),
         "video": .string("ВИДЕО"),
         "h": .string("СКРЫТЫЙ ТЕКСТ"),
         "spoiler": .string("СПОЙЛЕР")
