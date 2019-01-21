@@ -160,6 +160,12 @@ final class JSONConverter {
             bio: json.biography.stringValue,
             notes: json.biography_notes.stringValue,
             compiler: json.compiler.stringValue,
+            sites: json.sites.array.map({
+                AuthorModel.SiteModel(
+                    link: $0.site.stringValue,
+                    title: $0.descr.stringValue
+                )
+            }),
             awards: makeAwardListFrom(json: json.awards.win.array + json.awards.nom.array),
             workBlocks: ChildWorkList((json.cycles_blocks.keys.map({ json.cycles_blocks[$0] }) + json.works_blocks.keys.map({ json.works_blocks[$0] })).flatMap(makeWorksBlockFrom))
         )

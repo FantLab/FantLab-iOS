@@ -51,30 +51,33 @@ final class AuthorContentBuilder {
             items.append(item)
         }
 
-        // sections
-
-        var sections: [SectionModel] = []
+        // bio
 
         let info = [data.author.bio, data.author.notes].compactAndJoin("\n")
 
         if !info.isEmpty {
-            let section = SectionModel(name: "Биография", count: 0) {
-                let item = ListItem(
-                    id: "author_bio",
-                    layoutSpec: FLTextPreviewLayoutSpec(model: info)
-                )
+            items.append(ListItem(
+                id: "author_bio_sep",
+                layoutSpec: ItemSeparatorLayoutSpec(model: Colors.separatorColor)
+            ))
 
-                item.didSelect = { [weak self] cell, _ in
-                    CellSelection.scale(cell: cell, action: {
-                        self?.onDescriptionTap?(data.author)
-                    })
-                }
+            let item = ListItem(
+                id: "author_bio",
+                layoutSpec: FLTextPreviewLayoutSpec(model: info)
+            )
 
-                items.append(item)
+            item.didSelect = { [weak self] cell, _ in
+                CellSelection.scale(cell: cell, action: {
+                    self?.onDescriptionTap?(data.author)
+                })
             }
 
-            sections.append(section)
+            items.append(item)
         }
+
+        // sections
+
+        var sections: [SectionModel] = []
 
         if !data.author.awards.isEmpty {
             let section = SectionModel(name: "Премии", count: data.author.awards.count) {

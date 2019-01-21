@@ -1,6 +1,18 @@
 import Foundation
 
 public final class AuthorModel {
+    public final class SiteModel {
+        public let link: String
+        public let title: String
+
+        public init(link: String,
+                    title: String) {
+
+            self.link = link
+            self.title = title
+        }
+    }
+
     public let id: Int
     public let isOpened: Bool
     public let name: String
@@ -14,6 +26,7 @@ public final class AuthorModel {
     public let bio: String
     public let notes: String
     public let compiler: String
+    public let sites: [SiteModel]
     public let awards: [AwardPreviewModel]
     public let workBlocks: ChildWorkList
 
@@ -30,6 +43,7 @@ public final class AuthorModel {
                 bio: String,
                 notes: String,
                 compiler: String,
+                sites: [SiteModel],
                 awards: [AwardPreviewModel],
                 workBlocks: ChildWorkList) {
 
@@ -46,6 +60,7 @@ public final class AuthorModel {
         self.bio = bio
         self.notes = notes
         self.compiler = compiler
+        self.sites = sites
         self.awards = awards
         self.workBlocks = workBlocks
     }
