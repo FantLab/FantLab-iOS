@@ -75,6 +75,32 @@ final class AuthorContentBuilder {
             items.append(item)
         }
 
+        data.author.sites.enumerated().forEach { (index, webSite) in
+            guard let url = URL(string: webSite.link), !webSite.title.isEmpty else {
+                return
+            }
+
+            let id = "website_\(index)"
+
+            items.append(ListItem(
+                id: id + "_sep",
+                layoutSpec: ItemSeparatorLayoutSpec(model: Colors.separatorColor)
+            ))
+
+            let item = ListItem(
+                id: id,
+                layoutSpec: AuthorWebSiteLayoutSpec(model: webSite)
+            )
+
+            item.didSelect = { cell, _ in
+                CellSelection.scale(cell: cell, action: {
+                    print(url)
+                })
+            }
+
+            items.append(item)
+        }
+
         // sections
 
         var sections: [SectionModel] = []

@@ -20,7 +20,7 @@ public final class AuthorHeaderLayoutSpec: ModelLayoutSpec<AuthorModel> {
 
             if !otherNamesText.isEmpty {
                 otherNamesString = otherNamesText.attributed()
-                    .font(Fonts.system.medium(size: 11))
+                    .font(Fonts.system.medium(size: 12))
                     .foregroundColor(UIColor.lightGray)
                     .make()
             } else {
@@ -34,7 +34,7 @@ public final class AuthorHeaderLayoutSpec: ModelLayoutSpec<AuthorModel> {
 
             if !dateText.isEmpty {
                 dateString = dateText.attributed()
-                    .font(Fonts.system.medium(size: 12))
+                    .font(Fonts.system.medium(size: 10))
                     .foregroundColor(UIColor.gray)
                     .make()
             } else {
