@@ -2,8 +2,13 @@ import Foundation
 import UIKit
 import YYWebImage
 import FantLabUtils
+import FantLabStyle
 
 public final class ImageBackgroundViewController: UIViewController {
+    public override var preferredStatusBarStyle: UIStatusBarStyle {
+        return Appearance.statusBarStyle
+    }
+
     private let imageView = UIImageView()
 
     public override func viewDidLoad() {

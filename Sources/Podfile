@@ -15,7 +15,7 @@ inhibit_all_warnings!
 def all_pods
 	pod 'RxSwift', '4.4.0'
     pod 'YYWebImage', '1.0.5'
-    pod 'ALLKit', :git => 'https://github.com/geor-kasapidi/ALLKit', :commit => 'c8067d9a446a9f66b95982df69fcc6ec8ceb7bb4'
+    pod 'ALLKit', :git => 'https://github.com/geor-kasapidi/ALLKit', :commit => '2a951b6992d527ff8470dc3454db2e6cabfd15ee'
     pod 'Fabric'
     pod 'Crashlytics'
 end

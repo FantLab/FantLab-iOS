@@ -21,6 +21,8 @@ private final class AppDelegate: UIResponder, UIApplicationDelegate, UINavigatio
         let rootNC = UINavigationController()
         rootNC.delegate = self
         
+        Appearance.setup(navigationBar: rootNC.navigationBar)
+        
         do {
             let imageVC = ImageBackgroundViewController()
             imageVC.addChild(rootNC)
@@ -32,8 +34,6 @@ private final class AppDelegate: UIResponder, UIApplicationDelegate, UINavigatio
         window?.makeKeyAndVisible()
 
         window?.tintColor = Colors.flBlue
-
-        Appearance.setup()
 
         #if DEBUG
         #else

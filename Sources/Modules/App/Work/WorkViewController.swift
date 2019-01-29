@@ -88,6 +88,10 @@ final class WorkViewController: ImageBackedListViewController {
             contentBuilder.onAwardsTap = { [weak self] work in
                 self?.openAwards(work: work)
             }
+
+            contentBuilder.onEditionsTap = { [weak self] work in
+                self?.openEditions(work: work)
+            }
         }
 
         // image background
@@ -142,6 +146,12 @@ final class WorkViewController: ImageBackedListViewController {
 
     // MARK: -
 
+    private func openEditions(work model: WorkModel) {
+        let vc = EditionListViewController(editionBlocks: model.editionBlocks)
+
+        navigationController?.pushViewController(vc, animated: true)
+    }
+
     private func openWork(id: Int) {
         let vc = WorkViewController(workId: id)
 
@@ -149,7 +159,7 @@ final class WorkViewController: ImageBackedListViewController {
     }
 
     private func openAwards(work model: WorkModel) {
-        let vc = WorkAwardListViewController(awards: model.awards)
+        let vc = AwardListViewController(awards: model.awards)
 
         navigationController?.pushViewController(vc, animated: true)
     }

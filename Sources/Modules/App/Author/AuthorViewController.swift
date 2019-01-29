@@ -104,7 +104,7 @@ final class AuthorViewController: ImageBackedListViewController {
     }
 
     private func openAwards(author model: AuthorModel) {
-        let vc = WorkAwardListViewController(awards: model.awards)
+        let vc = AwardListViewController(awards: model.awards)
 
         navigationController?.pushViewController(vc, animated: true)
     }

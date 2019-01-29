@@ -85,6 +85,7 @@ public final class WorkPreviewLayoutSpec: ModelLayoutSpec<WorkPreviewModel> {
         let coverNode = LayoutNode(config: { node in
             node.height = 80
             node.width = 60
+            node.alignSelf = .flexStart
         }) { (view: UIImageView, _) in
             view.clipsToBounds = true
             view.contentMode = .scaleAspectFit

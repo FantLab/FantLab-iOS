@@ -84,6 +84,7 @@ public final class WorkModel {
     public let parents: [[ParentWorkModel]]
     public let classificatory: [GenreGroupModel]
     public let awards: [AwardPreviewModel]
+    public let editionBlocks: [EditionBlockModel]
 
     public init(id: Int,
                 name: String,
@@ -103,7 +104,8 @@ public final class WorkModel {
                 children: ChildWorkList,
                 parents: [[ParentWorkModel]],
                 classificatory: [GenreGroupModel],
-                awards: [AwardPreviewModel]) {
+                awards: [AwardPreviewModel],
+                editionBlocks: [EditionBlockModel]) {
 
         self.id = id
         self.name = name
@@ -124,5 +126,6 @@ public final class WorkModel {
         self.parents = parents
         self.classificatory = classificatory
         self.awards = awards
+        self.editionBlocks = editionBlocks
     }
 }

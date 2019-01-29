@@ -63,7 +63,32 @@ final class JSONConverter {
                     })
                 )
             }),
-            awards: makeAwardListFrom(json: json.awards.win.array + json.awards.nom.array)
+            awards: makeAwardListFrom(json: json.awards.win.array + json.awards.nom.array),
+            editionBlocks: makeEditionBlocksFrom(json: json.editions_blocks)
+        )
+    }
+
+    static func makeEditionBlocksFrom(json: JSON) -> [EditionBlockModel] {
+        return json.keys.sorted().map { key -> EditionBlockModel in
+            makeEditionBlockFrom(json: json[key])
+        }
+    }
+
+    static func makeEditionBlockFrom(json: JSON) -> EditionBlockModel {
+        return EditionBlockModel(
+            type: json.name.stringValue,
+            title: json.title.stringValue,
+            list: json.list.array.map({
+                EditionPreviewModel(
+                    id: $0.edition_id.intValue,
+                    langCode: $0.lang_code.stringValue,
+                    year: $0.year.intValue,
+                    coverURL: URL.from(string: "/images/editions/big/\($0.edition_id.intValue)", defaultHost: Hosts.data),
+                    correctLevel: $0.correct_level.floatValue
+                )
+            }).sorted(by: { (x, y) -> Bool in
+                x.year > y.year
+            })
         )
     }
 
@@ -217,5 +242,38 @@ final class JSONConverter {
 
             makeAuthorChildWorksFrom(json: $0.children, storage: &storage)
         }
+    }
+
+    static func makeEditionFrom(json: JSON) -> EditionModel {
+        var isbn = json.isbns[0].stringValue
+
+        // 978-2-2-07-25804-0 [<small>2-207-25804-1</small>]
+        isbn = isbn.split(separator: " ").first.flatMap({ String($0) }) ?? isbn
+
+        var format = json.format.stringValue
+        format = format == "0" ? "" : format
+
+        let publisher = json.creators.publishers.array.map({ $0.name.stringValue }).compactAndJoin(" ")
+
+        return EditionModel(
+            id: json.edition_id.intValue,
+            name: json.edition_name.stringValue,
+            image: URL.from(string: json.image.stringValue),
+            correctLevel: json.correct_level.floatValue,
+            year: json.year.intValue,
+            planDate: json.plan_date.stringValue,
+            type: json.edition_type.stringValue,
+            copies: json.copies.intValue,
+            pages: json.pages.intValue,
+            coverType: json.cover_type.stringValue,
+            publisher: publisher,
+            format: format,
+            isbn: isbn,
+            lang: json.lang.stringValue,
+            content: json.content.array.map({ $0.stringValue }),
+            description: json["description"].stringValue,
+            notes: json.notes.stringValue,
+            planDescription: json.plan_description.stringValue
+        )
     }
 }

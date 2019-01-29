@@ -10,7 +10,7 @@ import FantLabBaseUI
 import FantLabLayoutSpecs
 
 final class TextListViewController: ListViewController {
-    private static let textDecorator: TextDecorator = {
+    static let textDecorator: TextDecorator = {
         let defaultParagraphStyle = NSMutableParagraphStyle()
         defaultParagraphStyle.alignment = .left
         defaultParagraphStyle.lineSpacing = 4
@@ -72,6 +72,8 @@ final class TextListViewController: ListViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        adapter.set(items: [ListItem(id: UUID().uuidString, layoutSpec: SpinnerLayoutSpec())])
 
         let hiddenTextObservable = hiddenTextSubject.scan(into: Set<Int>()) {
             $0.insert($1)

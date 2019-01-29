@@ -13,8 +13,8 @@ final class AuthorContentBuilder {
     }
 
     private struct SectionModel {
-        let name: String
-        let count: Int
+        let layoutModel: ListSectionTitleLayoutModel
+        let tapAction: (() -> Void)?
         let makeListItems: () -> Void
     }
 
@@ -106,26 +106,36 @@ final class AuthorContentBuilder {
         var sections: [SectionModel] = []
 
         if !data.author.awards.isEmpty {
-            let section = SectionModel(name: "Премии", count: data.author.awards.count) {
-                let item = ListItem(
-                    id: "author_awards",
-                    layoutSpec: AwardIconsLayoutSpec(model: data.author.awards)
-                )
+            let section = SectionModel(layoutModel: ListSectionTitleLayoutModel(
+                title: "Премии",
+                count: data.author.awards.count,
+                hasArrow: true
+                ), tapAction: ({ [weak self] in
+                    self?.onAwardsTap?(data.author)
+                })) {
+                    let item = ListItem(
+                        id: "author_awards",
+                        layoutSpec: AwardIconsLayoutSpec(model: data.author.awards)
+                    )
 
-                item.didSelect = { [weak self] cell, _ in
-                    CellSelection.scale(cell: cell, action: {
-                        self?.onAwardsTap?(data.author)
-                    })
-                }
+                    item.didSelect = { [weak self] cell, _ in
+                        CellSelection.scale(cell: cell, action: {
+                            self?.onAwardsTap?(data.author)
+                        })
+                    }
 
-                items.append(item)
+                    items.append(item)
             }
 
             sections.append(section)
         }
 
         if data.contentRoot.count > 0 {
-            let section = SectionModel(name: "Произведения", count: 0) {
+            let section = SectionModel(layoutModel: ListSectionTitleLayoutModel(
+                title: "Произведения",
+                count: 0,
+                hasArrow: false
+            ), tapAction: nil) {
                 data.contentRoot.traverseContent { node in
                     guard let work = node.model else {
                         return
@@ -175,14 +185,22 @@ final class AuthorContentBuilder {
 
         sections.enumerated().forEach { (index, section) in
             items.append(ListItem(
-                id: section.name + "_separator",
+                id: section.layoutModel.title + "_separator",
                 layoutSpec: EmptySpaceLayoutSpec(model: (Colors.perfectGray, 8))
             ))
 
-            items.append(ListItem(
-                id: section.name + "_title",
-                layoutSpec: ListSectionTitleLayoutSpec(model: (section.name, section.count))
-            ))
+            let titleItem = ListItem(
+                id: section.layoutModel.title + "_title",
+                layoutSpec: ListSectionTitleLayoutSpec(model: section.layoutModel)
+            )
+
+            if let tapAction = section.tapAction {
+                titleItem.didSelect = { (cell, _) in
+                    CellSelection.scale(cell: cell, action: tapAction)
+                }
+            }
+
+            items.append(titleItem)
 
             section.makeListItems()
         }

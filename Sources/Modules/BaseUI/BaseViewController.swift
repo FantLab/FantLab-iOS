@@ -1,6 +1,7 @@
 import Foundation
 import UIKit
 import RxSwift
+import FantLabStyle
 
 open class BaseViewController: UIViewController {
     public let disposeBag = DisposeBag()

@@ -29,7 +29,9 @@ final class SearchViewController: ListViewController, UISearchResultsUpdating {
             let searchController = UISearchController(searchResultsController: nil)
             searchController.searchResultsUpdater = self
             searchController.obscuresBackgroundDuringPresentation = false
-            searchController.searchBar.placeholder = "Поиск произведений"
+            searchController.searchBar.placeholder = "Поиск"
+
+            Appearance.setup(searchBar: searchController.searchBar)
 
             navigationItem.searchController = searchController
             navigationItem.hidesSearchBarWhenScrolling = false
@@ -55,6 +57,15 @@ final class SearchViewController: ListViewController, UISearchResultsUpdating {
 
     func updateSearchResults(for searchController: UISearchController) {
         searchSubject.onNext(searchController.searchBar.text ?? "")
+    }
+
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+
+        navigationItem.searchController.flatMap({
+            $0.view.setNeedsLayout()
+            $0.view.layoutIfNeeded()
+        })
     }
 
     // MARK: -

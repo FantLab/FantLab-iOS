@@ -8,6 +8,7 @@ import FantLabModels
 import FantLabText
 import FantLabBaseUI
 import FantLabLayoutSpecs
+import FantLabStyle
 
 final class WorkReviewsViewController: ListViewController {
     private let interactor: WorkReviewsInteractor
@@ -40,6 +41,7 @@ final class WorkReviewsViewController: ListViewController {
         do {
             sortSelectionControl.backgroundColor = UIColor.white
             sortSelectionControl.selectedSegmentIndex = 2
+            Appearance.setup(segmentedControl: sortSelectionControl)
             view.addSubview(sortSelectionControl)
             sortSelectionControl.pinEdges(to: view.safeAreaLayoutGuide, top: 8, left: 16, bottom: .nan, right: 16)
         }

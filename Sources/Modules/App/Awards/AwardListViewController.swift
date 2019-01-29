@@ -6,7 +6,7 @@ import FantLabStyle
 import FantLabBaseUI
 import FantLabLayoutSpecs
 
-final class WorkAwardListViewController: ListViewController {
+final class AwardListViewController: ListViewController {
     private let awards: [AwardPreviewModel]
 
     init(awards: [AwardPreviewModel]) {

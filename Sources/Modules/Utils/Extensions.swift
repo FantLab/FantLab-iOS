@@ -23,9 +23,7 @@ extension String {
     public func capitalizedFirstLetter() -> String {
         return isEmpty ? "" : prefix(1).capitalized + dropFirst()
     }
-}
 
-extension String {
     public var nilIfEmpty: String? {
         return isEmpty ? nil : self
     }
@@ -168,6 +166,24 @@ extension UIScreen {
 }
 
 extension UIImage {
+    public static func from(color: UIColor, size: CGSize = CGSize(width: 1, height: 1), cornerRadius: CGFloat = 0) -> UIImage {
+        let rect = CGRect(origin: .zero, size: size)
+
+        let renderer = UIGraphicsImageRenderer(bounds: rect)
+
+        return renderer.image { context in
+            color.setFill()
+
+            if cornerRadius > 0 {
+                UIBezierPath(roundedRect: rect, cornerRadius: cornerRadius).addClip()
+            }
+
+            context.fill(rect)
+        }
+    }
+}
+
+extension UIImage {
     public func with(orientation: UIImage.Orientation) -> UIImage? {
         guard let cgImage = cgImage else {
             return nil
@@ -186,5 +202,23 @@ extension ListItem {
 extension UIViewController {
     public func parentVC<T: UIViewController>() -> T? {
         return (parent as? T) ?? parent?.parentVC()
+    }
+}
+
+extension UIView {
+    public func findChild<T>() -> T? {
+        var queue: [UIView] = subviews
+
+        while !queue.isEmpty {
+            let nextView = queue.removeLast()
+
+            if nextView is T {
+                return nextView as? T
+            }
+
+            queue = nextView.subviews + queue
+        }
+
+        return nil
     }
 }
