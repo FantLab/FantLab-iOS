@@ -38,17 +38,19 @@ private final class EditionListView: UIView {
         adapter.set(sizeConstraints: SizeConstraints(width: bounds.height * 0.75, height: bounds.height))
     }
 
+    var openEdition: ((Int) -> Void)?
+
     func set(editions: [EditionPreviewModel]) {
         DispatchQueue.global().async { [weak self] in
-            let items: [ListItem] = editions.enumerated().map({
+            let items: [ListItem] = editions.enumerated().map({ (index, edition) in
                 let item = ListItem(
-                    id: String($0.offset),
-                    layoutSpec: EditionPreviewLayoutSpec(model: $0.element)
+                    id: String(index),
+                    layoutSpec: EditionPreviewLayoutSpec(model: edition)
                 )
 
                 item.didSelect = { (cell, _) in
                     CellSelection.scale(cell: cell, action: {
-                        // TODO:
+                        self?.openEdition?(edition.id)
                     })
                 }
 
@@ -62,12 +64,13 @@ private final class EditionListView: UIView {
     }
 }
 
-public final class EditionListLayoutSpec: ModelLayoutSpec<[EditionPreviewModel]> {
-    public override func makeNodeFrom(model: [EditionPreviewModel], sizeConstraints: SizeConstraints) -> LayoutNode {
+public final class EditionListLayoutSpec: ModelLayoutSpec<([EditionPreviewModel], ((Int) -> Void)?)> {
+    public override func makeNodeFrom(model: ([EditionPreviewModel], ((Int) -> Void)?), sizeConstraints: SizeConstraints) -> LayoutNode {
         let listNode = LayoutNode(config: { node in
             node.height = 150
         }) { (view: EditionListView, _) in
-            view.set(editions: model)
+            view.openEdition = model.1
+            view.set(editions: model.0)
         }
 
         return listNode

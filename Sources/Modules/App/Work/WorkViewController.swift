@@ -92,6 +92,10 @@ final class WorkViewController: ImageBackedListViewController {
             contentBuilder.onEditionsTap = { [weak self] work in
                 self?.openEditions(work: work)
             }
+
+            contentBuilder.onEditionTap = { [weak self] editionId in
+                self?.openEdition(id: editionId)
+            }
         }
 
         // image background
@@ -208,10 +212,14 @@ final class WorkViewController: ImageBackedListViewController {
 
     private func openDescriptionAndNotes(work model: WorkModel) {
         let string = [model.descriptionText,
-                    model.descriptionAuthor,
-                    model.notes].compactAndJoin("\n\n")
+                      model.descriptionAuthor,
+                      model.notes].compactAndJoin("\n\n")
 
         AppRouter.shared.openText(title: "Описание", string: string, customHeaderListItems: [], makePhotoURL: nil)
+    }
+
+    private func openEdition(id: Int) {
+        AppRouter.shared.openEdition(id: id)
     }
 
     @objc

@@ -31,6 +31,7 @@ final class WorkContentBuilder {
     var onWorkAnalogTap: ((Int) -> Void)?
     var onAwardsTap: ((WorkModel) -> Void)?
     var onEditionsTap: ((WorkModel) -> Void)?
+    var onEditionTap: ((Int) -> Void)?
 
     // MARK: -
 
@@ -166,7 +167,9 @@ final class WorkContentBuilder {
                     })) {
                         let item = ListItem(
                             id: workId + "_editions",
-                            layoutSpec: EditionListLayoutSpec(model: editionList)
+                            layoutSpec: EditionListLayoutSpec(model: (editionList, ({ [weak self] editionId in
+                                self?.onEditionTap?(editionId)
+                            })))
                         )
 
                         items.append(item)
