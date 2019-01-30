@@ -15,20 +15,9 @@ public final class WorkHeaderLayoutSpec: ModelLayoutSpec<WorkModel> {
 
         do {
             let nameText = model.name.nilIfEmpty ?? model.origName
-            let nameLength = nameText.count
-
-            let nameFontSize: CGFloat
-
-            if nameLength < 30 {
-                nameFontSize = 22
-            } else if nameLength < 50 {
-                nameFontSize = 20
-            } else {
-                nameFontSize = 18
-            }
 
             nameString = nameText.attributed()
-                .font(Fonts.system.bold(size: nameFontSize))
+                .font(Fonts.system.bold(size: TitleFontSizeRule.fontSizeFor(length: nameText.count)))
                 .foregroundColor(UIColor.black)
                 .make()
 

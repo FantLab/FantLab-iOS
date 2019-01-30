@@ -11,10 +11,6 @@ public final class EditionPropertiesLayoutSpec: ModelLayoutSpec<EditionModel> {
 
         var properties: [(String, String)] = []
 
-        if !model.type.isEmpty {
-            properties.append(("Тип", model.type))
-        }
-
         if !model.lang.isEmpty {
             properties.append(("Язык", model.lang))
         }

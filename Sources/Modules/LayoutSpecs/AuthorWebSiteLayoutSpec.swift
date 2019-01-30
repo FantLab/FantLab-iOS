@@ -7,7 +7,7 @@ import FantLabStyle
 public final class AuthorWebSiteLayoutSpec: ModelLayoutSpec<AuthorModel.SiteModel> {
     public override func makeNodeFrom(model: AuthorModel.SiteModel, sizeConstraints: SizeConstraints) -> LayoutNode {
         let nameString = model.title.capitalizedFirstLetter().attributed()
-            .font(Fonts.system.medium(size: 14))
+            .font(Fonts.system.regular(size: 15))
             .foregroundColor(Colors.flBlue)
             .make()
 

@@ -1,6 +1,8 @@
 import UIKit.UIColor
 
 public struct RatingColorRule {
+    private init() {}
+    
     public static func colorFor(rating: Float) -> UIColor {
         if rating < 5 {
             return UIColor(rgb: 0xFF3B30)

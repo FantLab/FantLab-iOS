@@ -43,7 +43,7 @@ final class AuthorContentBuilder {
     private func makeListItemsFrom(data: AuthorInteractor.DataModel) -> [ListItem] {
         var items: [ListItem] = []
 
-        // header
+        // хедер
 
         do {
             let item = ListItem(id: "author_header", layoutSpec: AuthorHeaderLayoutSpec(model: data.author))
@@ -51,7 +51,7 @@ final class AuthorContentBuilder {
             items.append(item)
         }
 
-        // bio
+        // биография
 
         let info = [data.author.bio, data.author.notes].compactAndJoin("\n")
 
@@ -74,6 +74,8 @@ final class AuthorContentBuilder {
 
             items.append(item)
         }
+
+        // сайты
 
         data.author.sites.enumerated().forEach { (index, webSite) in
             guard let url = URL(string: webSite.link), !webSite.title.isEmpty else {

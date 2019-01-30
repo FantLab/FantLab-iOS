@@ -77,9 +77,7 @@ final class WorkContentBuilder {
             )
 
             item.didSelect = { [weak self] cell, _ in
-                CellSelection.alpha(cell: cell, action: {
-                    self?.onHeaderTap?(data.work)
-                })
+                self?.onHeaderTap?(data.work)
             }
 
             items.append(item)

@@ -11,8 +11,10 @@ public final class AuthorHeaderLayoutSpec: ModelLayoutSpec<AuthorModel> {
         let dateString: NSAttributedString?
 
         do {
-            nameString = (model.name.nilIfEmpty ?? model.origName).attributed()
-                .font(Fonts.system.bold(size: 22))
+            let nameText = model.name.nilIfEmpty ?? model.origName
+
+            nameString = nameText.attributed()
+                .font(Fonts.system.bold(size: TitleFontSizeRule.fontSizeFor(length: nameText.count)))
                 .foregroundColor(UIColor.black)
                 .make()
 
@@ -34,7 +36,7 @@ public final class AuthorHeaderLayoutSpec: ModelLayoutSpec<AuthorModel> {
 
             if !dateText.isEmpty {
                 dateString = dateText.attributed()
-                    .font(Fonts.system.medium(size: 12))
+                    .font(Fonts.system.medium(size: 13))
                     .foregroundColor(UIColor.gray)
                     .make()
             } else {
@@ -64,7 +66,7 @@ public final class AuthorHeaderLayoutSpec: ModelLayoutSpec<AuthorModel> {
 
         if let string = otherNamesString {
             otherNamesNode = LayoutNode(sizeProvider: string, config: { node in
-                node.marginTop = 8
+                node.marginTop = 12
             }) { (label: UILabel, _) in
                 label.numberOfLines = 0
                 label.attributedText = string

@@ -13,7 +13,6 @@ final class EditionViewController: ImageBackedListViewController {
     private let interactor: EditionInteractor
 
     init(editionId: Int) {
-        print(editionId)
         interactor = EditionInteractor(editionId: editionId)
 
         super.init(nibName: nil, bundle: nil)
