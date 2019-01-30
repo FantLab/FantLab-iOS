@@ -17,35 +17,14 @@ private final class AppDelegate: UIResponder, UIApplicationDelegate, UINavigatio
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-        window = UIWindow()
-        let rootNC = UINavigationController()
-        rootNC.delegate = self
-        
-        Appearance.setup(navigationBar: rootNC.navigationBar)
-        
-        do {
-            let imageVC = ImageBackgroundViewController()
-            imageVC.addChild(rootNC)
-            imageVC.contentView.addSubview(rootNC.view)
-            rootNC.view.pinEdges(to: imageVC.view)
-            rootNC.didMove(toParent: imageVC)
-            window?.rootViewController = imageVC
-        }
-        window?.makeKeyAndVisible()
 
-        window?.tintColor = Colors.flBlue
+        window = AppRouter.shared.window
 
         #if DEBUG
         #else
         Fabric.with([Crashlytics.self])
         #endif
 
-        rootNC.pushViewController(SearchViewController(), animated: true)
-
         return true
-    }
-
-    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
-        viewController.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
     }
 }

@@ -13,12 +13,10 @@ import FantLabStyle
 final class WorkReviewsViewController: ListViewController {
     private let interactor: WorkReviewsInteractor
     private let reviewsCount: Int
-    private let openReview: ((WorkReviewModel) -> Void)?
 
-    init(workId: Int, reviewsCount: Int, openReview: ((WorkReviewModel) -> Void)?) {
+    init(workId: Int, reviewsCount: Int) {
         self.interactor = WorkReviewsInteractor(workId: workId)
         self.reviewsCount = reviewsCount
-        self.openReview = openReview
 
         super.init(nibName: nil, bundle: nil)
     }
@@ -155,6 +153,6 @@ final class WorkReviewsViewController: ListViewController {
     }
 
     private func open(review: WorkReviewModel) {
-        openReview?(review)
+        AppRouter.shared.openReview(model: review)
     }
 }

@@ -59,15 +59,6 @@ final class SearchViewController: ListViewController, UISearchResultsUpdating {
         searchSubject.onNext(searchController.searchBar.text ?? "")
     }
 
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-
-        navigationItem.searchController.flatMap({
-            $0.view.setNeedsLayout()
-            $0.view.layoutIfNeeded()
-        })
-    }
-
     // MARK: -
 
     private func makeListItemsFrom(searchResults: [WorkPreviewModel]) -> [ListItem] {
@@ -96,8 +87,6 @@ final class SearchViewController: ListViewController, UISearchResultsUpdating {
     }
 
     private func openWork(id: Int) {
-        let vc = WorkViewController(workId: id)
-
-        navigationController?.pushViewController(vc, animated: true)
+        AppRouter.shared.openWork(id: id)
     }
 }

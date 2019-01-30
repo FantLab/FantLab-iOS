@@ -223,6 +223,6 @@ final class TextListViewController: ListViewController {
     }
 
     private func open(url: URL) {
-        // TODO:
+        AppRouter.shared.openURL(url)
     }
 }

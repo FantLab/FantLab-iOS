@@ -222,3 +222,17 @@ extension UIView {
         return nil
     }
 }
+
+extension String {
+    public func firstMatch(for pattern: String) -> String? {
+        guard let regex = try? NSRegularExpression(pattern: pattern) else {
+            return nil
+        }
+
+        guard let result = regex.firstMatch(in: self, range: NSRange(startIndex..., in: self)), let range = Range(result.range, in: self) else {
+            return nil
+        }
+
+        return String(self[range])
+    }
+}

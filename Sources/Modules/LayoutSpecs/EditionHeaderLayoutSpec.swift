@@ -19,7 +19,7 @@ public final class EditionHeaderLayoutSpec: ModelLayoutSpec<EditionModel> {
 
             if !model.type.isEmpty {
                 typeString = model.type.capitalizedFirstLetter().attributed()
-                    .font(Fonts.system.medium(size: 13))
+                    .font(Fonts.system.regular(size: 14))
                     .foregroundColor(UIColor.lightGray)
                     .make()
             } else {

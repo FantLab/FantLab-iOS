@@ -111,8 +111,6 @@ final class EditionListViewController: ListViewController {
     }
 
     private func open(edition id: Int) {
-        let vc = EditionViewController(editionId: id)
-
-        navigationController?.pushViewController(vc, animated: true)
+        AppRouter.shared.openEdition(id: id)
     }
 }

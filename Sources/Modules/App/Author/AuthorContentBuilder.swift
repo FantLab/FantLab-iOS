@@ -24,6 +24,7 @@ final class AuthorContentBuilder {
     var onExpandOrCollapse: (() -> Void)?
     var onChildWorkTap: ((Int) -> Void)?
     var onAwardsTap: ((AuthorModel) -> Void)?
+    var onURLTap: ((URL) -> Void)?
 
     // MARK: -
 
@@ -94,9 +95,9 @@ final class AuthorContentBuilder {
                 layoutSpec: AuthorWebSiteLayoutSpec(model: webSite)
             )
 
-            item.didSelect = { cell, _ in
+            item.didSelect = { [weak self] cell, _ in
                 CellSelection.scale(cell: cell, action: {
-                    print(url)
+                    self?.onURLTap?(url)
                 })
             }
 

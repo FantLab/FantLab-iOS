@@ -147,21 +147,15 @@ final class WorkViewController: ImageBackedListViewController {
     // MARK: -
 
     private func openEditions(work model: WorkModel) {
-        let vc = EditionListViewController(editionBlocks: model.editionBlocks)
-
-        navigationController?.pushViewController(vc, animated: true)
+        AppRouter.shared.openEditionList(model.editionBlocks)
     }
 
     private func openWork(id: Int) {
-        let vc = WorkViewController(workId: id)
-
-        navigationController?.pushViewController(vc, animated: true)
+        AppRouter.shared.openWork(id: id)
     }
 
     private func openAwards(work model: WorkModel) {
-        let vc = AwardListViewController(awards: model.awards)
-
-        navigationController?.pushViewController(vc, animated: true)
+        AppRouter.shared.openAwards(model.awards)
     }
 
     private func openAuthors(work model: WorkModel) {
@@ -197,9 +191,7 @@ final class WorkViewController: ImageBackedListViewController {
     }
 
     private func openAuthor(id: Int, entityType: String) {
-        let vc = AuthorViewController(authorId: id)
-
-        navigationController?.pushViewController(vc, animated: true)
+        AppRouter.shared.openAuthor(id: id)
     }
 
     private func openReviews(work model: WorkModel) {
@@ -207,38 +199,19 @@ final class WorkViewController: ImageBackedListViewController {
             return
         }
 
-        let vc = WorkReviewsViewController(
-            workId: model.id,
-            reviewsCount: model.reviewsCount,
-            openReview: { [weak self] review in
-                self?.openReview(review)
-            }
-        )
-
-        navigationController?.pushViewController(vc, animated: true)
+        AppRouter.shared.openWorkReviews(workId: model.id, reviewsCount: model.reviewsCount)
     }
 
     private func openReview(_ model: WorkReviewModel) {
-        let item = ListItem(
-            id: "review",
-            layoutSpec: WorkReviewHeaderLayoutSpec(model: model)
-        )
-
-        let vc = TextListViewController(string: model.text, customHeaderListItems: [item], makePhotoURL: nil)
-        vc.title = "Отзыв"
-
-        navigationController?.pushViewController(vc, animated: true)
+        AppRouter.shared.openReview(model: model)
     }
 
     private func openDescriptionAndNotes(work model: WorkModel) {
-        let text = [model.descriptionText,
+        let string = [model.descriptionText,
                     model.descriptionAuthor,
                     model.notes].compactAndJoin("\n\n")
 
-        let vc = TextListViewController(string: text, customHeaderListItems: [], makePhotoURL: nil)
-        vc.title = "Описание"
-
-        navigationController?.pushViewController(vc, animated: true)
+        AppRouter.shared.openText(title: "Описание", string: string, customHeaderListItems: [], makePhotoURL: nil)
     }
 
     @objc
@@ -247,8 +220,6 @@ final class WorkViewController: ImageBackedListViewController {
             return
         }
 
-        let vc = UIActivityViewController(activityItems: [url], applicationActivities: nil)
-
-        present(vc, animated: true, completion: nil)
+        AppRouter.shared.share(url: url)
     }
 }

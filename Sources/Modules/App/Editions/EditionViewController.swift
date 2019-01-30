@@ -63,6 +63,14 @@ final class EditionViewController: ImageBackedListViewController {
         }
     }
 
+    // MARK: -
+
+    private func open(url: URL) {
+        AppRouter.shared.openURL(url)
+    }
+
+    // MARK: -
+
     private func makeListItemsFrom(state: DataState<EditionModel>) -> [ListItem] {
         switch state {
         case .initial:
@@ -131,8 +139,8 @@ final class EditionViewController: ImageBackedListViewController {
                 let model = FLTextStringLayoutModel(
                     string: content,
                     linkAttributes: text.decorator.linkAttributes,
-                    openURL: ({ url in
-                        print(url)
+                    openURL: ({ [weak self] url in
+                        self?.open(url: url)
                     })
                 )
 

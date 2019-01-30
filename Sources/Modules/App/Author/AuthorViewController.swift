@@ -51,6 +51,10 @@ final class AuthorViewController: ImageBackedListViewController {
             contentBuilder.onChildWorkTap = { [weak self] workId in
                 self?.openWork(id: workId)
             }
+
+            contentBuilder.onURLTap = { [weak self] url in
+                self?.open(url: url)
+            }
         }
 
         // image background
@@ -98,32 +102,29 @@ final class AuthorViewController: ImageBackedListViewController {
     // MARK: -
 
     private func openWork(id: Int) {
-        let vc = WorkViewController(workId: id)
-
-        navigationController?.pushViewController(vc, animated: true)
+        AppRouter.shared.openWork(id: id)
     }
 
     private func openAwards(author model: AuthorModel) {
-        let vc = AwardListViewController(awards: model.awards)
-
-        navigationController?.pushViewController(vc, animated: true)
+        AppRouter.shared.openAwards(model.awards)
     }
 
     private func openDescriptionAndNotes(author model: AuthorModel) {
-        let text = [model.bio,
+        let string = [model.bio,
                     model.compiler,
                     model.notes].compactAndJoin("\n\n")
-        let vc = TextListViewController(string: text, customHeaderListItems: []) { photoIndex -> URL in
+
+        AppRouter.shared.openText(title: "Биография", string: string, customHeaderListItems: []) { photoIndex -> URL in
             if photoIndex > 0 {
                 return URL(string: "https://data.fantlab.ru/images/autors/\(model.id)_\(photoIndex)")!
             } else {
                 return URL(string: "https://data.fantlab.ru/images/autors/\(model.id)")!
             }
         }
+    }
 
-        vc.title = "Биография"
-
-        navigationController?.pushViewController(vc, animated: true)
+    private func open(url: URL) {
+        AppRouter.shared.openURL(url)
     }
 
     @objc
@@ -132,8 +133,6 @@ final class AuthorViewController: ImageBackedListViewController {
             return
         }
 
-        let vc = UIActivityViewController(activityItems: [url], applicationActivities: nil)
-
-        present(vc, animated: true, completion: nil)
+        AppRouter.shared.share(url: url)
     }
 }

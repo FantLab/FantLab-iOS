@@ -63,8 +63,6 @@ final class AwardListViewController: ListViewController {
     }
 
     private func openWork(id: Int) {
-        let vc = WorkViewController(workId: id)
-
-        navigationController?.pushViewController(vc, animated: true)
+        AppRouter.shared.openWork(id: id)
     }
 }
