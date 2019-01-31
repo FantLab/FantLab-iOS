@@ -22,7 +22,7 @@ public final class AuthorHeaderLayoutSpec: ModelLayoutSpec<AuthorModel> {
 
             if !otherNamesText.isEmpty {
                 otherNamesString = otherNamesText.attributed()
-                    .font(Fonts.system.medium(size: 12))
+                    .font(Fonts.system.medium(size: 11))
                     .foregroundColor(UIColor.lightGray)
                     .make()
             } else {

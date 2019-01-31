@@ -10,8 +10,8 @@ public final class WorkHeaderLayoutSpec: ModelLayoutSpec<WorkModel> {
     public override func makeNodeFrom(model: WorkModel, sizeConstraints: SizeConstraints) -> LayoutNode {
         let nameString: NSAttributedString
         let origNameString: NSAttributedString?
-        let authorString: NSAttributedString
         let infoString: NSAttributedString
+        let authorString: NSAttributedString?
 
         do {
             let nameText = model.name.nilIfEmpty ?? model.origName
@@ -23,7 +23,7 @@ public final class WorkHeaderLayoutSpec: ModelLayoutSpec<WorkModel> {
 
             if !model.origName.isEmpty && model.origName != nameText {
                 origNameString = model.origName.attributed()
-                    .font(Fonts.system.medium(size: 11))
+                    .font(Fonts.system.medium(size: 12))
                     .foregroundColor(UIColor.lightGray)
                     .make()
             } else {
@@ -38,10 +38,16 @@ public final class WorkHeaderLayoutSpec: ModelLayoutSpec<WorkModel> {
                 .foregroundColor(UIColor.gray)
                 .make()
 
-            authorString = model.authors.map({ $0.name }).compactAndJoin(", ").attributed()
-                .font(Fonts.system.medium(size: 15))
-                .foregroundColor(Colors.flBlue)
-                .make()
+            let authors = model.authors.filter { $0.id != 10 && $0.id != 100 }.map { $0.name }.compactAndJoin(", ")
+
+            if !authors.isEmpty {
+                authorString = authors.attributed()
+                    .font(Fonts.system.medium(size: 15))
+                    .foregroundColor(Colors.flBlue)
+                    .make()
+            } else {
+                authorString = nil
+            }
         }
 
         let coverNode = LayoutNode(config: { node in
@@ -79,6 +85,7 @@ public final class WorkHeaderLayoutSpec: ModelLayoutSpec<WorkModel> {
 
         let authorNode = LayoutNode(sizeProvider: authorString, config: { node in
             node.marginTop = 16
+            node.isHidden = authorString == nil
         }) { (label: UILabel, _) in
             label.numberOfLines = 0
             label.attributedText = authorString
@@ -87,6 +94,7 @@ public final class WorkHeaderLayoutSpec: ModelLayoutSpec<WorkModel> {
         let textStackNode = LayoutNode(children: [nameNode, origNameNode, infoNode, authorNode], config: { node in
             node.flexDirection = .column
             node.alignItems = .flexStart
+            node.alignSelf = .center
             node.flex = 1
         })
 
