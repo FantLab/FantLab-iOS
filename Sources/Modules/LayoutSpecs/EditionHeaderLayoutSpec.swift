@@ -15,12 +15,15 @@ public final class EditionHeaderLayoutSpec: ModelLayoutSpec<EditionModel> {
             nameString = model.name.attributed()
                 .font(Fonts.system.bold(size: TitleFontSizeRule.fontSizeFor(length: model.name.count)))
                 .foregroundColor(UIColor.black)
+                .hyphenationFactor(1)
+                .alignment(.center)
                 .make()
 
             if !model.type.isEmpty {
                 typeString = model.type.capitalizedFirstLetter().attributed()
                     .font(Fonts.system.regular(size: 14))
                     .foregroundColor(UIColor.gray)
+                    .alignment(.center)
                     .make()
             } else {
                 typeString = nil
@@ -29,8 +32,8 @@ public final class EditionHeaderLayoutSpec: ModelLayoutSpec<EditionModel> {
 
         let coverNode = LayoutNode(config: { node in
             node.width = 120
-            node.height = 160
-            node.marginLeft = 16
+            node.height = 180
+            node.marginRight = 16
         }) { (view: UIImageView, _) in
             view.clipsToBounds = true
             view.contentMode = .scaleAspectFit
@@ -51,13 +54,13 @@ public final class EditionHeaderLayoutSpec: ModelLayoutSpec<EditionModel> {
             label.attributedText = typeString
         }
 
-        let leftStackNode = LayoutNode(children: [nameNode, typeNode], config: { node in
+        let rightStackNode = LayoutNode(children: [nameNode, typeNode], config: { node in
             node.flexDirection = .column
-            node.alignItems = .flexStart
+            node.alignItems = .center
             node.flex = 1
         })
 
-        let contentNode = LayoutNode(children: [leftStackNode, coverNode], config: { node in
+        let contentNode = LayoutNode(children: [coverNode, rightStackNode], config: { node in
             node.flexDirection = .row
             node.alignItems = .center
             node.padding(all: 16)

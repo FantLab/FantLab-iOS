@@ -16,10 +16,14 @@ public final class GetEditionNetworkRequest: NetworkRequest {
     }
 
     public func parse(response: URLResponse, data: Data) throws -> EditionModel {
-        guard let json = JSON(jsonData: data) else {
-            throw NetworkError.invalidJSON
+        let json = try JSON(jsonData: data)
+
+        let edition = JSONConverter.makeEditionFrom(json: json)
+
+        if edition.id == 0 {
+            throw WebAPIError.notFound
         }
 
-        return JSONConverter.makeEditionFrom(json: json)
+        return edition
     }
 }

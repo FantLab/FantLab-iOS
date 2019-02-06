@@ -1,10 +1,15 @@
 import Foundation
 import RxSwift
 
-public enum NetworkError: Error {
-    case invalidJSON
-    case incompleteJSON
+public enum NetworkError: Error, ErrorHumanReadableTextConvertible {
     case unknown
+
+    public var humanReadableDescription: String {
+        switch self {
+        case .unknown:
+            return "Неизвестная сетевая ошибка"
+        }
+    }
 }
 
 public protocol NetworkRequest {

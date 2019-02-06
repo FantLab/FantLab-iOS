@@ -38,7 +38,7 @@ public final class WorkHeaderLayoutSpec: ModelLayoutSpec<WorkModel> {
                 .foregroundColor(UIColor.gray)
                 .make()
 
-            let authors = model.authors.filter { $0.id != 10 && $0.id != 100 }.map { $0.name }.compactAndJoin(", ")
+            let authors = model.authors.map { $0.name }.compactAndJoin(", ")
 
             if !authors.isEmpty {
                 authorString = authors.attributed()

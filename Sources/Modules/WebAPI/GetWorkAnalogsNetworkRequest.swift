@@ -16,9 +16,7 @@ public final class GetWorkAnalogsNetworkRequest: NetworkRequest {
     }
 
     public func parse(response: URLResponse, data: Data) throws -> [WorkPreviewModel] {
-        guard let json = JSON(jsonData: data) else {
-            throw NetworkError.invalidJSON
-        }
+        let json = try JSON(jsonData: data)
 
         return JSONConverter.makeWorkPreviewsFrom(json: json)
     }

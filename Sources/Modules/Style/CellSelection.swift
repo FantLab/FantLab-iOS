@@ -24,7 +24,7 @@ public final class CellSelection {
         UIApplication.shared.beginIgnoringInteractionEvents()
 
         UIView.animate(withDuration: 0.1, animations: {
-            cell.transform = CGAffineTransform(scaleX: 0.92, y: 0.92)
+            cell.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
         }, completion: { _ in
             UIView.animate(withDuration: 0.15, animations: {
                 cell.transform = CGAffineTransform.identity

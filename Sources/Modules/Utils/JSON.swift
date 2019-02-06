@@ -8,10 +8,8 @@ public class JSON: CustomDebugStringConvertible, CustomStringConvertible {
         self.object = object is NSNull ? nil : object
     }
 
-    public convenience init?(jsonData: Data) {
-        guard let object = try? JSONSerialization.jsonObject(with: jsonData, options: .allowFragments) else {
-            return nil
-        }
+    public convenience init(jsonData: Data) throws {
+        let object = try JSONSerialization.jsonObject(with: jsonData, options: .allowFragments)
 
         self.init(object)
     }

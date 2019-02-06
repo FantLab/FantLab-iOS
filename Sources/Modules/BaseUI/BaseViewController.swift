@@ -4,6 +4,10 @@ import RxSwift
 import FantLabStyle
 
 open class BaseViewController: UIViewController {
+    open override var preferredStatusBarStyle: UIStatusBarStyle {
+        return Appearance.statusBarStyle
+    }
+    
     public let disposeBag = DisposeBag()
 
     private let viewActiveSubject = ReplaySubject<Bool>.create(bufferSize: 1)

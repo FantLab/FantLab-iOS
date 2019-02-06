@@ -16,10 +16,14 @@ public final class GetAuthorNetworkRequest: NetworkRequest {
     }
 
     public func parse(response: URLResponse, data: Data) throws -> AuthorModel {
-        guard let json = JSON(jsonData: data) else {
-            throw NetworkError.invalidJSON
+        let json = try JSON(jsonData: data)
+
+        let author = JSONConverter.makeAuthorModelFrom(json: json)
+
+        if author.id == 0 {
+            throw WebAPIError.notFound
         }
 
-        return JSONConverter.makeAuthorModelFrom(json: json)
+        return author
     }
 }

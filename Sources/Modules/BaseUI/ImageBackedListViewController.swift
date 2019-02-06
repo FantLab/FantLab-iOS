@@ -11,7 +11,7 @@ open class ImageBackedListViewController: ListViewController {
         imageVC?.moveTo(position: max(0, -offset) / 100)
     }
 
-    public final func setupWith(urlObservable: Observable<URL?>) {
+    public final func setupBackgroundImageWith(urlObservable: Observable<URL?>) {
         Observable.combineLatest(viewActive, urlObservable)
             .map({ (viewActive, url) -> URL? in
                 return viewActive ? url : nil

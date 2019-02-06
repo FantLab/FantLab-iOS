@@ -2,8 +2,14 @@ import Foundation
 import FantLabUtils
 import FantLabModels
 
+public struct MainSearchResult {
+    public let searchText: String
+    public let works: [WorkPreviewModel]
+    public let authors: [AuthorPreviewModel]
+}
+
 public final class MainSearchNetworkRequest: NetworkRequest {
-    public typealias ModelType = [WorkPreviewModel]
+    public typealias ModelType = MainSearchResult
 
     private let searchText: String
 
@@ -16,11 +22,16 @@ public final class MainSearchNetworkRequest: NetworkRequest {
         return URLRequest(url: URL(string: "https://\(Hosts.api)/search-txt?q=\(text)")!)
     }
 
-    public func parse(response: URLResponse, data: Data) throws -> [WorkPreviewModel] {
-        guard let json = JSON(jsonData: data) else {
-            throw NetworkError.invalidJSON
+    public func parse(response: URLResponse, data: Data) throws -> MainSearchResult {
+        let json = try JSON(jsonData: data)
+
+        let works = JSONConverter.makeWorkPreviewsFrom(json: json.works)
+        let authors = JSONConverter.makeAuthorPreviewsFrom(json: json.authors)
+
+        if works.isEmpty && authors.isEmpty {
+            throw WebAPIError.notFound
         }
 
-        return JSONConverter.makeWorkPreviewsFrom(json: json.works)
+        return MainSearchResult(searchText: searchText, works: works, authors: authors)
     }
 }

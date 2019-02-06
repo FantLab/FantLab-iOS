@@ -20,9 +20,7 @@ public final class GetWorkReviewsNetworkRequest: NetworkRequest {
     }
 
     public func parse(response: URLResponse, data: Data) throws -> [WorkReviewModel] {
-        guard let json = JSON(jsonData: data) else {
-            throw NetworkError.invalidJSON
-        }
+        let json = try JSON(jsonData: data)
 
         return JSONConverter.makeWorkReviewsFrom(json: json)
     }

@@ -9,9 +9,11 @@ FantLabApp:
     - FantLabWebAPI
     - FantLabBaseUI
     - FantLabLayoutSpecs
+    - FantLabContentBuilders
   system_frameworks:
     - Foundation
     - UIKit
+    - AVFoundation
 FantLabBaseUI:
   display_name: BaseUI
   sources: Modules/BaseUI
@@ -26,6 +28,18 @@ FantLabText:
   sources: Modules/Text
   dependencies:
     - FantLabUtils
+  system_frameworks:
+    - Foundation
+    - UIKit
+FantLabContentBuilders:
+  display_name: ContentBuilders
+  sources: Modules/ContentBuilders
+  dependencies:
+    - FantLabUtils
+    - FantLabStyle
+    - FantLabModels
+    - FantLabText
+    - FantLabLayoutSpecs
   system_frameworks:
     - Foundation
     - UIKit
@@ -45,6 +59,7 @@ FantLabStyle:
   sources: Modules/Style
   dependencies:
     - FantLabUtils
+    - FantLabText
   system_frameworks:
     - Foundation
     - UIKit
@@ -69,3 +84,4 @@ FantLabUtils:
   system_frameworks:
     - Foundation
     - UIKit
+    - AVFoundation

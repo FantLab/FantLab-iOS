@@ -6,55 +6,43 @@ import FantLabModels
 import FantLabStyle
 import FantLabLayoutSpecs
 
-final class AuthorContentBuilder {
-    private struct WorkChildListModel: Equatable {
-        let id: String
-        let isExpanded: Bool
-    }
+public typealias AuthorContentModel = (info: AuthorModel, workTree: WorkTreeNode)
 
-    private struct SectionModel {
-        let layoutModel: ListSectionTitleLayoutModel
-        let tapAction: (() -> Void)?
-        let makeListItems: () -> Void
-    }
+public protocol AuthorContentBuilderDelegate: class {
+    func onDescriptionTap(author: AuthorModel)
+    func onExpandOrCollapse()
+    func onWorkTap(id: Int)
+    func onAwardsTap(author: AuthorModel)
+    func onURLTap(url: URL)
+}
 
-    // MARK: -
-
-    var onDescriptionTap: ((AuthorModel) -> Void)?
-    var onExpandOrCollapse: (() -> Void)?
-    var onChildWorkTap: ((Int) -> Void)?
-    var onAwardsTap: ((AuthorModel) -> Void)?
-    var onURLTap: ((URL) -> Void)?
+public final class AuthorContentBuilder: ListContentBuilder {
+    public typealias ModelType = AuthorContentModel
 
     // MARK: -
 
-    func makeListItemsFrom(state: DataState<AuthorInteractor.DataModel>) -> [ListItem] {
-        switch state {
-        case .initial:
-            return []
-        case .loading:
-            return [ListItem(id: "author_loading", layoutSpec: SpinnerLayoutSpec())]
-        case .error:
-            return [] // TODO:
-        case let .idle(data):
-            return makeListItemsFrom(data: data)
-        }
-    }
+    public init() {}
 
-    private func makeListItemsFrom(data: AuthorInteractor.DataModel) -> [ListItem] {
+    // MARK: -
+
+    public weak var delegate: AuthorContentBuilderDelegate?
+
+    // MARK: -
+
+    public func makeListItemsFrom(model: AuthorContentModel) -> [ListItem] {
         var items: [ListItem] = []
 
         // хедер
 
         do {
-            let item = ListItem(id: "author_header", layoutSpec: AuthorHeaderLayoutSpec(model: data.author))
+            let item = ListItem(id: "author_header", layoutSpec: AuthorHeaderLayoutSpec(model: model.info))
 
             items.append(item)
         }
 
         // биография
 
-        let info = [data.author.bio, data.author.notes].compactAndJoin("\n")
+        let info = [model.info.bio, model.info.notes].compactAndJoin("\n")
 
         if !info.isEmpty {
             items.append(ListItem(
@@ -69,7 +57,7 @@ final class AuthorContentBuilder {
 
             item.didSelect = { [weak self] cell, _ in
                 CellSelection.scale(cell: cell, action: {
-                    self?.onDescriptionTap?(data.author)
+                    self?.delegate?.onDescriptionTap(author: model.info)
                 })
             }
 
@@ -78,7 +66,7 @@ final class AuthorContentBuilder {
 
         // сайты
 
-        data.author.sites.enumerated().forEach { (index, webSite) in
+        model.info.sites.enumerated().forEach { (index, webSite) in
             guard let url = URL(string: webSite.link), !webSite.title.isEmpty else {
                 return
             }
@@ -97,7 +85,7 @@ final class AuthorContentBuilder {
 
             item.didSelect = { [weak self] cell, _ in
                 CellSelection.scale(cell: cell, action: {
-                    self?.onURLTap?(url)
+                    self?.delegate?.onURLTap(url: url)
                 })
             }
 
@@ -106,24 +94,24 @@ final class AuthorContentBuilder {
 
         // sections
 
-        var sections: [SectionModel] = []
+        var sections: [SectionListModel] = []
 
-        if !data.author.awards.isEmpty {
-            let section = SectionModel(layoutModel: ListSectionTitleLayoutModel(
+        if !model.info.awards.isEmpty {
+            let section = SectionListModel(layoutModel: ListSectionTitleLayoutModel(
                 title: "Премии",
-                count: data.author.awards.count,
+                count: model.info.awards.count,
                 hasArrow: true
                 ), tapAction: ({ [weak self] in
-                    self?.onAwardsTap?(data.author)
+                    self?.delegate?.onAwardsTap(author: model.info)
                 })) {
                     let item = ListItem(
                         id: "author_awards",
-                        layoutSpec: AwardIconsLayoutSpec(model: data.author.awards)
+                        layoutSpec: AwardIconsLayoutSpec(model: model.info.awards)
                     )
 
                     item.didSelect = { [weak self] cell, _ in
                         CellSelection.scale(cell: cell, action: {
-                            self?.onAwardsTap?(data.author)
+                            self?.delegate?.onAwardsTap(author: model.info)
                         })
                     }
 
@@ -133,13 +121,13 @@ final class AuthorContentBuilder {
             sections.append(section)
         }
 
-        if data.contentRoot.count > 0 {
-            let section = SectionModel(layoutModel: ListSectionTitleLayoutModel(
+        if model.workTree.count > 0 {
+            let section = SectionListModel(layoutModel: ListSectionTitleLayoutModel(
                 title: "Произведения",
                 count: 0,
                 hasArrow: false
             ), tapAction: nil) {
-                data.contentRoot.traverseContent { node in
+                model.workTree.traverseContent { node in
                     guard let work = node.model else {
                         return
                     }
@@ -148,7 +136,7 @@ final class AuthorContentBuilder {
 
                     let item = ListItem(
                         id: nodeId,
-                        model: WorkChildListModel(
+                        model: WorkTreeNodeListModel(
                             id: nodeId,
                             isExpanded: node.isExpanded
                         ),
@@ -159,7 +147,7 @@ final class AuthorContentBuilder {
                             expandCollapseAction: node.count > 0 ? ({ [weak self] in
                                 node.isExpanded = !node.isExpanded
 
-                                self?.onExpandOrCollapse?()
+                                self?.delegate?.onExpandOrCollapse()
                             }) : nil
                         ))
                     )
@@ -167,7 +155,7 @@ final class AuthorContentBuilder {
                     if work.id > 0 {
                         item.didSelect = { [weak self] cell, _ in
                             CellSelection.alpha(cell: cell, action: {
-                                self?.onChildWorkTap?(work.id)
+                                self?.delegate?.onWorkTap(id: work.id)
                             })
                         }
                     }

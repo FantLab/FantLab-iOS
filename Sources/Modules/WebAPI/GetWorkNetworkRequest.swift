@@ -16,10 +16,14 @@ public final class GetWorkNetworkRequest: NetworkRequest {
     }
 
     public func parse(response: URLResponse, data: Data) throws -> WorkModel {
-        guard let json = JSON(jsonData: data) else {
-            throw NetworkError.invalidJSON
+        let json = try JSON(jsonData: data)
+
+        let work = JSONConverter.makeWorkModelFrom(json: json)
+
+        if work.id == 0 {
+            throw WebAPIError.notFound
         }
 
-        return JSONConverter.makeWorkModelFrom(json: json)
+        return work
     }
 }

@@ -5,6 +5,10 @@ import FantLabModels
 final class JSONConverter {
     private init() {}
 
+    private static func isAuthorValid(id: Int) -> Bool {
+        return id > 0 && id != 10 && id != 100 // Журнал и Межавторский цикл (для них бэк не отдает жсон как для других авторов)
+    }
+
     static func makeWorkModelFrom(json: JSON) -> WorkModel {
         return WorkModel(
             id: json.work_id.intValue,
@@ -28,6 +32,8 @@ final class JSONConverter {
                     type: $0.type.stringValue,
                     isOpened: $0.is_opened.boolValue
                 )
+            }).filter({
+                isAuthorValid(id: $0.id)
             }),
             children: ChildWorkList(json.children.array.map({
                 ChildWorkModel(
@@ -160,7 +166,9 @@ final class JSONConverter {
                 workType: $0.name_type.stringValue,
                 imageURL: URL.from(string: $0.image.stringValue),
                 year: $0.year.intValue,
-                authors: $0.creators.authors.array.map({
+                authors: $0.creators.authors.array.filter({
+                    isAuthorValid(id: $0.id.intValue)
+                }).map({
                     $0.name.string ?? $0.name_orig.stringValue
                 }),
                 rating: $0.stat.rating.floatValue,
@@ -168,6 +176,16 @@ final class JSONConverter {
                 reviewsCount: $0.stat.responses.intValue
             )
         }
+    }
+
+    static func makeAuthorPreviewsFrom(json: JSON) -> [AuthorPreviewModel] {
+        return json.array.map({
+            AuthorPreviewModel(
+                id: $0.id.intValue,
+                name: $0.title.stringValue,
+                photoURL: URL.from(string: $0.image.stringValue)
+            )
+        })
     }
 
     static func makeAuthorModelFrom(json: JSON) -> AuthorModel {
@@ -251,14 +269,24 @@ final class JSONConverter {
         isbn = isbn.split(separator: " ").first.flatMap({ String($0) }) ?? isbn
 
         var format = json.format.stringValue
-        format = format == "0" ? "" : format
+        format = format == "0" /* null */ ? "" : format
 
         let publisher = json.creators.publishers.array.map({ $0.name.stringValue }).compactAndJoin(" ")
+
+        let images = json.images_plus.keys.flatMap({ json.images_plus[$0].array }).map({
+            EditionModel.ImageModel(
+                url: URL.from(string: $0.image.stringValue),
+                urlOrig: URL.from(string: $0.image_orig.stringValue),
+                text: $0.pic_text.stringValue
+            )
+        })
 
         return EditionModel(
             id: json.edition_id.intValue,
             name: json.edition_name.stringValue,
             image: URL.from(string: json.image.stringValue),
+            coverHDURL: URL.from(string: json.images_plus.cover.array[0].image_orig.stringValue),
+            images: images,
             correctLevel: json.correct_level.floatValue,
             year: json.year.intValue,
             planDate: json.plan_date.stringValue,

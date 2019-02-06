@@ -1,46 +1,31 @@
 import Foundation
 import UIKit
 import ALLKit
-import FantLabBaseUI
-import FantLabModels
-import FantLabLayoutSpecs
-import FantLabStyle
-import FantLabWebAPI
 import FantLabUtils
+import FantLabModels
+import FantLabStyle
+import FantLabLayoutSpecs
+import FantLabText
 
-final class EditionListViewController: ListViewController {
-    private let editionBlocks: [EditionBlockModel]
+public final class EditionListContentBuilder: ListContentBuilder {
+    public typealias ModelType = [EditionBlockModel]
 
-    init(editionBlocks: [EditionBlockModel]) {
-        self.editionBlocks = editionBlocks
+    // MARK: -
 
-        super.init(nibName: nil, bundle: nil)
-    }
+    public init() {}
 
-    required init?(coder aDecoder: NSCoder) {
-        fatalError()
-    }
+    // MARK: -
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    public var onEditionTap: ((Int) -> Void)?
 
-        title = "Все издания"
+    // MARK: -
 
-        DispatchQueue.global().async { [weak self] in
-            let items = self?.makeListItems() ?? []
-
-            DispatchQueue.main.async {
-                self?.adapter.set(items: items)
-            }
-        }
-    }
-
-    private func makeListItems() -> [ListItem] {
+    public func makeListItemsFrom(model: [EditionBlockModel]) -> [ListItem] {
         var items: [ListItem] = []
 
         let columnsCount = 3
 
-        editionBlocks.enumerated().forEach { (i, block) in
+        model.enumerated().forEach { (i, block) in
             let count = block.list.count
 
             let titleItem = ListItem(
@@ -69,7 +54,7 @@ final class EditionListViewController: ListViewController {
 
                 item.didSelect = { [weak self] (cell, _) in
                     CellSelection.scale(cell: cell, action: {
-                        self?.open(edition: edition.id)
+                        self?.onEditionTap?(edition.id)
                     })
                 }
 
@@ -108,9 +93,5 @@ final class EditionListViewController: ListViewController {
         items.removeLast()
 
         return items
-    }
-
-    private func open(edition id: Int) {
-        AppRouter.shared.openEdition(id: id)
     }
 }

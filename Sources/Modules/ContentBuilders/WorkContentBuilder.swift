@@ -6,66 +6,75 @@ import FantLabModels
 import FantLabStyle
 import FantLabLayoutSpecs
 
-final class WorkContentBuilder {
-    private struct WorkChildListModel: Equatable {
-        let id: String
-        let isExpanded: Bool
-    }
+public enum WorkContentTabIndex: String {
+    case info
+    case reviews
+    case analogs
+}
 
-    private struct SectionModel {
-        let layoutModel: ListSectionTitleLayoutModel
-        let tapAction: (() -> Void)?
-        let makeListItems: () -> Void
-    }
+struct DataModel {
+    let work: WorkModel
+    let analogs: [WorkPreviewModel]
+    let contentRoot: WorkTreeNode
+}
+
+public typealias WorkContentModel = (info: WorkModel, reviews: DataState<WorkReviewsShortListContentModel>, analogs: [WorkPreviewModel], workTree: WorkTreeNode, tabIndex: WorkContentTabIndex)
+
+public protocol WorkContentBuilderDelegate: class {
+    func onHeaderTap(work: WorkModel)
+    func onTabTap(tab: WorkContentTabIndex)
+    func onDescriptionTap(work: WorkModel)
+    func onExpandOrCollapse()
+    func onWorkTap(id: Int)
+    func onReviewTap(review: WorkReviewModel)
+    func onShowAllReviewsTap(work: WorkModel)
+    func onReviewsErrorTap()
+    func onAwardsTap(work: WorkModel)
+    func onEditionsTap(work: WorkModel)
+    func onEditionTap(id: Int)
+}
+
+public final class WorkContentBuilder: ListContentBuilder {
+    public typealias ModelType = WorkContentModel
 
     // MARK: -
 
-    var onHeaderTap: ((WorkModel) -> Void)?
-    var onTabTap: ((TabIndex) -> Void)?
-    var onDescriptionTap: ((WorkModel) -> Void)?
-    var onExpandOrCollapse: (() -> Void)?
-    var onChildWorkTap: ((Int) -> Void)?
-    var onParentWorkTap: ((Int) -> Void)?
-    var onReviewTap: ((WorkReviewModel) -> Void)?
-    var onShowAllReviewsTap: ((WorkModel) -> Void)?
-    var onWorkAnalogTap: ((Int) -> Void)?
-    var onAwardsTap: ((WorkModel) -> Void)?
-    var onEditionsTap: ((WorkModel) -> Void)?
-    var onEditionTap: ((Int) -> Void)?
+    private let reviewContentBuilder = DataStateContentBuilder(dataContentBuilder: WorkReviewsShortListContentBuilder())
 
-    // MARK: -
+    public init() {
+        reviewContentBuilder.dataContentBuilder.onReviewTap = { [weak self] review in
+            self?.delegate?.onReviewTap(review: review)
+        }
 
-    func makeListItemsFrom(state: DataState<WorkInteractor.DataModel>,
-                           reviewsState: DataState<[WorkReviewModel]>,
-                           tabIndex: TabIndex) -> [ListItem] {
-        switch state {
-        case .initial:
-            return []
-        case .loading:
-            return [ListItem(id: "work_loading", layoutSpec: SpinnerLayoutSpec())]
-        case .error:
-            return [] // TODO:
-        case let .idle(data):
-            return makeListItemsFrom(data: data, reviewsState: reviewsState, tabIndex: tabIndex)
+        reviewContentBuilder.dataContentBuilder.onShowAllReviewsTap = { [weak self] work in
+            self?.delegate?.onShowAllReviewsTap(work: work)
+        }
+
+        reviewContentBuilder.errorContentBuilder.onRetry = { [weak self] in
+            self?.delegate?.onReviewsErrorTap()
         }
     }
 
-    private func makeListItemsFrom(data: WorkInteractor.DataModel,
-                                   reviewsState: DataState<[WorkReviewModel]>,
-                                   tabIndex: TabIndex) -> [ListItem] {
-        let workId = String(data.work.id)
+    // MARK: -
 
-        let infoString = [data.work.descriptionText, data.work.notes].compactAndJoin("\n")
+    public weak var delegate: WorkContentBuilderDelegate?
 
-        let hasRating = data.work.rating > 0 && data.work.votes > 0
+    // MARK: -
+
+    public func makeListItemsFrom(model: WorkContentModel) -> [ListItem] {
+        let workId = String(model.info.id)
+
+        let infoString = [model.info.descriptionText, model.info.notes].compactAndJoin("\n")
+
+        let hasRating = model.info.rating > 0 && model.info.votes > 0
         let hasDescription = !infoString.isEmpty
-        let hasClassification = !data.work.classificatory.isEmpty
-        let hasAwards = !data.work.awards.isEmpty
-        let parentsCount = data.work.parents.compactMap({ $0.count }).reduce(0, +)
-        let childrenCount = data.contentRoot.count
-        let hasEditions = data.work.editionBlocks.contains { !$0.list.isEmpty }
-        let hasReviews = data.work.reviewsCount > 0
-        let hasAnalogs = !data.analogs.isEmpty
+        let hasClassification = !model.info.classificatory.isEmpty
+        let hasAwards = !model.info.awards.isEmpty
+        let parentsCount = model.info.parents.compactMap({ $0.count }).reduce(0, +)
+        let childrenCount = model.workTree.count
+        let hasEditions = model.info.editionBlocks.contains { !$0.list.isEmpty }
+        let hasReviews = model.info.reviewsCount > 0
+        let hasAnalogs = !model.analogs.isEmpty
 
         var items: [ListItem] = []
 
@@ -74,11 +83,11 @@ final class WorkContentBuilder {
         do {
             let item = ListItem(
                 id: workId + "_header",
-                layoutSpec: WorkHeaderLayoutSpec(model: data.work)
+                layoutSpec: WorkHeaderLayoutSpec(model: model.info)
             )
 
             item.didSelect = { [weak self] cell, _ in
-                self?.onHeaderTap?(data.work)
+                self?.delegate?.onHeaderTap(work: model.info)
             }
 
             items.append(item)
@@ -89,7 +98,7 @@ final class WorkContentBuilder {
         if hasRating {
             let item = ListItem(
                 id: workId + "_rating",
-                layoutSpec: WorkRatingLayoutSpec(model: data.work)
+                layoutSpec: WorkRatingLayoutSpec(model: model.info)
             )
 
             items.append(item)
@@ -97,11 +106,11 @@ final class WorkContentBuilder {
 
         // sections
 
-        var sections: [SectionModel] = []
+        var sections: [SectionListModel] = []
 
         do {
             if hasDescription || hasClassification {
-                let section = SectionModel(layoutModel: ListSectionTitleLayoutModel(
+                let section = SectionListModel(layoutModel: ListSectionTitleLayoutModel(
                     title: "Обзор",
                     count: 0,
                     hasArrow: false
@@ -114,7 +123,7 @@ final class WorkContentBuilder {
 
                         item.didSelect = { [weak self] cell, _ in
                             CellSelection.scale(cell: cell, action: {
-                                self?.onDescriptionTap?(data.work)
+                                self?.delegate?.onDescriptionTap(work: model.info)
                             })
                         }
 
@@ -131,7 +140,7 @@ final class WorkContentBuilder {
 
                         items.append(ListItem(
                             id: workId + "_classification",
-                            layoutSpec: WorkGenresLayoutSpec(model: data.work)
+                            layoutSpec: WorkGenresLayoutSpec(model: model.info)
                         ))
                     }
                 }
@@ -140,7 +149,7 @@ final class WorkContentBuilder {
             }
 
             if hasEditions {
-                let count = data.work.editionBlocks.reduce(into: 0) {
+                let count = model.info.editionBlocks.reduce(into: 0) {
                     $0 += $1.list.count
                 }
 
@@ -148,7 +157,7 @@ final class WorkContentBuilder {
 
                 let maxCount = 10
 
-                outer: for block in data.work.editionBlocks {
+                outer: for block in model.info.editionBlocks {
                     for edition in block.list {
                         editionList.append(edition)
 
@@ -158,17 +167,17 @@ final class WorkContentBuilder {
                     }
                 }
 
-                let section = SectionModel(layoutModel: ListSectionTitleLayoutModel(
+                let section = SectionListModel(layoutModel: ListSectionTitleLayoutModel(
                     title: "Издания",
                     count: count,
                     hasArrow: true
                     ), tapAction: ({ [weak self] in
-                        self?.onEditionsTap?(data.work)
+                        self?.delegate?.onEditionsTap(work: model.info)
                     })) {
                         let item = ListItem(
                             id: workId + "_editions",
                             layoutSpec: EditionListLayoutSpec(model: (editionList, ({ [weak self] editionId in
-                                self?.onEditionTap?(editionId)
+                                self?.delegate?.onEditionTap(id: editionId)
                             })))
                         )
 
@@ -179,21 +188,21 @@ final class WorkContentBuilder {
             }
 
             if hasAwards {
-                let section = SectionModel(layoutModel: ListSectionTitleLayoutModel(
+                let section = SectionListModel(layoutModel: ListSectionTitleLayoutModel(
                     title: "Премии",
-                    count: data.work.awards.count,
+                    count: model.info.awards.count,
                     hasArrow: true
                     ), tapAction: ({ [weak self] in
-                        self?.onAwardsTap?(data.work)
+                        self?.delegate?.onAwardsTap(work: model.info)
                     })) {
                         let item = ListItem(
                             id: workId + "_awards",
-                            layoutSpec: AwardIconsLayoutSpec(model: data.work.awards)
+                            layoutSpec: AwardIconsLayoutSpec(model: model.info.awards)
                         )
 
                         item.didSelect = { [weak self] cell, _ in
                             CellSelection.scale(cell: cell, action: {
-                                self?.onAwardsTap?(data.work)
+                                self?.delegate?.onAwardsTap(work: model.info)
                             })
                         }
 
@@ -204,12 +213,12 @@ final class WorkContentBuilder {
             }
 
             if childrenCount > 0 {
-                let section = SectionModel(layoutModel: ListSectionTitleLayoutModel(
+                let section = SectionListModel(layoutModel: ListSectionTitleLayoutModel(
                     title: "Содержание",
                     count: childrenCount,
                     hasArrow: false
                 ), tapAction: nil) {
-                    data.contentRoot.traverseContent { node in
+                    model.workTree.traverseContent { node in
                         guard let work = node.model else {
                             return
                         }
@@ -218,7 +227,7 @@ final class WorkContentBuilder {
 
                         let item = ListItem(
                             id: nodeId,
-                            model: WorkChildListModel(
+                            model: WorkTreeNodeListModel(
                                 id: nodeId,
                                 isExpanded: node.isExpanded
                             ),
@@ -229,7 +238,7 @@ final class WorkContentBuilder {
                                 expandCollapseAction: node.count > 0 ? ({ [weak self] in
                                     node.isExpanded = !node.isExpanded
 
-                                    self?.onExpandOrCollapse?()
+                                    self?.delegate?.onExpandOrCollapse()
                                 }) : nil
                             ))
                         )
@@ -237,7 +246,7 @@ final class WorkContentBuilder {
                         if work.id > 0 {
                             item.didSelect = { [weak self] cell, _ in
                                 CellSelection.alpha(cell: cell, action: {
-                                    self?.onChildWorkTap?(work.id)
+                                    self?.delegate?.onWorkTap(id: work.id)
                                 })
                             }
                         }
@@ -257,12 +266,12 @@ final class WorkContentBuilder {
             }
 
             if parentsCount > 0 {
-                let section = SectionModel(layoutModel: ListSectionTitleLayoutModel(
+                let section = SectionListModel(layoutModel: ListSectionTitleLayoutModel(
                     title: "Входит в",
                     count: parentsCount,
                     hasArrow: false
                 ), tapAction: nil) {
-                    data.work.parents.forEach { parents in
+                    model.info.parents.forEach { parents in
                         parents.enumerated().forEach({ (index, parentModel) in
                             let itemId = workId + "_parent_" + String(parentModel.id)
 
@@ -278,7 +287,7 @@ final class WorkContentBuilder {
                             if parentModel.id > 0 {
                                 item.didSelect = { [weak self] cell, _ in
                                     CellSelection.alpha(cell: cell, action: {
-                                        self?.onParentWorkTap?(parentModel.id)
+                                        self?.delegate?.onWorkTap(id: parentModel.id)
                                     })
                                 }
                             }
@@ -315,19 +324,19 @@ final class WorkContentBuilder {
             tabs.append(TabLayoutModel(
                 name: sections[0].layoutModel.title,
                 count: sections[0].layoutModel.count,
-                isSelected: tabIndex == .info,
+                isSelected: model.tabIndex == .info,
                 action: ({ [weak self] in
-                    self?.onTabTap?(.info)
+                    self?.delegate?.onTabTap(tab: .info)
                 })
             ))
 
             if hasReviews {
                 tabs.append(TabLayoutModel(
                     name: "Отзывы",
-                    count: data.work.reviewsCount,
-                    isSelected: tabIndex == .reviews,
+                    count: model.info.reviewsCount,
+                    isSelected: model.tabIndex == .reviews,
                     action: ({ [weak self] in
-                        self?.onTabTap?(.reviews)
+                        self?.delegate?.onTabTap(tab: .reviews)
                     })
                 ))
             }
@@ -335,23 +344,23 @@ final class WorkContentBuilder {
             if hasAnalogs {
                 tabs.append(TabLayoutModel(
                     name: "Похожие",
-                    count: data.analogs.count,
-                    isSelected: tabIndex == .analogs,
+                    count: model.analogs.count,
+                    isSelected: model.tabIndex == .analogs,
                     action: ({ [weak self] in
-                        self?.onTabTap?(.analogs)
+                        self?.delegate?.onTabTap(tab: .analogs)
                     })
                 ))
             }
 
             let item = ListItem(
-                id: workId + "_tabs_" + tabIndex.rawValue,
+                id: workId + "_tabs_" + model.tabIndex.rawValue,
                 layoutSpec: TabsLayoutSpec(model: tabs)
             )
 
             items.append(item)
         }
 
-        switch tabIndex {
+        switch model.tabIndex {
         case .info:
             sections.enumerated().forEach { (index, section) in
                 let sectionId = workId + "_" + section.layoutModel.title
@@ -379,61 +388,13 @@ final class WorkContentBuilder {
                 section.makeListItems()
             }
         case .reviews:
-            switch reviewsState {
-            case .initial:
-                break
-            case .loading:
-                items.append(ListItem(id: "reviews_loading", layoutSpec: SpinnerLayoutSpec()))
-            case .error:
-            break // TODO:
-            case let .idle(reviews):
-                reviews.prefix(5).forEach { review in
-                    let itemId = "review_" + String(review.id)
+            let reviewItems = reviewContentBuilder.makeListItemsFrom(model: model.reviews)
 
-                    let headerItem = ListItem(
-                        id: itemId + "_header",
-                        layoutSpec: WorkReviewHeaderLayoutSpec(model: review)
-                    )
-
-                    let textItem = ListItem(
-                        id: itemId + "_text",
-                        layoutSpec: WorkReviewTextLayoutSpec(model: review)
-                    )
-
-                    textItem.didSelect = { [weak self] cell, _ in
-                        CellSelection.scale(cell: cell, action: {
-                            self?.onReviewTap?(review)
-                        })
-                    }
-
-                    items.append(headerItem)
-                    items.append(textItem)
-
-                    items.append(ListItem(
-                        id: itemId + "_separator",
-                        layoutSpec: ItemSeparatorLayoutSpec(model: Colors.separatorColor)
-                    ))
-                }
-
-                if data.work.reviewsCount > reviews.count {
-                    let item = ListItem(
-                        id: "reviews_show_all_btn",
-                        layoutSpec: ShowAllButtonLayoutSpec(model: "Все отзывы")
-                    )
-
-                    item.didSelect = { [weak self] cell, _ in
-                        CellSelection.scale(cell: cell, action: {
-                            self?.onShowAllReviewsTap?(data.work)
-                        })
-                    }
-
-                    items.append(item)
-                }
-            }
+            items.append(contentsOf: reviewItems)
         case .analogs:
-            data.analogs.forEach { analog in
+            model.analogs.forEach { analog in
                 let itemId = "analog_" + String(analog.id)
-                
+
                 let item = ListItem(
                     id: itemId,
                     layoutSpec: WorkPreviewLayoutSpec(model: analog)
@@ -441,7 +402,7 @@ final class WorkContentBuilder {
 
                 item.didSelect = { [weak self] cell, _ in
                     CellSelection.scale(cell: cell, action: {
-                        self?.onWorkAnalogTap?(analog.id)
+                        self?.delegate?.onWorkTap(id: analog.id)
                     })
                 }
 

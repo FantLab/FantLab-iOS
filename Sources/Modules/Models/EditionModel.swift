@@ -1,9 +1,26 @@
 import Foundation
 
 public final class EditionModel {
+    public final class ImageModel {
+        public let url: URL?
+        public let urlOrig: URL?
+        public let text: String
+
+        public init(url: URL?,
+                    urlOrig: URL?,
+                    text: String) {
+
+            self.url = url
+            self.urlOrig = urlOrig
+            self.text = text
+        }
+    }
+
     public let id: Int
     public let name: String
     public let image: URL?
+    public let coverHDURL: URL?
+    public let images: [ImageModel]
     public let correctLevel: Float
     public let year: Int
     public let planDate: String
@@ -23,6 +40,8 @@ public final class EditionModel {
     public init(id: Int,
                 name: String,
                 image: URL?,
+                coverHDURL: URL?,
+                images: [ImageModel],
                 correctLevel: Float,
                 year: Int,
                 planDate: String,
@@ -42,6 +61,8 @@ public final class EditionModel {
         self.id = id
         self.name = name
         self.image = image
+        self.coverHDURL = coverHDURL
+        self.images = images
         self.correctLevel = correctLevel
         self.year = year
         self.planDate = planDate
@@ -57,5 +78,11 @@ public final class EditionModel {
         self.description = description
         self.notes = notes
         self.planDescription = planDescription
+    }
+}
+
+extension EditionModel {
+    public var biggestImageURL: URL? {
+        return coverHDURL ?? image
     }
 }

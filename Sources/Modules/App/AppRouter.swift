@@ -1,24 +1,61 @@
 import Foundation
 import UIKit
+import SafariServices
+import AVFoundation
+import RxSwift
 import ALLKit
 import FantLabModels
 import FantLabLayoutSpecs
 import FantLabStyle
 import FantLabBaseUI
-import SafariServices
+import FantLabWebAPI
+import FantLabUtils
 
-final class AppRouter: NSObject, UINavigationControllerDelegate {
-    static let shared = AppRouter()
+private final class RootNavigationController: UINavigationController, UINavigationControllerDelegate {
+    var onSearch: (() -> Void)?
+    var onShare: ((URL) -> Void)?
 
-    private override init() {
-        super.init()
+    override func viewDidLoad() {
+        super.viewDidLoad()
 
-        do {
-            navigationController.delegate = self
+        view.backgroundColor = UIColor.white
+        Appearance.setup(navigationBar: navigationBar)
+        delegate = self
+    }
 
-            Appearance.setup(navigationBar: navigationController.navigationBar)
+    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+        viewController.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+
+        let searchItem = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(search))
+
+        if viewController is WebURLProvider {
+            let shareItem = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(share))
+
+            viewController.navigationItem.rightBarButtonItems = [searchItem, shareItem]
+        } else {
+            viewController.navigationItem.rightBarButtonItems = [searchItem]
+        }
+    }
+
+    @objc
+    private func search() {
+        onSearch?()
+    }
+
+    @objc
+    private func share() {
+        guard let webURLProvider = topViewController as? WebURLProvider, let url = webURLProvider.webURL else {
+            return
         }
 
+        onShare?(url)
+    }
+}
+
+final class AppRouter {
+    static let shared = AppRouter()
+
+    private init() {
         do {
             let imageVC = ImageBackgroundViewController()
             imageVC.addChild(navigationController)
@@ -34,26 +71,156 @@ final class AppRouter: NSObject, UINavigationControllerDelegate {
             window.tintColor = Colors.flBlue
         }
 
-        navigationController.pushViewController(SearchViewController(), animated: false)
+        navigationController.onSearch = { [weak self] in
+            self?.presentSearch()
+        }
+
+        navigationController.onShare = { [weak self] url in
+            self?.share(url: url)
+        }
+
+        do {
+            let startVC = StartViewController()
+            startVC.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .camera, target: self, action: #selector(showScannerTapped))
+
+            navigationController.pushViewController(startVC, animated: false)
+        }
     }
 
     let window = UIWindow()
 
-    private let navigationController = UINavigationController()
+    private let navigationController = RootNavigationController()
+    private lazy var searchVC = SearchViewController()
 
     // MARK: -
 
-    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
-        viewController.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+    @objc
+    private func showScannerTapped() {
+        tryShowScanner()
     }
 
-    // MARK: -
+    private func tryShowScanner() {
+        let authorizationStatus = AVCaptureDevice.authorizationStatus(for: .video)
 
-    func share(url: URL) {
-        let vc = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+        if authorizationStatus == .notDetermined {
+            AVCaptureDevice.requestAccess(for: .video) { [weak self] _ in
+                self?.tryShowScanner()
+            }
+
+            return
+        }
+
+        if authorizationStatus == .authorized {
+            if let vc = BarcodeScannerViewController() {
+                vc.modalPresentationStyle = .overFullScreen
+
+                vc.close = { [weak self] code in
+                    self?.navigationController.dismiss(animated: true, completion: {
+                        code.flatMap({
+                            self?.openEditionWith(isbn: $0)
+                        })
+                    })
+                }
+
+                navigationController.present(vc, animated: true, completion: nil)
+            } else {
+                let alert = Alert()
+                    .set(title: "Камера не доступна")
+                    .set(cancelAction: "Закрыть") {}
+
+                let alertVC = UIAlertController(alert: alert, preferredStyle: .alert)
+
+                navigationController.present(alertVC, animated: true, completion: nil)
+            }
+        } else {
+            let alert = Alert()
+                .set(title: "Требуется доступ к камере")
+                .add(positiveAction: "Настройки") {
+                    if let url = URL(string: UIApplication.openSettingsURLString) {
+                        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                    }
+                }
+                .set(cancelAction: "Закрыть") {}
+
+            let alertVC = UIAlertController(alert: alert, preferredStyle: .alert)
+
+            navigationController.present(alertVC, animated: true, completion: nil)
+        }
+    }
+
+    private func presentSearch() {
+        searchVC.modalPresentationStyle = .overFullScreen
+        searchVC.modalTransitionStyle = .crossDissolve
+
+        navigationController.present(searchVC, animated: true, completion: nil)
+    }
+
+    private func share(url: URL) {
+        let alert = Alert()
+            .add(positiveAction: "Поделиться") { [weak self] in
+                let vc = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+
+                self?.navigationController.present(vc, animated: true, completion: nil)
+            }
+            .add(positiveAction: "Открыть веб-версию") { [weak self] in
+                self?.openWebURL(url: url)
+            }
+            .set(cancelAction: "Отмена") {}
+
+        let alertVC = UIAlertController(alert: alert, preferredStyle: .actionSheet)
+
+        navigationController.present(alertVC, animated: true, completion: nil)
+    }
+
+    private func openWebURL(url: URL) {
+        if url.host != nil && (url.scheme == "http" || url.scheme == "https") {
+            openSafeWebURL(url: url)
+
+            return
+        }
+
+        if let fantLabURL = URL.from(string: url.absoluteString, defaultHost: Hosts.portal, defaultScheme: "https") {
+            openSafeWebURL(url: fantLabURL)
+
+            return
+        }
+
+        let alert = Alert()
+            .set(title: url.absoluteString)
+            .add(positiveAction: "Скопировать") {
+                UIPasteboard.general.url = url
+            }
+            .set(cancelAction: "Закрыть") {}
+
+        let alertVC = UIAlertController(alert: alert, preferredStyle: .alert)
+
+        navigationController.present(alertVC, animated: true, completion: nil)
+    }
+
+    private func openSafeWebURL(url: URL) {
+        let vc = SFSafariViewController(url: url)
+        vc.preferredControlTintColor = Colors.flBlue
 
         navigationController.present(vc, animated: true, completion: nil)
     }
+
+    private func openAuthor(id: Int, isOpened: Bool) {
+        if isOpened {
+            openAuthor(id: id)
+
+            return
+        }
+
+        let alert = Alert()
+            .set(title: "Страница автора находится в разработке")
+            .set(cancelAction: "OK") {}
+
+        let alertVC = UIAlertController(alert: alert, preferredStyle: .alert)
+
+        navigationController.present(alertVC, animated: true, completion: nil)
+    }
+
+    // MARK: -
 
     func openWork(id: Int) {
         let vc = WorkViewController(workId: id)
@@ -71,6 +238,40 @@ final class AppRouter: NSObject, UINavigationControllerDelegate {
         let vc = EditionViewController(editionId: id)
 
         navigationController.pushViewController(vc, animated: true)
+    }
+
+    func openEditionWith(isbn: String) {
+        let vc = EditionViewController(isbn: isbn)
+
+        navigationController.pushViewController(vc, animated: true)
+    }
+
+    func openWorkAuthors(work: WorkModel) {
+        guard !work.authors.isEmpty else {
+            return
+        }
+
+        if work.authors.count == 1 {
+            let author = work.authors[0]
+
+            openAuthor(id: author.id, isOpened: author.isOpened)
+
+            return
+        }
+
+        let alert = Alert()
+
+        work.authors.forEach { author in
+            alert.add(positiveAction: author.name, perform: { [weak self] in
+                self?.openAuthor(id: author.id, isOpened: author.isOpened)
+            })
+        }
+
+        alert.set(cancelAction: "Закрыть") {}
+
+        let alertVC = UIAlertController(alert: alert, preferredStyle: .actionSheet)
+
+        navigationController.present(alertVC, animated: true, completion: nil)
     }
 
     func openWorkReviews(workId: Int, reviewsCount: Int) {
@@ -134,13 +335,6 @@ final class AppRouter: NSObject, UINavigationControllerDelegate {
             return
         }
 
-        if url.host != nil && (url.scheme == "http" || url.scheme == "https") {
-            let vc = SFSafariViewController(url: url)
-            vc.preferredControlTintColor = Colors.flBlue
-
-            navigationController.present(vc, animated: true, completion: nil)
-
-            return
-        }
+        openWebURL(url: url)
     }
 }

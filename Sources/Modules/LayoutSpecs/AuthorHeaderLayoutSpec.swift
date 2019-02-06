@@ -36,7 +36,7 @@ public final class AuthorHeaderLayoutSpec: ModelLayoutSpec<AuthorModel> {
 
             if !dateText.isEmpty {
                 dateString = dateText.attributed()
-                    .font(Fonts.system.medium(size: 13))
+                    .font(Fonts.system.medium(size: 11))
                     .foregroundColor(UIColor.gray)
                     .make()
             } else {
@@ -66,7 +66,7 @@ public final class AuthorHeaderLayoutSpec: ModelLayoutSpec<AuthorModel> {
 
         if let string = otherNamesString {
             otherNamesNode = LayoutNode(sizeProvider: string, config: { node in
-                node.marginTop = 12
+                node.marginTop = 8
             }) { (label: UILabel, _) in
                 label.numberOfLines = 0
                 label.attributedText = string
