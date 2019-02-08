@@ -3,6 +3,8 @@ import UIKit
 import FantLabUtils
 
 public final class FLText {
+    public static let linkAttribute: NSAttributedString.Key = NSAttributedString.Key(rawValue: "FLLink")
+
     public enum Item {
         case string(NSAttributedString)
         case hidden(string: NSAttributedString, name: String)
@@ -60,23 +62,48 @@ private final class FLTextBuilder {
                         mutableString.addAttributes(decorator.linkAttributes, range: nsRange)
 
                         if setupLinkAttribute {
-                            mutableString.addAttribute(.link, value: url, range: nsRange)
+                            mutableString.addAttribute(FLText.linkAttribute,
+                                                       value: url,
+                                                       range: nsRange)
                         }
                     }
                 case "autor", "work", "edition", "person", "user", "art", "dictor", "series", "film", "translator":
-                    let link = "https://fantlab.ru/\(node.tag.name)\(node.tag.value)"
+                    let link = "/\(node.tag.name)\(node.tag.value)"
 
                     if let url = URL(string: link) {
                         mutableString.addAttributes(decorator.linkAttributes, range: nsRange)
 
                         if setupLinkAttribute {
-                            mutableString.addAttribute(.link, value: url, range: nsRange)
+                            mutableString.addAttribute(FLText.linkAttribute,
+                                                       value: url,
+                                                       range: nsRange)
                         }
                     }
                 default:
                     break
                 }
             }
+
+            #warning("TODO:")
+
+//            if let linkDetector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue) {
+//                let matches = linkDetector.matches(in: mutableString.string,
+//                                                   range: mutableString.fullRange)
+//
+//                matches.forEach {
+//                    guard let url = $0.url else {
+//                        return
+//                    }
+//
+//                    mutableString.addAttributes(decorator.linkAttributes, range: $0.range)
+//
+//                    if setupLinkAttribute {
+//                        mutableString.addAttribute(FLText.linkAttribute,
+//                                                   value: url,
+//                                                   range: $0.range)
+//                    }
+//                }
+//            }
 
             mutableString.fixAttributes(in: mutableString.fullRange)
             mutableString.endEditing()

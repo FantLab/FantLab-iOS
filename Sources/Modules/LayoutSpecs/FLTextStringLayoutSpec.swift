@@ -1,51 +1,77 @@
 import Foundation
 import UIKit
 import ALLKit
+import FantLabUtils
 import FantLabText
 
-private final class TextViewContainer: UIView, UITextViewDelegate {
-    let textView = UITextView()
+private final class TextView: UIView {
+    var onURLTap: ((URL) -> Void)?
 
-    var openURL: ((URL) -> Void)?
+    var textStack: InteractiveTextStack! {
+        didSet {
+            let size = bounds.size
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+            DispatchQueue.global().async { [weak self] in
+                let image = self?.textStack.render(size: size)
 
-        textView.clipsToBounds = false
-        textView.isScrollEnabled = false
-        textView.scrollsToTop = false
-        textView.isEditable = false
-        textView.isSelectable = true
-        textView.bounces = false
-        textView.bouncesZoom = false
-        textView.showsHorizontalScrollIndicator = false
-        textView.showsVerticalScrollIndicator = false
-        textView.isExclusiveTouch = true
-        textView.contentInset = .zero
-        textView.contentInsetAdjustmentBehavior = .never
-        textView.textContainerInset = .zero
-        textView.textContainer.lineFragmentPadding = 0
-        textView.layoutManager.usesFontLeading = false
-        textView.dataDetectorTypes = .link
-        textView.delegate = self
-
-        addSubview(textView)
+                DispatchQueue.main.async {
+                    self?.layer.contents = image?.cgImage
+                }
+            }
+        }
     }
 
-    required init?(coder aDecoder: NSCoder) {
-        fatalError()
+    // MARK: -
+
+    private lazy var selectionLayer = CAShapeLayer()
+
+    private func linkRangeFrom(touch: UITouch?) -> InteractiveTextStack.LinkRange? {
+        guard let point = touch?.location(in: self), let characterIndex = textStack.characterIndexAt(point: point) else {
+            return nil
+        }
+
+        return textStack.linkRangeAt(characterIndex: characterIndex)
     }
 
-    override func layoutSubviews() {
-        super.layoutSubviews()
+    // MARK: -
 
-        textView.frame = bounds
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
+
+        guard let linkRange = linkRangeFrom(touch: touches.first) else {
+            return
+        }
+
+        if selectionLayer.superlayer == nil {
+            layer.addSublayer(selectionLayer)
+
+            selectionLayer.frame = bounds
+            selectionLayer.fillColor = UIColor.black.withAlphaComponent(0.3).cgColor
+        }
+
+        selectionLayer.path = textStack.selectionPathFor(glyphRange: linkRange.range).cgPath
     }
 
-    func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
-        openURL?(URL)
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesEnded(touches, with: event)
 
-        return false
+        let linkRange = linkRangeFrom(touch: touches.first)
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+            self?.selectionLayer.path = nil
+
+            linkRange.flatMap({
+                self?.onURLTap?($0.url)
+            })
+        }
+    }
+
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesCancelled(touches, with: event)
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+            self?.selectionLayer.path = nil
+        }
     }
 }
 
@@ -66,10 +92,12 @@ public struct FLTextStringLayoutModel {
 
 public final class FLTextStringLayoutSpec: ModelLayoutSpec<FLTextStringLayoutModel> {
     public override func makeNodeFrom(model: FLTextStringLayoutModel, sizeConstraints: SizeConstraints) -> LayoutNode {
-        let textNode = LayoutNode(sizeProvider: model.string, config: nil) { (view: TextViewContainer, _) in
-            view.textView.linkTextAttributes = model.linkAttributes
-            view.textView.attributedText = model.string
-            view.openURL = model.openURL
+        let textStack = InteractiveTextStack(string: model.string, linkAttribute: FLText.linkAttribute)
+
+        let textNode = LayoutNode(sizeProvider: textStack, config: nil) { (view: TextView, _) in
+            view.onURLTap = model.openURL
+
+            view.textStack = textStack
         }
 
         let contentNode = LayoutNode(children: [textNode], config: { node in
