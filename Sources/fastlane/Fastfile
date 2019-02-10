@@ -18,7 +18,8 @@ platform :ios do
 
 		crashlytics(
 			api_token: "e48f5ec42a49c05139083ca3c19049916013ca2a",
-			build_secret: build_secret
+			build_secret: build_secret,
+			groups: 'fantlab-testers'
 			)
 	end
 end
