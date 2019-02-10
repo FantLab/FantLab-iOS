@@ -1,7 +1,7 @@
 import Foundation
 
 @dynamicMemberLookup
-public class JSON: CustomDebugStringConvertible, CustomStringConvertible {
+public class DynamicJSON: CustomDebugStringConvertible, CustomStringConvertible {
     private let object: Any?
 
     public init(_ object: Any?) {
@@ -37,8 +37,8 @@ public class JSON: CustomDebugStringConvertible, CustomStringConvertible {
         return object != nil
     }
 
-    public var array: [JSON] {
-        return (object as? [Any])?.map({ JSON($0) }) ?? []
+    public var array: [DynamicJSON] {
+        return (object as? [Any])?.map({ DynamicJSON($0) }) ?? []
     }
 
     public var keys: [String] {
@@ -47,17 +47,17 @@ public class JSON: CustomDebugStringConvertible, CustomStringConvertible {
 
     // MARK: -
 
-    public subscript(_ index: Int) -> JSON {
-        return JSON((object as? [Any])?[safe: index])
+    public subscript(_ index: Int) -> DynamicJSON {
+        return DynamicJSON((object as? [Any])?[safe: index])
     }
 
-    public subscript(_ key: String) -> JSON {
-        return JSON((object as? [String: Any])?[key])
+    public subscript(_ key: String) -> DynamicJSON {
+        return DynamicJSON((object as? [String: Any])?[key])
     }
 
     // MARK: - dynamicMemberLookup
 
-    public subscript(dynamicMember key: String) -> JSON {
+    public subscript(dynamicMember key: String) -> DynamicJSON {
         return self[key]
     }
 
@@ -88,7 +88,7 @@ public class JSON: CustomDebugStringConvertible, CustomStringConvertible {
     }
 }
 
-extension JSON {
+extension DynamicJSON {
     public var stringValue: String {
         return string ?? ""
     }

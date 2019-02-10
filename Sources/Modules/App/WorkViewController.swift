@@ -174,8 +174,12 @@ final class WorkViewController: ImageBackedListViewController, WorkContentBuilde
         AppRouter.shared.openWork(id: id)
     }
 
-    func onReviewTap(review: WorkReviewModel) {
-        AppRouter.shared.openReview(model: review)
+    func onReviewUserTap(userId: Int) {
+        AppRouter.shared.openUserProfile(id: userId)
+    }
+
+    func onReviewTextTap(review: WorkReviewModel) {
+        AppRouter.shared.openReview(model: review, headerMode: .user)
     }
 
     func onReviewsErrorTap() {

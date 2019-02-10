@@ -13,7 +13,8 @@ public final class WorkReviewsShortListContentBuilder: ListContentBuilder {
 
     // MARK: -
 
-    var onReviewTap: ((WorkReviewModel) -> Void)?
+    let singleReviewContentBuilder = WorkReviewContentBuilder(headerMode: .user)
+
     var onShowAllReviewsTap: ((WorkModel) -> Void)?
 
     // MARK: -
@@ -22,29 +23,10 @@ public final class WorkReviewsShortListContentBuilder: ListContentBuilder {
         var items: [ListItem] = []
 
         model.reviews.forEach { review in
-            let itemId = "review_" + String(review.id)
-
-            let headerItem = ListItem(
-                id: itemId + "_header",
-                layoutSpec: WorkReviewHeaderLayoutSpec(model: review)
-            )
-
-            let textItem = ListItem(
-                id: itemId + "_text",
-                layoutSpec: WorkReviewTextLayoutSpec(model: review)
-            )
-
-            textItem.didSelect = { [weak self] cell, _ in
-                CellSelection.scale(cell: cell, action: {
-                    self?.onReviewTap?(review)
-                })
-            }
-
-            items.append(headerItem)
-            items.append(textItem)
+            items.append(contentsOf: singleReviewContentBuilder.makeListItemsFrom(model: review))
 
             items.append(ListItem(
-                id: itemId + "_separator",
+                id: "review_\(review.id)_sep",
                 layoutSpec: ItemSeparatorLayoutSpec(model: Colors.separatorColor)
             ))
         }

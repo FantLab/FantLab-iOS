@@ -9,7 +9,7 @@ final class JSONConverter {
         return id > 0 && id != 10 && id != 100 // Журнал и Межавторский цикл (для них бэк не отдает жсон как для других авторов)
     }
 
-    static func makeWorkModelFrom(json: JSON) -> WorkModel {
+    static func makeWorkModelFrom(json: DynamicJSON) -> WorkModel {
         return WorkModel(
             id: json.work_id.intValue,
             name: json.work_name.stringValue,
@@ -74,13 +74,13 @@ final class JSONConverter {
         )
     }
 
-    static func makeEditionBlocksFrom(json: JSON) -> [EditionBlockModel] {
+    static func makeEditionBlocksFrom(json: DynamicJSON) -> [EditionBlockModel] {
         return json.keys.sorted().map { key -> EditionBlockModel in
             makeEditionBlockFrom(json: json[key])
         }
     }
 
-    static func makeEditionBlockFrom(json: JSON) -> EditionBlockModel {
+    static func makeEditionBlockFrom(json: DynamicJSON) -> EditionBlockModel {
         return EditionBlockModel(
             type: json.name.stringValue,
             title: json.title.stringValue,
@@ -98,7 +98,7 @@ final class JSONConverter {
         )
     }
 
-    static func makeWorkGenreFrom(json: JSON) -> WorkModel.GenreGroupModel.GenreModel {
+    static func makeWorkGenreFrom(json: DynamicJSON) -> WorkModel.GenreGroupModel.GenreModel {
         return WorkModel.GenreGroupModel.GenreModel(
             id: json.genre_id.intValue,
             label: json.label.stringValue,
@@ -110,7 +110,7 @@ final class JSONConverter {
         )
     }
 
-    static func makeAwardListFrom(json: [JSON]) -> [AwardPreviewModel] {
+    static func makeAwardListFrom(json: [DynamicJSON]) -> [AwardPreviewModel] {
         let jsonTable = Dictionary(grouping: json) { $0.award_id.stringValue }
 
         let awards = jsonTable.map { (_, group) in
@@ -140,9 +140,9 @@ final class JSONConverter {
         })
     }
 
-    static func makeWorkReviewsFrom(json: JSON) -> [WorkReviewModel] {
+    static func makeWorkReviewsFrom(json: DynamicJSON) -> [WorkReviewModel] {
         return json.items.array.map {
-            WorkReviewModel(
+            return WorkReviewModel(
                 id: $0.response_id.intValue,
                 date: Date.from(string: $0.response_date.stringValue, format: "yyyy-MM-dd HH:mm:ss"),
                 text: $0.response_text.stringValue,
@@ -152,12 +152,24 @@ final class JSONConverter {
                     id: $0.user_id.intValue,
                     name: $0.user_name.stringValue,
                     avatar: URL.from(string: $0.user_avatar.stringValue)
+                ),
+                work: WorkPreviewModel(
+                    id: $0.work_id.intValue,
+                    name: $0.work_name.stringValue,
+                    nameOrig: $0.work_name_orig.stringValue,
+                    workType: $0.work_type.stringValue,
+                    imageURL: URL.from(string: $0.work_image.stringValue),
+                    year: $0.work_year.intValue,
+                    authors: [$0.work_author.string ?? $0.work_author_orig.stringValue],
+                    rating: 0,
+                    votes: 0,
+                    reviewsCount: 0
                 )
             )
         }
     }
 
-    static func makeWorkPreviewsFrom(json: JSON) -> [WorkPreviewModel] {
+    static func makeWorkPreviewsFrom(json: DynamicJSON) -> [WorkPreviewModel] {
         return json.array.map {
             return WorkPreviewModel(
                 id: $0.id.intValue,
@@ -178,7 +190,7 @@ final class JSONConverter {
         }
     }
 
-    static func makeAuthorPreviewsFrom(json: JSON) -> [AuthorPreviewModel] {
+    static func makeAuthorPreviewsFrom(json: DynamicJSON) -> [AuthorPreviewModel] {
         return json.array.map({
             AuthorPreviewModel(
                 id: $0.id.intValue,
@@ -188,7 +200,7 @@ final class JSONConverter {
         })
     }
 
-    static func makeAuthorModelFrom(json: JSON) -> AuthorModel {
+    static func makeAuthorModelFrom(json: DynamicJSON) -> AuthorModel {
         return AuthorModel(
             id: json.id.intValue,
             isOpened: json.is_opened.boolValue,
@@ -214,7 +226,7 @@ final class JSONConverter {
         )
     }
 
-    static func makeWorksBlockFrom(json: JSON) -> [ChildWorkModel] {
+    static func makeWorksBlockFrom(json: DynamicJSON) -> [ChildWorkModel] {
         var items: [ChildWorkModel] = [
             ChildWorkModel(
                 id: 0,
@@ -238,7 +250,7 @@ final class JSONConverter {
         return items
     }
 
-    private static func makeAuthorChildWorksFrom(json: JSON, storage: inout [ChildWorkModel]) {
+    private static func makeAuthorChildWorksFrom(json: DynamicJSON, storage: inout [ChildWorkModel]) {
         json.array.forEach {
             let model = ChildWorkModel(
                 id: $0.work_id.intValue,
@@ -262,7 +274,7 @@ final class JSONConverter {
         }
     }
 
-    static func makeEditionFrom(json: JSON) -> EditionModel {
+    static func makeEditionFrom(json: DynamicJSON) -> EditionModel {
         var isbn = json.isbns[0].stringValue
 
         // 978-2-2-07-25804-0 [<small>2-207-25804-1</small>]
@@ -302,6 +314,34 @@ final class JSONConverter {
             description: json["description"].stringValue,
             notes: json.notes.stringValue,
             planDescription: json.plan_description.stringValue
+        )
+    }
+
+    static func makeUserProfileFrom(json: DynamicJSON) -> UserProfileModel {
+        let sex: UserProfileModel.Sex?
+
+        switch json.sex.stringValue {
+        case "m":
+            sex = .male
+        case "f":
+            sex = .female
+        default:
+            sex = nil
+        }
+
+        return UserProfileModel(
+            id: json.user_id.intValue,
+            login: json.login.stringValue,
+            name: json.fio.stringValue,
+            avatar: URL.from(string: json.avatar.stringValue),
+            birthDate: Date.from(string: json.birthday.stringValue, format: "yyyy-MM-dd HH:mm:ss"),
+            sex: sex,
+            userClass: json.class_name.stringValue,
+            location: json.location.stringValue,
+            onlineDate: Date.from(string: json.date_of_last_action.stringValue, format: "yyyy-MM-dd HH:mm:ss"),
+            registrationDate: Date.from(string: json.date_of_reg.stringValue, format: "yyyy-MM-dd HH:mm:ss"),
+            isBlocked: json.block.boolValue,
+            reviewsCount: json.responsecount.intValue
         )
     }
 }

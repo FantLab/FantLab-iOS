@@ -22,13 +22,15 @@ public final class WorkReviewModel {
     public let votes: Int
     public let mark: Int
     public let user: UserModel
+    public let work: WorkPreviewModel
 
     public init(id: Int,
                 date: Date?,
                 text: String,
                 votes: Int,
                 mark: Int,
-                user: UserModel) {
+                user: UserModel,
+                work: WorkPreviewModel) {
 
         self.id = id
         self.date = date
@@ -36,5 +38,6 @@ public final class WorkReviewModel {
         self.votes = votes
         self.mark = mark
         self.user = user
+        self.work = work
     }
 }

@@ -16,7 +16,7 @@ public final class GetAuthorNetworkRequest: NetworkRequest {
     }
 
     public func parse(response: URLResponse, data: Data) throws -> AuthorModel {
-        let json = try JSON(jsonData: data)
+        let json = try DynamicJSON(jsonData: data)
 
         let author = JSONConverter.makeAuthorModelFrom(json: json)
 

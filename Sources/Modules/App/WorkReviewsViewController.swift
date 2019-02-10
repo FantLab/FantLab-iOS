@@ -29,14 +29,42 @@ final class WorkReviewsViewController: ListViewController {
         state: .initial
     ))
 
-    private let workId: Int
     private let reviewsCount: Int
+    private let reviewHeaderMode: WorkReviewHeaderMode
+    private let makeRequestObservable: (Int, ReviewsSort) -> Observable<[WorkReviewModel]>
     private let requestSubject = PublishSubject<ReviewsSort>()
-    private let contentBuilder = WorkReviewsListContentBuilder()
+    private let contentBuilder: WorkReviewsListContentBuilder
 
     init(workId: Int, reviewsCount: Int) {
-        self.workId = workId
         self.reviewsCount = reviewsCount
+
+        makeRequestObservable = { (page, sort) in
+            return NetworkClient.shared.perform(request: GetWorkReviewsNetworkRequest(
+                workId: workId,
+                page: page,
+                sort: sort
+            ))
+        }
+
+        reviewHeaderMode = .user
+        contentBuilder = WorkReviewsListContentBuilder(headerMode: .user)
+
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    init(userId: Int, reviewsCount: Int) {
+        self.reviewsCount = reviewsCount
+
+        makeRequestObservable = { (page, sort) in
+            return NetworkClient.shared.perform(request: GetUserReviewsNetworkRequest(
+                userId: userId,
+                page: page,
+                sort: sort
+            ))
+        }
+
+        reviewHeaderMode = .work
+        contentBuilder = WorkReviewsListContentBuilder(headerMode: .work)
 
         super.init(nibName: nil, bundle: nil)
     }
@@ -52,12 +80,26 @@ final class WorkReviewsViewController: ListViewController {
 
         title = "Отзывы (\(reviewsCount))"
 
+        contentBuilder.stateContentBuilder.errorContentBuilder.onRetry = { [weak self] in
+            self?.loadNextPage()
+        }
+
         contentBuilder.onLastItemDisplay = { [weak self] in
             self?.loadNextPage()
         }
 
-        contentBuilder.onReviewTap = { review in
-            AppRouter.shared.openReview(model: review)
+        contentBuilder.singleReviewContentBuilder.onReviewUserTap = { userId in
+            AppRouter.shared.openUserProfile(id: userId)
+        }
+
+        contentBuilder.singleReviewContentBuilder.onReviewWorkTap = { workId in
+            AppRouter.shared.openWork(id: workId)
+        }
+
+        let headerMode = reviewHeaderMode
+
+        contentBuilder.singleReviewContentBuilder.onReviewTextTap = { review in
+            AppRouter.shared.openReview(model: review, headerMode: headerMode)
         }
 
         setupUI()
@@ -151,13 +193,7 @@ final class WorkReviewsViewController: ListViewController {
             pageToLoad = value.page + 1
         }
 
-        let request = GetWorkReviewsNetworkRequest(
-            workId: workId,
-            page: pageToLoad,
-            sort: sort
-        )
-
-        return NetworkClient.shared.perform(request: request)
+        return makeRequestObservable(pageToLoad, sort)
             .do(
                 onNext: ({ [weak self] reviews in
                     guard let strongSelf = self else { return }

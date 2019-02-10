@@ -2,25 +2,25 @@ import Foundation
 import FantLabUtils
 import FantLabModels
 
-public final class GetWorkReviewsNetworkRequest: NetworkRequest {
+public final class GetUserReviewsNetworkRequest: NetworkRequest {
     public typealias ModelType = [WorkReviewModel]
 
-    private let workId: Int
+    private let userId: Int
     private let page: Int
     private let sort: ReviewsSort
 
-    public init(workId: Int, page: Int, sort: ReviewsSort) {
-        self.workId = workId
+    public init(userId: Int, page: Int, sort: ReviewsSort) {
+        self.userId = userId
         self.page = page
         self.sort = sort
     }
 
     public func makeURLRequest() -> URLRequest {
-        return URLRequest(url: URL(string: "https://\(Hosts.api)/work/\(workId)/responses?sort=\(sort.rawValue)&page=\(page)")!)
+        return URLRequest(url: URL(string: "https://\(Hosts.api)/user/\(userId)/responses?sort=\(sort.rawValue)&page=\(page)")!)
     }
 
     public func parse(response: URLResponse, data: Data) throws -> [WorkReviewModel] {
-        let json = try JSON(jsonData: data)
+        let json = try DynamicJSON(jsonData: data)
 
         return JSONConverter.makeWorkReviewsFrom(json: json)
     }

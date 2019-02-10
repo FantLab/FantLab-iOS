@@ -43,5 +43,7 @@ public final class ImageBackgroundViewController: UIViewController {
 
         contentView.alpha = 1 - position
         imageView.alpha = position
+
+        imageView.isHidden = position.isZero
     }
 }

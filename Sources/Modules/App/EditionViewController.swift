@@ -74,8 +74,6 @@ final class EditionViewController: ImageBackedListViewController, WebURLProvider
             .disposed(by: disposeBag)
     }
 
-    // MARK: -
-
     private func loadEdition() {
         if state.value.isLoading || state.value.isIdle {
             return

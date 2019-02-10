@@ -16,7 +16,7 @@ public final class GetWorkNetworkRequest: NetworkRequest {
     }
 
     public func parse(response: URLResponse, data: Data) throws -> WorkModel {
-        let json = try JSON(jsonData: data)
+        let json = try DynamicJSON(jsonData: data)
 
         let work = JSONConverter.makeWorkModelFrom(json: json)
 

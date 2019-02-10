@@ -23,7 +23,7 @@ public final class MainSearchNetworkRequest: NetworkRequest {
     }
 
     public func parse(response: URLResponse, data: Data) throws -> MainSearchResult {
-        let json = try JSON(jsonData: data)
+        let json = try DynamicJSON(jsonData: data)
 
         let works = JSONConverter.makeWorkPreviewsFrom(json: json.works)
         let authors = JSONConverter.makeAuthorPreviewsFrom(json: json.authors)

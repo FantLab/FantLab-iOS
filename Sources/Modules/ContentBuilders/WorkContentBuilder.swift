@@ -26,7 +26,8 @@ public protocol WorkContentBuilderDelegate: class {
     func onDescriptionTap(work: WorkModel)
     func onExpandOrCollapse()
     func onWorkTap(id: Int)
-    func onReviewTap(review: WorkReviewModel)
+    func onReviewUserTap(userId: Int)
+    func onReviewTextTap(review: WorkReviewModel)
     func onShowAllReviewsTap(work: WorkModel)
     func onReviewsErrorTap()
     func onAwardsTap(work: WorkModel)
@@ -42,8 +43,12 @@ public final class WorkContentBuilder: ListContentBuilder {
     private let reviewContentBuilder = DataStateContentBuilder(dataContentBuilder: WorkReviewsShortListContentBuilder())
 
     public init() {
-        reviewContentBuilder.dataContentBuilder.onReviewTap = { [weak self] review in
-            self?.delegate?.onReviewTap(review: review)
+        reviewContentBuilder.dataContentBuilder.singleReviewContentBuilder.onReviewUserTap = { [weak self] userId in
+            self?.delegate?.onReviewUserTap(userId: userId)
+        }
+
+        reviewContentBuilder.dataContentBuilder.singleReviewContentBuilder.onReviewTextTap = { [weak self] review in
+            self?.delegate?.onReviewTextTap(review: review)
         }
 
         reviewContentBuilder.dataContentBuilder.onShowAllReviewsTap = { [weak self] work in

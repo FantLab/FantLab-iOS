@@ -7,7 +7,7 @@ import FantLabUtils
 import FantLabModels
 import YYWebImage
 
-public final class WorkReviewHeaderLayoutSpec: ModelLayoutSpec<WorkReviewModel> {
+public final class WorkReviewUserHeaderLayoutSpec: ModelLayoutSpec<WorkReviewModel> {
     public override func makeNodeFrom(model: WorkReviewModel, sizeConstraints: SizeConstraints) -> LayoutNode {
         let userNameString = model.user.name.attributed()
             .font(Fonts.system.medium(size: 14))
@@ -54,6 +54,7 @@ public final class WorkReviewHeaderLayoutSpec: ModelLayoutSpec<WorkReviewModel> 
             view.layer.cornerRadius = 4
             view.layer.masksToBounds = true
             view.contentMode = .scaleAspectFill
+            view.backgroundColor = Colors.perfectGray
             view.yy_setImage(with: model.user.avatar, options: .setImageWithFadeAnimation)
         }
 

@@ -16,7 +16,7 @@ public final class GetWorkAnalogsNetworkRequest: NetworkRequest {
     }
 
     public func parse(response: URLResponse, data: Data) throws -> [WorkPreviewModel] {
-        let json = try JSON(jsonData: data)
+        let json = try DynamicJSON(jsonData: data)
 
         return JSONConverter.makeWorkPreviewsFrom(json: json)
     }

@@ -13,11 +13,15 @@ public final class WorkReviewsListContentBuilder: ListContentBuilder {
 
     // MARK: -
 
-    public init() {}
+    public init(headerMode: WorkReviewHeaderMode) {
+        singleReviewContentBuilder = WorkReviewContentBuilder(headerMode: headerMode)
+    }
+
+    public let stateContentBuilder = DataStateContentBuilder(dataContentBuilder: EmptyContentBuilder())
+    public let singleReviewContentBuilder: WorkReviewContentBuilder
 
     // MARK: -
 
-    public var onReviewTap: ((WorkReviewModel) -> Void)?
     public var onLastItemDisplay: (() -> Void)?
 
     // MARK: -
@@ -29,48 +33,25 @@ public final class WorkReviewsListContentBuilder: ListContentBuilder {
 
     public func makeListItemsFrom(model: WorkReviewsListContentModel) -> [ListItem] {
         var items: [ListItem] = model.reviews.enumerated().flatMap { (index, review) -> [ListItem] in
-            let itemId = "review_" + String(review.id)
+            var reviewItems = singleReviewContentBuilder.makeListItemsFrom(model: review)
 
-            let headerItem = ListItem(
-                id: itemId + "_header",
-                layoutSpec: WorkReviewHeaderLayoutSpec(model: review)
+            let sepItem = ListItem(
+                id: "review_\(review.id)" + "_sep",
+                layoutSpec: ItemSeparatorLayoutSpec(model: Colors.separatorColor)
             )
-
-            let textItem = ListItem(
-                id: itemId + "_text",
-                layoutSpec: WorkReviewTextLayoutSpec(model: review)
-            )
-
-            textItem.didSelect = { [weak self] cell, _ in
-                CellSelection.scale(cell: cell, action: {
-                    self?.onReviewTap?(review)
-                })
-            }
 
             if index == model.reviews.endIndex - 1 {
-                textItem.willDisplay = { [weak self] _, _ in
+                sepItem.willDisplay = { [weak self] _, _ in
                     self?.onLastItemDisplay?()
                 }
             }
 
-            let separatorItem = ListItem(
-                id: itemId + "_separator",
-                layoutSpec: ItemSeparatorLayoutSpec(model: Colors.separatorColor)
-            )
+            reviewItems.append(sepItem)
 
-            return [headerItem, textItem, separatorItem]
+            return reviewItems
         }
 
-        switch model.state {
-        case .loading:
-            let item = ListItem(id: loadingId, model: loadingId, layoutSpec: SpinnerLayoutSpec())
-
-            items.append(item)
-        case let .error(error):
-        break // TODO:
-        case .initial, .idle:
-            break
-        }
+        items.append(contentsOf: stateContentBuilder.makeListItemsFrom(model: model.state))
 
         return items
     }

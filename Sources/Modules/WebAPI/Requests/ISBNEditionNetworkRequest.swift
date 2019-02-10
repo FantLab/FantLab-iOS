@@ -18,7 +18,7 @@ public final class ISBNEditionNetworkRequest: NetworkRequest {
     }
 
     public func parse(response: URLResponse, data: Data) throws -> Int {
-        let json = try JSON(jsonData: data)
+        let json = try DynamicJSON(jsonData: data)
 
         let editionId = json[0].edition_id.intValue
 

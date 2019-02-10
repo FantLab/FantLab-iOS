@@ -5,7 +5,7 @@ import AVFoundation
 import RxSwift
 import ALLKit
 import FantLabModels
-import FantLabLayoutSpecs
+import FantLabContentBuilders
 import FantLabStyle
 import FantLabBaseUI
 import FantLabWebAPI
@@ -246,6 +246,12 @@ final class AppRouter {
         navigationController.pushViewController(vc, animated: true)
     }
 
+    func openUserProfile(id: Int) {
+        let vc = UserProfileViewController(userId: id)
+
+        navigationController.pushViewController(vc, animated: true)
+    }
+
     func openWorkAuthors(work: WorkModel) {
         guard !work.authors.isEmpty else {
             return
@@ -280,13 +286,32 @@ final class AppRouter {
         navigationController.pushViewController(vc, animated: true)
     }
 
-    func openReview(model: WorkReviewModel) {
-        let item = ListItem(
-            id: "review",
-            layoutSpec: WorkReviewHeaderLayoutSpec(model: model)
+    func openUserReviews(userId: Int, reviewsCount: Int) {
+        let vc = WorkReviewsViewController(userId: userId, reviewsCount: reviewsCount)
+
+        navigationController.pushViewController(vc, animated: true)
+    }
+
+    func openReview(model: WorkReviewModel, headerMode: WorkReviewHeaderMode) {
+        let contentBuilder = WorkReviewContentBuilder(
+            headerMode: headerMode,
+            showText: false
         )
 
-        openText(title: "Отзыв", string: model.text, customHeaderListItems: [item], makePhotoURL: nil)
+        contentBuilder.onReviewUserTap = { userId in
+            AppRouter.shared.openUserProfile(id: userId)
+        }
+
+        contentBuilder.onReviewWorkTap = { workId in
+            AppRouter.shared.openWork(id: workId)
+        }
+
+        let reviewItems = contentBuilder.makeListItemsFrom(model: model)
+
+        openText(title: "Отзыв",
+                 string: model.text,
+                 customHeaderListItems: reviewItems,
+                 makePhotoURL: nil)
     }
 
     func openText(title: String,
@@ -331,6 +356,12 @@ final class AppRouter {
 
         if let editionString = url.path.firstMatch(for: "edition\\d+"), let editionId = Int(editionString.dropFirst(7)) {
             openEdition(id: editionId)
+
+            return
+        }
+
+        if let userString = url.path.firstMatch(for: "user\\d+"), let userId = Int(userString.dropFirst(4)) {
+            openUserProfile(id: userId)
 
             return
         }

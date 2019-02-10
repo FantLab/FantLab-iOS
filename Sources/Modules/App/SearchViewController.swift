@@ -92,7 +92,7 @@ final class SearchViewController: UIViewController {
         textBackgroundView.pin(.right).to(cancelBtn, .left).const(-8).equal()
 
         let textField = UITextField()
-        textField.font = Fonts.system.regular(size: 15)
+        textField.font = Fonts.system.regular(size: 16)
         textField.placeholder = "Поиск авторов и произведений"
         textField.clearButtonMode = .whileEditing
         textField.all_setEventHandler(for: UIControl.Event.editingChanged) { [weak self] in

@@ -16,7 +16,7 @@ public final class GetEditionNetworkRequest: NetworkRequest {
     }
 
     public func parse(response: URLResponse, data: Data) throws -> EditionModel {
-        let json = try JSON(jsonData: data)
+        let json = try DynamicJSON(jsonData: data)
 
         let edition = JSONConverter.makeEditionFrom(json: json)
 
