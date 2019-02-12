@@ -15,7 +15,7 @@ final class JSONConverter {
             name: json.work_name.stringValue,
             origName: json.work_name_orig.stringValue,
             year: json.work_year.intValue,
-            imageURL: URL.from(string: json.image.stringValue),
+            imageURL: URL.web(json.image.stringValue),
             workType: json.work_type.stringValue,
             publishStatuses: json.publish_statuses.array.map({ $0.stringValue }),
             rating: json.rating.rating.floatValue,
@@ -89,7 +89,7 @@ final class JSONConverter {
                     id: $0.edition_id.intValue,
                     langCode: $0.lang_code.stringValue,
                     year: $0.year.intValue,
-                    coverURL: URL.from(string: "/images/editions/big/\($0.edition_id.intValue)", defaultHost: Hosts.data),
+                    coverURL: URL.web("/images/editions/big/\($0.edition_id.intValue)", host: Hosts.data),
                     correctLevel: $0.correct_level.floatValue
                 )
             }).sorted(by: { (x, y) -> Bool in
@@ -119,7 +119,7 @@ final class JSONConverter {
                 name: group[0].award_name.stringValue,
                 rusName: group[0].award_rusname.stringValue,
                 isOpen: group[0].award_is_opened.boolValue,
-                iconURL: URL.from(string: group[0].award_icon.stringValue),
+                iconURL: URL.web(group[0].award_icon.stringValue),
                 contests: group.map({
                     AwardPreviewModel.ContestModel(
                         id: $0.contest_id.intValue,
@@ -151,14 +151,14 @@ final class JSONConverter {
                 user: WorkReviewModel.UserModel(
                     id: $0.user_id.intValue,
                     name: $0.user_name.stringValue,
-                    avatar: URL.from(string: $0.user_avatar.stringValue)
+                    avatar: URL.web($0.user_avatar.stringValue)
                 ),
                 work: WorkPreviewModel(
                     id: $0.work_id.intValue,
                     name: $0.work_name.stringValue,
                     nameOrig: $0.work_name_orig.stringValue,
                     workType: $0.work_type.stringValue,
-                    imageURL: URL.from(string: $0.work_image.stringValue),
+                    imageURL: URL.web($0.work_image.stringValue),
                     year: $0.work_year.intValue,
                     authors: [$0.work_author.string ?? $0.work_author_orig.stringValue],
                     rating: 0,
@@ -176,7 +176,7 @@ final class JSONConverter {
                 name: $0.name.stringValue,
                 nameOrig: $0.name_orig.stringValue,
                 workType: $0.name_type.stringValue,
-                imageURL: URL.from(string: $0.image.stringValue),
+                imageURL: URL.web($0.image.stringValue),
                 year: $0.year.intValue,
                 authors: $0.creators.authors.array.filter({
                     isAuthorValid(id: $0.id.intValue)
@@ -195,7 +195,7 @@ final class JSONConverter {
             AuthorPreviewModel(
                 id: $0.id.intValue,
                 name: $0.title.stringValue,
-                photoURL: URL.from(string: $0.image.stringValue)
+                photoURL: URL.web($0.image.stringValue)
             )
         })
     }
@@ -209,7 +209,7 @@ final class JSONConverter {
             pseudonyms: json.name_pseudonyms.array.map({ $0.name.string ?? $0.name_orig.stringValue }).filter({ !($0.isEmpty) }),
             countryName: json.country_name.stringValue,
             countryCode: json.country_id.stringValue,
-            imageURL: URL.from(string: json.image.stringValue),
+            imageURL: URL.web(json.image.stringValue),
             birthDate: Date.from(string: json.birthday.stringValue, format: "yyyy-MM-dd"),
             deathDate: Date.from(string: json.deathday.stringValue, format: "yyyy-MM-dd"),
             bio: json.biography.stringValue,
@@ -287,8 +287,8 @@ final class JSONConverter {
 
         let images = json.images_plus.keys.flatMap({ json.images_plus[$0].array }).map({
             EditionModel.ImageModel(
-                url: URL.from(string: $0.image.stringValue),
-                urlOrig: URL.from(string: $0.image_orig.stringValue),
+                url: URL.web($0.image.stringValue),
+                urlOrig: URL.web($0.image_orig.stringValue),
                 text: $0.pic_text.stringValue
             )
         })
@@ -296,8 +296,8 @@ final class JSONConverter {
         return EditionModel(
             id: json.edition_id.intValue,
             name: json.edition_name.stringValue,
-            image: URL.from(string: json.image.stringValue),
-            coverHDURL: URL.from(string: json.images_plus.cover.array[0].image_orig.stringValue),
+            image: URL.web(json.image.stringValue),
+            coverHDURL: URL.web(json.images_plus.cover[0].image_orig.stringValue),
             images: images,
             correctLevel: json.correct_level.floatValue,
             year: json.year.intValue,
@@ -333,7 +333,7 @@ final class JSONConverter {
             id: json.user_id.intValue,
             login: json.login.stringValue,
             name: json.fio.stringValue,
-            avatar: URL.from(string: json.avatar.stringValue),
+            avatar: URL.web(json.avatar.stringValue),
             birthDate: Date.from(string: json.birthday.stringValue, format: "yyyy-MM-dd HH:mm:ss"),
             sex: sex,
             userClass: json.class_name.stringValue,

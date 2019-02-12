@@ -18,6 +18,7 @@ private final class EditionListView: UIView {
 
         adapter.collectionView.backgroundColor = UIColor.white
         adapter.collectionView.alwaysBounceHorizontal = true
+        adapter.collectionView.showsHorizontalScrollIndicator = false
 
         addSubview(adapter.collectionView)
     }
@@ -68,11 +69,12 @@ public final class EditionListLayoutSpec: ModelLayoutSpec<([EditionPreviewModel]
     public override func makeNodeFrom(model: ([EditionPreviewModel], ((Int) -> Void)?), sizeConstraints: SizeConstraints) -> LayoutNode {
         let listNode = LayoutNode(config: { node in
             node.height = 150
+            node.marginBottom = 16
         }) { (view: EditionListView, _) in
             view.openEdition = model.1
             view.set(editions: model.0)
         }
 
-        return listNode
+        return LayoutNode(children: [listNode])
     }
 }

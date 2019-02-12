@@ -29,7 +29,7 @@ public final class EditionListContentBuilder: ListContentBuilder {
             let count = block.list.count
 
             let titleItem = ListItem(
-                id: "\(i)_title",
+                id: "edition_block_\(i)_title",
                 layoutSpec: EditionsBlockTitleLayoutSpec(model: EditionsBlockTitleLayoutModel(
                     title: block.title,
                     count: count
@@ -40,7 +40,7 @@ public final class EditionListContentBuilder: ListContentBuilder {
 
             block.list.enumerated().forEach({ (j, edition) in
                 let item = ListItem(
-                    id: "\(i)_\(j)",
+                    id: "edition_block_\(i)_edition_\(j)",
                     layoutSpec: EditionPreviewLayoutSpec(model: edition)
                 )
 
@@ -66,7 +66,7 @@ public final class EditionListContentBuilder: ListContentBuilder {
             if remainder > 0 {
                 (0..<columnsCount - remainder).forEach({ j in
                     let item = ListItem(
-                        id: "\(i)_\(j)_",
+                        id: "edition_block_\(i)_edition_\(j)_placeholder",
                         layoutSpec: EmptyLayoutSpec()
                     )
 
@@ -83,7 +83,7 @@ public final class EditionListContentBuilder: ListContentBuilder {
             }
 
             let sepItem = ListItem(
-                id: "\(i)_sep",
+                id: "edition_block_\(i)_sep",
                 layoutSpec: EmptySpaceLayoutSpec(model: (Colors.perfectGray, 12))
             )
 

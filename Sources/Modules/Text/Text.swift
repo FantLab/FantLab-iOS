@@ -84,26 +84,15 @@ private final class FLTextBuilder {
                 }
             }
 
-            #warning("TODO:")
+            mutableString.string.detectURLs().forEach { (url, range) in
+                mutableString.addAttributes(decorator.linkAttributes, range: range)
 
-//            if let linkDetector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue) {
-//                let matches = linkDetector.matches(in: mutableString.string,
-//                                                   range: mutableString.fullRange)
-//
-//                matches.forEach {
-//                    guard let url = $0.url else {
-//                        return
-//                    }
-//
-//                    mutableString.addAttributes(decorator.linkAttributes, range: $0.range)
-//
-//                    if setupLinkAttribute {
-//                        mutableString.addAttribute(FLText.linkAttribute,
-//                                                   value: url,
-//                                                   range: $0.range)
-//                    }
-//                }
-//            }
+                if setupLinkAttribute {
+                    mutableString.addAttribute(FLText.linkAttribute,
+                                               value: url,
+                                               range: range)
+                }
+            }
 
             mutableString.fixAttributes(in: mutableString.fullRange)
             mutableString.endEditing()

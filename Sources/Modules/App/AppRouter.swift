@@ -173,20 +173,27 @@ final class AppRouter {
     }
 
     private func openWebURL(url: URL) {
-        if url.host != nil && (url.scheme == "http" || url.scheme == "https") {
+        if url.isWebSafe {
             openSafeWebURL(url: url)
 
             return
         }
 
-        if let fantLabURL = URL.from(string: url.absoluteString, defaultHost: Hosts.portal, defaultScheme: "https") {
+        if let fantLabURL = URL.web(url.absoluteString, host: Hosts.portal) {
             openSafeWebURL(url: fantLabURL)
 
             return
         }
 
+        if let detectedURL = url.absoluteString.detectURLs().first?.0, detectedURL.isWebSafe {
+            openSafeWebURL(url: detectedURL)
+
+            return
+        }
+
         let alert = Alert()
-            .set(title: url.absoluteString)
+            .set(title: "Не удалось перейти по ссылке")
+            .set(subtitle: url.absoluteString)
             .add(positiveAction: "Скопировать") {
                 UIPasteboard.general.url = url
             }

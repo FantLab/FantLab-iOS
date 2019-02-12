@@ -35,7 +35,7 @@ public final class UserProfileContentBuilder: ListContentBuilder {
 
         do {
             items.append(ListItem(
-                id: "properties_sep",
+                id: "profile_properties_sep",
                 layoutSpec: EmptySpaceLayoutSpec(model: (Colors.perfectGray, 8))
             ))
 
@@ -49,12 +49,12 @@ public final class UserProfileContentBuilder: ListContentBuilder {
 
         if model.reviewsCount > 0 {
             items.append(ListItem(
-                id: "reviews_sep",
+                id: "profile_reviews_sep",
                 layoutSpec: EmptySpaceLayoutSpec(model: (Colors.perfectGray, 8))
             ))
 
             let item = ListItem(
-                id: "reviews",
+                id: "profile_reviews",
                 layoutSpec: ShowAllButtonLayoutSpec(model: "Отзывы (\(model.reviewsCount))")
             )
 

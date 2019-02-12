@@ -20,7 +20,7 @@ public final class GetAuthorNetworkRequest: NetworkRequest {
 
         let author = JSONConverter.makeAuthorModelFrom(json: json)
 
-        if author.id == 0 {
+        if author.id == 0 || !author.isOpened {
             throw WebAPIError.notFound
         }
 

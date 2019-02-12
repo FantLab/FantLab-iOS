@@ -67,8 +67,6 @@ public final class WorkContentBuilder: ListContentBuilder {
     // MARK: -
 
     public func makeListItemsFrom(model: WorkContentModel) -> [ListItem] {
-        let workId = String(model.info.id)
-
         let infoString = [model.info.descriptionText, model.info.notes].compactAndJoin("\n")
 
         let hasRating = model.info.rating > 0 && model.info.votes > 0
@@ -87,7 +85,7 @@ public final class WorkContentBuilder: ListContentBuilder {
 
         do {
             let item = ListItem(
-                id: workId + "_header",
+                id: "work_header",
                 layoutSpec: WorkHeaderLayoutSpec(model: model.info)
             )
 
@@ -102,7 +100,7 @@ public final class WorkContentBuilder: ListContentBuilder {
 
         if hasRating {
             let item = ListItem(
-                id: workId + "_rating",
+                id: "work_rating",
                 layoutSpec: WorkRatingLayoutSpec(model: model.info)
             )
 
@@ -122,7 +120,7 @@ public final class WorkContentBuilder: ListContentBuilder {
                 ), tapAction: nil) {
                     if hasDescription {
                         let item = ListItem(
-                            id: workId + "_description",
+                            id: "work_description",
                             layoutSpec: FLTextPreviewLayoutSpec(model: infoString)
                         )
 
@@ -138,13 +136,13 @@ public final class WorkContentBuilder: ListContentBuilder {
                     if hasClassification {
                         if hasDescription {
                             items.append(ListItem(
-                                id: workId + "_classification_separator",
+                                id: "work_classification_sep",
                                 layoutSpec: ItemSeparatorLayoutSpec(model: Colors.separatorColor)
                             ))
                         }
 
                         items.append(ListItem(
-                            id: workId + "_classification",
+                            id: "work_classification",
                             layoutSpec: WorkGenresLayoutSpec(model: model.info)
                         ))
                     }
@@ -180,7 +178,7 @@ public final class WorkContentBuilder: ListContentBuilder {
                         self?.delegate?.onEditionsTap(work: model.info)
                     })) {
                         let item = ListItem(
-                            id: workId + "_editions",
+                            id: "work_editions",
                             layoutSpec: EditionListLayoutSpec(model: (editionList, ({ [weak self] editionId in
                                 self?.delegate?.onEditionTap(id: editionId)
                             })))
@@ -201,7 +199,7 @@ public final class WorkContentBuilder: ListContentBuilder {
                         self?.delegate?.onAwardsTap(work: model.info)
                     })) {
                         let item = ListItem(
-                            id: workId + "_awards",
+                            id: "work_awards",
                             layoutSpec: AwardIconsLayoutSpec(model: model.info.awards)
                         )
 
@@ -228,7 +226,7 @@ public final class WorkContentBuilder: ListContentBuilder {
                             return
                         }
 
-                        let nodeId = "child_node_" + String(node.id)
+                        let nodeId = "work_tree_node_" + String(node.id)
 
                         let item = ListItem(
                             id: nodeId,
@@ -259,7 +257,7 @@ public final class WorkContentBuilder: ListContentBuilder {
                         items.append(item)
 
                         items.append(ListItem(
-                            id: nodeId + "_separator",
+                            id: nodeId + "_sep",
                             layoutSpec: ItemSeparatorLayoutSpec(model: Colors.separatorColor)
                         ))
                     }
@@ -277,22 +275,22 @@ public final class WorkContentBuilder: ListContentBuilder {
                     hasArrow: false
                 ), tapAction: nil) {
                     model.info.parents.forEach { parents in
-                        parents.enumerated().forEach({ (index, parentModel) in
-                            let itemId = workId + "_parent_" + String(parentModel.id)
+                        parents.enumerated().forEach({ (index, parent) in
+                            let itemId = "work_parent_\(parent.id)"
 
                             let item = ListItem(
                                 id: itemId,
                                 layoutSpec: WorkParentModelLayoutSpec(model: WorkParentModelLayoutModel(
-                                    work: parentModel,
+                                    work: parent,
                                     level: index,
-                                    showArrow: parentModel.id > 0
+                                    showArrow: parent.id > 0
                                 ))
                             )
 
-                            if parentModel.id > 0 {
+                            if parent.id > 0 {
                                 item.didSelect = { [weak self] cell, _ in
                                     CellSelection.alpha(cell: cell, action: {
-                                        self?.delegate?.onWorkTap(id: parentModel.id)
+                                        self?.delegate?.onWorkTap(id: parent.id)
                                     })
                                 }
                             }
@@ -300,7 +298,7 @@ public final class WorkContentBuilder: ListContentBuilder {
                             items.append(item)
 
                             items.append(ListItem(
-                                id: itemId + "_separator",
+                                id: itemId + "_sep",
                                 layoutSpec: ItemSeparatorLayoutSpec(model: Colors.separatorColor)
                             ))
                         })
@@ -358,7 +356,8 @@ public final class WorkContentBuilder: ListContentBuilder {
             }
 
             let item = ListItem(
-                id: workId + "_tabs_" + model.tabIndex.rawValue,
+                id: "work_tabs",
+                model: model.tabIndex,
                 layoutSpec: TabsLayoutSpec(model: tabs)
             )
 
@@ -368,11 +367,11 @@ public final class WorkContentBuilder: ListContentBuilder {
         switch model.tabIndex {
         case .info:
             sections.enumerated().forEach { (index, section) in
-                let sectionId = workId + "_" + section.layoutModel.title
+                let sectionId = "work_section_" + section.layoutModel.title
 
                 if index > 0 || !hasTabs {
                     items.append(ListItem(
-                        id: sectionId + "_separator",
+                        id: sectionId + "_sep",
                         layoutSpec: EmptySpaceLayoutSpec(model: (Colors.perfectGray, 8))
                     ))
 
@@ -392,13 +391,18 @@ public final class WorkContentBuilder: ListContentBuilder {
 
                 section.makeListItems()
             }
+
+            items.append(ListItem(
+                id: "work_sections_bottom_spacing",
+                layoutSpec: EmptySpaceLayoutSpec(model: (UIColor.white, 64))
+            ))
         case .reviews:
             let reviewItems = reviewContentBuilder.makeListItemsFrom(model: model.reviews)
 
             items.append(contentsOf: reviewItems)
         case .analogs:
             model.analogs.forEach { analog in
-                let itemId = "analog_" + String(analog.id)
+                let itemId = "work_analog_\(analog.id)"
 
                 let item = ListItem(
                     id: itemId,
@@ -414,7 +418,7 @@ public final class WorkContentBuilder: ListContentBuilder {
                 items.append(item)
 
                 items.append(ListItem(
-                    id: itemId + "_separator",
+                    id: itemId + "_sep",
                     layoutSpec: ItemSeparatorLayoutSpec(model: Colors.separatorColor)
                 ))
             }

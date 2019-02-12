@@ -31,12 +31,12 @@ public final class TextListContentBuilder: ListContentBuilder {
         var items: [ListItem] = []
 
         items.append(ListItem(
-            id: "header_space",
+            id: "text_items_header_space",
             layoutSpec: EmptySpaceLayoutSpec(model: (UIColor.white, 16))
         ))
 
         model.text.items.enumerated().forEach { (index, item) in
-            let itemId = String(index)
+            let itemId = "text_item_\(index)"
 
             switch item {
             case let .string(string):
@@ -124,7 +124,7 @@ public final class TextListContentBuilder: ListContentBuilder {
             }
 
             items.append(ListItem(
-                id: itemId + "_separator",
+                id: itemId + "_sep",
                 layoutSpec: EmptySpaceLayoutSpec(model: (UIColor.white, 24))
             ))
         }

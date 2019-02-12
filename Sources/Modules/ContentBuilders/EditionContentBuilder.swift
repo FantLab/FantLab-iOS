@@ -58,12 +58,12 @@ public final class EditionContentBuilder: ListContentBuilder {
             )
 
             listItems.append(ListItem(
-                id: "text_sep",
+                id: "edition_text_sep",
                 layoutSpec: EmptySpaceLayoutSpec(model: (Colors.perfectGray, 8))
             ))
 
             listItems.append(ListItem(
-                id: "text_spacing",
+                id: "edition_text_spacing",
                 layoutSpec: EmptySpaceLayoutSpec(model: (UIColor.white, 16))
             ))
 
@@ -88,7 +88,7 @@ public final class EditionContentBuilder: ListContentBuilder {
                 )
 
                 let sepItem = ListItem(
-                    id: itemId + "_separator",
+                    id: itemId + "_sep",
                     layoutSpec: EmptySpaceLayoutSpec(model: (UIColor.white, 16))
                 )
 

@@ -12,7 +12,6 @@ public final class Appearance {
         navigationBar.barTintColor = Colors.flBlue
         navigationBar.isTranslucent = false
         navigationBar.shadowImage = UIImage()
-        navigationBar.setBackgroundImage(UIImage.from(color: Colors.flBlue), for: .default)
     }
 
     public static func setup(segmentedControl: UISegmentedControl) {

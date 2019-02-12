@@ -44,7 +44,7 @@ public final class AwardListContentBuilder: ListContentBuilder {
             })
 
             let sepItem = ListItem(
-                id: "award_\(i)_separator",
+                id: "award_\(i)_sep",
                 layoutSpec: ItemSeparatorLayoutSpec(model: Colors.separatorColor)
             )
 

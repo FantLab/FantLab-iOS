@@ -26,10 +26,8 @@ public final class SearchResultContentBuilder: ListContentBuilder {
         var items: [ListItem] = []
 
         model.authors.forEach { author in
-            let id = String(author.id)
-
             let item = ListItem(
-                id: id,
+                id: "author_\(author.id)",
                 layoutSpec: AuthorPreviewLayoutSpec(model: author)
             )
 
@@ -42,7 +40,7 @@ public final class SearchResultContentBuilder: ListContentBuilder {
             items.append(item)
 
             items.append(ListItem(
-                id: id + "_sep",
+                id: "author_\(author.id)_sep",
                 layoutSpec: ItemSeparatorLayoutSpec(model: Colors.separatorColor)
             ))
         }
@@ -57,10 +55,8 @@ public final class SearchResultContentBuilder: ListContentBuilder {
         }
 
         model.works.forEach { work in
-            let id = String(work.id)
-
             let item = ListItem(
-                id: id,
+                id: "work_\(work.id)",
                 layoutSpec: WorkPreviewLayoutSpec(model: work)
             )
 
@@ -73,7 +69,7 @@ public final class SearchResultContentBuilder: ListContentBuilder {
             items.append(item)
 
             items.append(ListItem(
-                id: id + "_sep",
+                id: "work_\(work.id)_sep",
                 layoutSpec: ItemSeparatorLayoutSpec(model: Colors.separatorColor)
             ))
         }

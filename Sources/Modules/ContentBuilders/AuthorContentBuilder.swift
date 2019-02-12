@@ -35,7 +35,10 @@ public final class AuthorContentBuilder: ListContentBuilder {
         // хедер
 
         do {
-            let item = ListItem(id: "author_header", layoutSpec: AuthorHeaderLayoutSpec(model: model.info))
+            let item = ListItem(
+                id: "author_header",
+                layoutSpec: AuthorHeaderLayoutSpec(model: model.info)
+            )
 
             items.append(item)
         }
@@ -71,15 +74,15 @@ public final class AuthorContentBuilder: ListContentBuilder {
                 return
             }
 
-            let id = "website_\(index)"
+            let itemId = "author_website_\(index)"
 
             items.append(ListItem(
-                id: id + "_sep",
+                id: itemId + "_sep",
                 layoutSpec: ItemSeparatorLayoutSpec(model: Colors.separatorColor)
             ))
 
             let item = ListItem(
-                id: id,
+                id: itemId,
                 layoutSpec: AuthorWebSiteLayoutSpec(model: webSite)
             )
 
@@ -132,7 +135,7 @@ public final class AuthorContentBuilder: ListContentBuilder {
                         return
                     }
 
-                    let nodeId = "child_node_" + String(node.id)
+                    let nodeId = "work_tree_node_\(node.id)"
 
                     let item = ListItem(
                         id: nodeId,
@@ -163,7 +166,7 @@ public final class AuthorContentBuilder: ListContentBuilder {
                     items.append(item)
 
                     items.append(ListItem(
-                        id: nodeId + "_separator",
+                        id: nodeId + "_sep",
                         layoutSpec: ItemSeparatorLayoutSpec(model: Colors.separatorColor)
                     ))
                 }
@@ -175,13 +178,15 @@ public final class AuthorContentBuilder: ListContentBuilder {
         }
 
         sections.enumerated().forEach { (index, section) in
+            let sectionId = "author_section_" + section.layoutModel.title
+
             items.append(ListItem(
-                id: section.layoutModel.title + "_separator",
+                id: sectionId + "_sep",
                 layoutSpec: EmptySpaceLayoutSpec(model: (Colors.perfectGray, 8))
             ))
 
             let titleItem = ListItem(
-                id: section.layoutModel.title + "_title",
+                id: sectionId + "_title",
                 layoutSpec: ListSectionTitleLayoutSpec(model: section.layoutModel)
             )
 
