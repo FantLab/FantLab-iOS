@@ -10,7 +10,7 @@ import FantLabLayoutSpecs
 import FantLabContentBuilders
 import FantLabWebAPI
 
-final class EditionViewController: ImageBackedListViewController, WebURLProvider {
+final class EditionViewController: ListViewController, WebURLProvider {
     private let state = ObservableValue<DataState<EditionModel>>(.initial)
     private let loadEditionObservable: Observable<EditionModel>
     private let contentBuilder = DataStateContentBuilder(dataContentBuilder: EditionContentBuilder())
@@ -49,10 +49,6 @@ final class EditionViewController: ImageBackedListViewController, WebURLProvider
         }
 
         setupBackgroundImageWith(urlObservable: state.observable().map({ $0.data?.biggestImageURL }))
-
-        adapter.scrollEvents.didScroll = { [weak self] scrollView in
-            self?.updateImageVisibilityWith(scrollView: scrollView)
-        }
 
         setupStateMapping()
 

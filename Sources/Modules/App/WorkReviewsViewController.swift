@@ -117,14 +117,16 @@ final class WorkReviewsViewController: ListViewController {
         adapter.collectionView.contentInset.top = 48
 
         adapter.scrollEvents.didScroll = { [weak self] scrollView in
-            self?.isSortSelectionControlHidden = (scrollView.contentOffset.y + scrollView.adjustedContentInset.top) > 10
+            self?.isSortSelectionControlHidden = scrollView.contentOffset.y > -32
         }
 
         sortSelectionControl.backgroundColor = UIColor.white
         sortSelectionControl.selectedSegmentIndex = 2
         Appearance.setup(segmentedControl: sortSelectionControl)
         view.addSubview(sortSelectionControl)
-        sortSelectionControl.pinEdges(to: view.safeAreaLayoutGuide, top: 8, left: 16, bottom: .nan, right: 16)
+        sortSelectionControl.pin(.top).to(adapter.collectionView).const(8).equal()
+        sortSelectionControl.pin(.left).to(view).const(16).equal()
+        sortSelectionControl.pin(.right).to(view).const(-16).equal()
 
         sortSelectionControl.all_setEventHandler(for: .valueChanged) { [weak self] in
             guard let strongSelf = self else { return }

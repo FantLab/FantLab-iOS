@@ -1,5 +1,5 @@
 import Foundation
 
-public protocol WebURLProvider {
+public protocol WebURLProvider: class {
     var webURL: URL? { get }
 }

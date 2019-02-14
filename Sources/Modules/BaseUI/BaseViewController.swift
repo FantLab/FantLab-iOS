@@ -7,7 +7,9 @@ open class BaseViewController: UIViewController {
     open override var preferredStatusBarStyle: UIStatusBarStyle {
         return Appearance.statusBarStyle
     }
-    
+
+    // MARK: -
+
     public let disposeBag = DisposeBag()
 
     private let viewActiveSubject = ReplaySubject<Bool>.create(bufferSize: 1)
@@ -16,12 +18,18 @@ open class BaseViewController: UIViewController {
         return viewActiveSubject
     }
 
+    // MARK: -
+
     deinit {
         viewActiveSubject.onCompleted()
     }
 
+    // MARK: -
+
     open override func viewDidLoad() {
         super.viewDidLoad()
+
+        view.backgroundColor = UIColor.white
 
         viewActiveSubject.onNext(false)
     }

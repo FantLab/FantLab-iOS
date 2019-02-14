@@ -9,7 +9,7 @@ import FantLabBaseUI
 import FantLabContentBuilders
 import FantLabWebAPI
 
-final class AuthorViewController: ImageBackedListViewController, AuthorContentBuilderDelegate, WebURLProvider {
+final class AuthorViewController: ListViewController, AuthorContentBuilderDelegate, WebURLProvider {
     private struct DataModel {
         let author: AuthorModel
         let contentRoot: WorkTreeNode
@@ -48,10 +48,6 @@ final class AuthorViewController: ImageBackedListViewController, AuthorContentBu
         }
 
         setupBackgroundImageWith(urlObservable: state.observable().map({ $0.data?.author.imageURL }))
-
-        adapter.scrollEvents.didScroll = { [weak self] scrollView in
-            self?.updateImageVisibilityWith(scrollView: scrollView)
-        }
 
         setupStateMapping()
 

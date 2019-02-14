@@ -9,7 +9,7 @@ import FantLabModels
 import FantLabWebAPI
 import FantLabContentBuilders
 
-final class UserProfileViewController: ImageBackedListViewController, WebURLProvider {
+final class UserProfileViewController: ListViewController, WebURLProvider {
     private let userId: Int
     private let state = ObservableValue<DataState<UserProfileModel>>(.initial)
     private let contentBuilder = DataStateContentBuilder(dataContentBuilder: UserProfileContentBuilder())
@@ -35,21 +35,14 @@ final class UserProfileViewController: ImageBackedListViewController, WebURLProv
             self?.loadUserProfile()
         }
 
-        setupUI()
+        setupBackgroundImageWith(urlObservable: state.observable().map({ $0.data?.avatar }))
+
         setupStateMapping()
 
         loadUserProfile()
     }
 
     // MARK: -
-
-    private func setupUI() {
-        setupBackgroundImageWith(urlObservable: state.observable().map({ $0.data?.avatar }))
-
-        adapter.scrollEvents.didScroll = { [weak self] scrollView in
-            self?.updateImageVisibilityWith(scrollView: scrollView)
-        }
-    }
 
     private func setupStateMapping() {
         state.observable()

@@ -10,7 +10,7 @@ import FantLabLayoutSpecs
 import FantLabContentBuilders
 import FantLabWebAPI
 
-final class WorkViewController: ImageBackedListViewController, WorkContentBuilderDelegate, WebURLProvider {
+final class WorkViewController: ListViewController, WorkContentBuilderDelegate, WebURLProvider {
     private struct DataModel {
         let work: WorkModel
         let analogs: [WorkPreviewModel]
@@ -52,21 +52,14 @@ final class WorkViewController: ImageBackedListViewController, WorkContentBuilde
             self?.loadWork()
         }
 
-        setupUI()
+        setupBackgroundImageWith(urlObservable: state.observable().map({ $0.data?.work.imageURL }))
+
         setupStateMapping()
 
         loadWork()
     }
 
     // MARK: -
-
-    private func setupUI() {
-        setupBackgroundImageWith(urlObservable: state.observable().map({ $0.data?.work.imageURL }))
-
-        adapter.scrollEvents.didScroll = { [weak self] scrollView in
-            self?.updateImageVisibilityWith(scrollView: scrollView)
-        }
-    }
 
     private func setupStateMapping() {
         Observable.combineLatest(state.observable(),

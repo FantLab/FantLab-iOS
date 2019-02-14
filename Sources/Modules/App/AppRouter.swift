@@ -11,44 +11,149 @@ import FantLabBaseUI
 import FantLabWebAPI
 import FantLabUtils
 
-private final class RootNavigationController: UINavigationController, UINavigationControllerDelegate {
+private final class RootNavigationController: UINavigationController, UINavigationControllerDelegate, UIGestureRecognizerDelegate {
     var onSearch: (() -> Void)?
     var onShare: ((URL) -> Void)?
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setNavigationBarHidden(true, animated: false)
+
         view.backgroundColor = UIColor.white
         Appearance.setup(navigationBar: navigationBar)
         delegate = self
+        interactivePopGestureRecognizer?.delegate = self
+    }
+
+    // MARK: -
+
+    func popWithFadeAnimation() {
+        view.layer.add(makeFadeTransition(), forKey: nil)
+        _ = popViewController(animated: false)
+    }
+
+    func pushWithFadeAnimation(viewController: UIViewController) {
+        view.layer.add(makeFadeTransition(), forKey: nil)
+        pushViewController(viewController, animated: false)
+    }
+
+    private func makeFadeTransition() -> CATransition {
+        let transition = CATransition()
+        transition.duration = 0.3
+        transition.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+        transition.type = .fade
+        return transition
+    }
+
+    // MARK: -
+
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        guard gestureRecognizer === interactivePopGestureRecognizer else {
+            return false
+        }
+
+        return viewControllers.count > 1
     }
 
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
-        viewController.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
-
-        let searchItem = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(search))
-
-        if viewController is WebURLProvider {
-            let shareItem = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(share))
-
-            viewController.navigationItem.rightBarButtonItems = [searchItem, shareItem]
-        } else {
-            viewController.navigationItem.rightBarButtonItems = [searchItem]
-        }
-    }
-
-    @objc
-    private func search() {
-        onSearch?()
-    }
-
-    @objc
-    private func share() {
-        guard let webURLProvider = topViewController as? WebURLProvider, let url = webURLProvider.webURL else {
+        guard let vc = viewController as? ListViewController else {
             return
         }
 
-        onShare?(url)
+        do {
+            var leftItems: [NavBarItem] = []
+
+            if viewControllers.count > 1 {
+                leftItems.append(makeBackItem())
+            }
+
+            if viewControllers.count > 2 {
+                leftItems.append(makeHomeItem())
+            }
+
+            if !leftItems.isEmpty {
+                vc.navBar.leftItems = leftItems
+            }
+        }
+
+        do {
+            var rightItems: [NavBarItem] = []
+
+            do {
+                let searchItem = makeSearchItem()
+
+                rightItems.append(searchItem)
+            }
+
+            if let urlProvider = viewController as? WebURLProvider {
+                let shareItem = makeShareItemFor(urlProvider: urlProvider)
+
+                rightItems.append(shareItem)
+            }
+
+            vc.navBar.rightItems = rightItems
+        }
+    }
+
+    // MARK: -
+
+    private func makeBackItem() -> NavBarItem {
+        return NavBarItem(margin: 0) { [weak self] in
+            let btn = UIButton(type: .system)
+            btn.setImage(UIImage(named: "arrow_left")?.withRenderingMode(.alwaysTemplate), for: .normal)
+            btn.contentEdgeInsets = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
+            btn.pin(.width).const(40).equal()
+            btn.pin(.height).const(40).equal()
+            btn.all_setEventHandler(for: .touchUpInside, {
+                _ = self?.popViewController(animated: true)
+            })
+            return btn
+        }
+    }
+
+    private func makeHomeItem() -> NavBarItem {
+        return NavBarItem(margin: 4) { [weak self] in
+            let btn = UIButton(type: .system)
+            btn.setImage(UIImage(named: "home")?.withRenderingMode(.alwaysTemplate).with(orientation: .down), for: .normal)
+            btn.contentEdgeInsets = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
+            btn.pin(.width).const(40).equal()
+            btn.pin(.height).const(40).equal()
+            btn.all_setEventHandler(for: .touchUpInside, {
+                _ = self?.popToRootViewController(animated: true)
+            })
+            return btn
+        }
+    }
+
+    private func makeSearchItem() -> NavBarItem {
+        return NavBarItem(margin: 4) { [weak self] in
+            let btn = UIButton(type: .system)
+            btn.setImage(UIImage(named: "search")?.withRenderingMode(.alwaysTemplate), for: .normal)
+            btn.contentEdgeInsets = UIEdgeInsets(top: 12, left: 12, bottom: 12, right: 12)
+            btn.pin(.width).const(40).equal()
+            btn.pin(.height).const(40).equal()
+            btn.all_setEventHandler(for: .touchUpInside, {
+                self?.onSearch?()
+            })
+            return btn
+        }
+    }
+
+    private func makeShareItemFor(urlProvider: WebURLProvider) -> NavBarItem {
+        return NavBarItem(margin: 8) { [weak self, weak urlProvider] in
+            let btn = UIButton(type: .system)
+            btn.setImage(UIImage(named: "share")?.withRenderingMode(.alwaysTemplate), for: .normal)
+            btn.contentEdgeInsets = UIEdgeInsets(top: 8, left: 12, bottom: 8, right: 12)
+            btn.pin(.width).const(40).equal()
+            btn.pin(.height).const(40).equal()
+            btn.all_setEventHandler(for: .touchUpInside, {
+                if let url = urlProvider?.webURL {
+                    self?.onShare?(url)
+                }
+            })
+            return btn
+        }
     }
 }
 
@@ -72,7 +177,7 @@ final class AppRouter {
         }
 
         navigationController.onSearch = { [weak self] in
-            self?.presentSearch()
+            self?.showSearch()
         }
 
         navigationController.onShare = { [weak self] url in
@@ -81,7 +186,22 @@ final class AppRouter {
 
         do {
             let startVC = StartViewController()
-            startVC.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .camera, target: self, action: #selector(showScannerTapped))
+
+            do {
+                let cameraItem = NavBarItem(margin: 8) { [weak self] in
+                    let btn = UIButton(type: .system)
+                    btn.setImage(UIImage(named: "camera")?.withRenderingMode(.alwaysTemplate), for: .normal)
+                    btn.contentEdgeInsets = UIEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
+                    btn.pin(.width).const(40).equal()
+                    btn.pin(.height).const(40).equal()
+                    btn.all_setEventHandler(for: .touchUpInside, {
+                        self?.tryShowScanner()
+                    })
+                    return btn
+                }
+
+                startVC.navBar.leftItems = [cameraItem]
+            }
 
             navigationController.pushViewController(startVC, animated: false)
         }
@@ -90,14 +210,8 @@ final class AppRouter {
     let window = UIWindow()
 
     private let navigationController = RootNavigationController()
-    private lazy var searchVC = SearchViewController()
 
     // MARK: -
-
-    @objc
-    private func showScannerTapped() {
-        tryShowScanner()
-    }
 
     private func tryShowScanner() {
         let authorizationStatus = AVCaptureDevice.authorizationStatus(for: .video)
@@ -148,11 +262,14 @@ final class AppRouter {
         }
     }
 
-    private func presentSearch() {
-        searchVC.modalPresentationStyle = .overFullScreen
-        searchVC.modalTransitionStyle = .crossDissolve
+    private func showSearch() {
+        let vc = MainSearchViewController()
 
-        navigationController.present(searchVC, animated: true, completion: nil)
+        vc.closeAction = { [weak self] in
+            self?.navigationController.popWithFadeAnimation()
+        }
+
+        navigationController.pushWithFadeAnimation(viewController: vc)
     }
 
     private func share(url: URL) {
