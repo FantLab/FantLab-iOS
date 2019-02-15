@@ -12,8 +12,10 @@ import FantLabWebAPI
 import FantLabUtils
 
 private final class RootNavigationController: UINavigationController, UINavigationControllerDelegate, UIGestureRecognizerDelegate {
-    var onSearch: (() -> Void)?
-    var onShare: ((URL) -> Void)?
+    var backAction: (() -> Void)?
+    var goHomeAction: (() -> Void)?
+    var searchAction: (() -> Void)?
+    var shareAction: ((URL) -> Void)?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -106,7 +108,7 @@ private final class RootNavigationController: UINavigationController, UINavigati
             btn.pin(.width).const(40).equal()
             btn.pin(.height).const(40).equal()
             btn.all_setEventHandler(for: .touchUpInside, {
-                _ = self?.popViewController(animated: true)
+                self?.backAction?()
             })
             return btn
         }
@@ -120,7 +122,7 @@ private final class RootNavigationController: UINavigationController, UINavigati
             btn.pin(.width).const(40).equal()
             btn.pin(.height).const(40).equal()
             btn.all_setEventHandler(for: .touchUpInside, {
-                _ = self?.popToRootViewController(animated: true)
+                self?.goHomeAction?()
             })
             return btn
         }
@@ -134,7 +136,7 @@ private final class RootNavigationController: UINavigationController, UINavigati
             btn.pin(.width).const(40).equal()
             btn.pin(.height).const(40).equal()
             btn.all_setEventHandler(for: .touchUpInside, {
-                self?.onSearch?()
+                self?.searchAction?()
             })
             return btn
         }
@@ -149,7 +151,7 @@ private final class RootNavigationController: UINavigationController, UINavigati
             btn.pin(.height).const(40).equal()
             btn.all_setEventHandler(for: .touchUpInside, {
                 if let url = urlProvider?.webURL {
-                    self?.onShare?(url)
+                    self?.shareAction?(url)
                 }
             })
             return btn
@@ -171,17 +173,26 @@ final class AppRouter {
         }
 
         do {
-            window.makeKeyAndVisible()
-
             window.tintColor = Colors.flBlue
+            window.makeKeyAndVisible()
         }
 
-        navigationController.onSearch = { [weak self] in
-            self?.showSearch()
-        }
+        do {
+            navigationController.backAction = { [weak self] in
+                _ = self?.navigationController.popViewController(animated: true)
+            }
 
-        navigationController.onShare = { [weak self] url in
-            self?.share(url: url)
+            navigationController.goHomeAction = { [weak self] in
+                self?.tryGoHome()
+            }
+
+            navigationController.searchAction = { [weak self] in
+                self?.showSearch()
+            }
+
+            navigationController.shareAction = { [weak self] url in
+                self?.share(url: url)
+            }
         }
 
         do {
@@ -212,6 +223,19 @@ final class AppRouter {
     private let navigationController = RootNavigationController()
 
     // MARK: -
+
+    private func tryGoHome() {
+        let alert = Alert()
+            .set(title: "Вернуться на главный экран?")
+            .add(positiveAction: "Да") { [weak self] in
+                _ = self?.navigationController.popToRootViewController(animated: true)
+            }
+            .set(cancelAction: "Нет") {}
+
+        let alertVC = UIAlertController(alert: alert, preferredStyle: .alert)
+
+        navigationController.present(alertVC, animated: true, completion: nil)
+    }
 
     private func tryShowScanner() {
         let authorizationStatus = AVCaptureDevice.authorizationStatus(for: .video)

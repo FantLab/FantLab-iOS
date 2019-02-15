@@ -71,6 +71,7 @@ public final class WorkModel {
     public let year: Int
     public let imageURL: URL?
     public let workType: String
+    public let workTypeKey: String
     public let publishStatuses: [String]
     public let rating: Float
     public let votes: Int
@@ -78,7 +79,6 @@ public final class WorkModel {
     public let descriptionText: String
     public let descriptionAuthor: String
     public let notes: String
-    public let linguisticAnalysis: [String]
     public let authors: [AuthorModel]
     public let children: ChildWorkList
     public let parents: [[ParentWorkModel]]
@@ -92,6 +92,7 @@ public final class WorkModel {
                 year: Int,
                 imageURL: URL?,
                 workType: String,
+                workTypeKey: String,
                 publishStatuses: [String],
                 rating: Float,
                 votes: Int,
@@ -99,7 +100,6 @@ public final class WorkModel {
                 descriptionText: String,
                 descriptionAuthor: String,
                 notes: String,
-                linguisticAnalysis: [String],
                 authors: [AuthorModel],
                 children: ChildWorkList,
                 parents: [[ParentWorkModel]],
@@ -113,6 +113,7 @@ public final class WorkModel {
         self.year = year
         self.imageURL = imageURL
         self.workType = workType
+        self.workTypeKey = workTypeKey
         self.publishStatuses = publishStatuses
         self.rating = rating
         self.votes = votes
@@ -120,7 +121,6 @@ public final class WorkModel {
         self.descriptionText = descriptionText
         self.descriptionAuthor = descriptionAuthor
         self.notes = notes
-        self.linguisticAnalysis = linguisticAnalysis
         self.authors = authors
         self.children = children
         self.parents = parents

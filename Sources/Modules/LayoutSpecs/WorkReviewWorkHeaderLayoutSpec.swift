@@ -96,7 +96,7 @@ public final class WorkReviewWorkHeaderLayoutSpec: ModelLayoutSpec<WorkReviewMod
             view.clipsToBounds = true
             view.contentMode = .scaleAspectFit
 
-            view.yy_setImage(with: model.work.imageURL, placeholder: UIImage(named: "not_found_cover"), options: .setImageWithFadeAnimation, completion: nil)
+            view.yy_setImage(with: model.work.imageURL, placeholder: WorkCoverImageRule.coverFor(workTypeId: model.work.workTypeId), options: .setImageWithFadeAnimation, completion: nil)
         }
 
         let markNode = LayoutNode(sizeProvider: markString, config: { node in

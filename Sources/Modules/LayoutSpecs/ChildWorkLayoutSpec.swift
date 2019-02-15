@@ -146,7 +146,7 @@ public final class ChildWorkLayoutSpec: ModelLayoutSpec<ChildWorkLayoutModel> {
             }) { (view: UIImageView, _) in
                 view.contentMode = .scaleAspectFit
                 view.tintColor = UIColor.black
-                view.image = WorkTypeIcons.iconFor(workType: model.work.workTypeKey)?.withRenderingMode(.alwaysTemplate)
+                view.image = WorkTypeIconRule.iconFor(workType: model.work.workTypeKey)?.withRenderingMode(.alwaysTemplate)
             }
         }
 

@@ -5,6 +5,8 @@ public final class WorkPreviewModel {
     public let name: String
     public let nameOrig: String
     public let workType: String
+    public let workTypeId: Int
+    public let workTypeKey: String
     public let imageURL: URL?
     public let year: Int
     public let authors: [String]
@@ -16,6 +18,8 @@ public final class WorkPreviewModel {
                 name: String,
                 nameOrig: String,
                 workType: String,
+                workTypeId: Int,
+                workTypeKey: String,
                 imageURL: URL?,
                 year: Int,
                 authors: [String],
@@ -27,6 +31,8 @@ public final class WorkPreviewModel {
         self.name = name
         self.nameOrig = nameOrig
         self.workType = workType
+        self.workTypeId = workTypeId
+        self.workTypeKey = workTypeKey
         self.imageURL = imageURL
         self.year = year
         self.authors = authors

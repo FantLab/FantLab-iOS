@@ -58,7 +58,7 @@ public final class WorkHeaderLayoutSpec: ModelLayoutSpec<WorkModel> {
             view.clipsToBounds = true
             view.contentMode = .scaleAspectFit
 
-            view.yy_setImage(with: model.imageURL, placeholder: UIImage(named: "not_found_cover"), options: .setImageWithFadeAnimation, completion: nil)
+            view.yy_setImage(with: model.imageURL, placeholder: WorkCoverImageRule.coverFor(workType: model.workTypeKey), options: .setImageWithFadeAnimation, completion: nil)
         }
 
         let nameNode = LayoutNode(sizeProvider: nameString, config: { node in

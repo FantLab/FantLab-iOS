@@ -108,6 +108,8 @@ open class SearchViewController: BaseViewController {
 
         adapter.collectionView.backgroundColor = UIColor.white
         adapter.collectionView.alwaysBounceVertical = true
+        adapter.collectionView.contentInset.bottom = UIScreen.main.bounds.size.height
+        adapter.collectionView.showsVerticalScrollIndicator = false
         view.addSubview(adapter.collectionView)
         adapter.collectionView.pinEdges(to: view, top: .nan)
         adapter.collectionView.pin(.top).to(searchBarView, .bottom).equal()

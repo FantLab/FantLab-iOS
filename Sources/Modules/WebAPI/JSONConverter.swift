@@ -17,6 +17,7 @@ final class JSONConverter {
             year: json.work_year.intValue,
             imageURL: URL.web(json.image.stringValue),
             workType: json.work_type.stringValue,
+            workTypeKey: json.work_type_name.stringValue,
             publishStatuses: json.publish_statuses.array.map({ $0.stringValue }),
             rating: json.rating.rating.floatValue,
             votes: json.rating.voters.intValue,
@@ -24,7 +25,6 @@ final class JSONConverter {
             descriptionText: json.work_description.stringValue,
             descriptionAuthor: json.work_description_author.stringValue,
             notes: json.work_notes.stringValue,
-            linguisticAnalysis: json.la_resume.array.map({ $0.stringValue }),
             authors: json.authors.array.map({
                 WorkModel.AuthorModel(
                     id: $0.id.intValue,
@@ -158,6 +158,8 @@ final class JSONConverter {
                     name: $0.work_name.stringValue,
                     nameOrig: $0.work_name_orig.stringValue,
                     workType: $0.work_type.stringValue,
+                    workTypeId: $0.work_type_id.intValue,
+                    workTypeKey: "",
                     imageURL: URL.web($0.work_image.stringValue),
                     year: $0.work_year.intValue,
                     authors: [$0.work_author.string ?? $0.work_author_orig.stringValue],
@@ -176,6 +178,8 @@ final class JSONConverter {
                 name: $0.name.stringValue,
                 nameOrig: $0.name_orig.stringValue,
                 workType: $0.name_type.stringValue,
+                workTypeId: 0,
+                workTypeKey: $0.name_type_icon.stringValue,
                 imageURL: URL.web($0.image.stringValue),
                 year: $0.year.intValue,
                 authors: $0.creators.authors.array.filter({
