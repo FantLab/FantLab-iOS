@@ -1,10 +1,3 @@
-//
-//  NewsLayoutSpec.swift
-//  FantLabLayoutSpecs
-//
-//  Created by Geor Kasapidi on 16/02/2019.
-//
-
 import Foundation
 import UIKit
 import ALLKit
@@ -52,9 +45,22 @@ public final class NewsLayoutSpec: ModelLayoutSpec<NewsModel> {
             label.stringDrawing = textDrawing
         }
 
-        let contentNode = LayoutNode(children: [titleNode, dateNode, textNode], config: { node in
+        let backgroundNode = LayoutNode(children: [titleNode, dateNode, textNode], config: { node in
             node.flexDirection = .column
             node.padding(all: 16)
+        }) { (view: UIView, _) in
+            view.backgroundColor = UIColor.white
+            view.layer.cornerRadius = 8
+            view.layer.shouldRasterize = true
+            view.layer.rasterizationScale = UIScreen.main.scale
+            view.layer.shadowOpacity = 1
+            view.layer.shadowColor = UIColor.black.withAlphaComponent(0.15).cgColor
+            view.layer.shadowOffset = CGSize(width: 0, height: 2)
+            view.layer.shadowRadius = 8
+        }
+
+        let contentNode = LayoutNode(children: [backgroundNode], config: { node in
+            node.padding(top: nil, left: 16, bottom: 16, right: 16)
         })
 
         return contentNode

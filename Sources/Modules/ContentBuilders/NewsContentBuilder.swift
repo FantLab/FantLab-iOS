@@ -37,11 +37,6 @@ public final class NewsContentBuilder: ListContentBuilder {
             }
 
             items.append(newsItem)
-
-            items.append(ListItem(
-                id: itemId + "_sep",
-                layoutSpec: EmptySpaceLayoutSpec(model: (Colors.perfectGray, 8))
-            ))
         }
 
         return items

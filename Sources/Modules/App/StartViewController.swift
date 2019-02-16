@@ -15,11 +15,13 @@ final class StartViewController: ListViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = "Новости"
+        title = "FantLab"
 
         contentBuilder.dataContentBuilder.onURLTap = { url in
             AppRouter.shared.openURL(url, entersReaderIfAvailable: true)
         }
+
+        adapter.collectionView.contentInset.top = 16
 
         setupStateMapping()
 
