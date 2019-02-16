@@ -33,6 +33,8 @@ public final class Trie<KeyType: Collection, ValueType> where KeyType.Element: H
 
     // MARK: -
 
+    public private(set) var maxKeyLength: Int = 0
+
     public func insert(key: KeyType, value: ValueType) {
         var current = root
 
@@ -41,6 +43,12 @@ public final class Trie<KeyType: Collection, ValueType> where KeyType.Element: H
         }
 
         current.value = value
+
+        let keyLength = key.count
+
+        if keyLength > maxKeyLength {
+            maxKeyLength = keyLength
+        }
     }
 
     public func hasPathFor(key: KeyType) -> Bool {

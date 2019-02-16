@@ -10,6 +10,7 @@ public final class WorkReviewTextLayoutSpec: ModelLayoutSpec<WorkReviewModel> {
     public override func makeNodeFrom(model: WorkReviewModel, sizeConstraints: SizeConstraints) -> LayoutNode {
         let text = FLStringPreview(string: model.text).value.attributed()
             .font(Fonts.system.regular(size: 15))
+            .foregroundColor(UIColor.black)
             .lineSpacing(3)
             .paragraphSpacing(12)
             .make()

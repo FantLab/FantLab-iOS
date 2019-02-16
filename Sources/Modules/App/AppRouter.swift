@@ -304,7 +304,7 @@ final class AppRouter {
                 self?.navigationController.present(vc, animated: true, completion: nil)
             }
             .add(positiveAction: "Открыть веб-версию") { [weak self] in
-                self?.openWebURL(url: url)
+                self?.openWebURL(url: url, entersReaderIfAvailable: false)
             }
             .set(cancelAction: "Отмена") {}
 
@@ -313,21 +313,21 @@ final class AppRouter {
         navigationController.present(alertVC, animated: true, completion: nil)
     }
 
-    private func openWebURL(url: URL) {
+    private func openWebURL(url: URL, entersReaderIfAvailable: Bool) {
         if url.isWebSafe {
-            openSafeWebURL(url: url)
+            openSafeWebURL(url: url, entersReaderIfAvailable: entersReaderIfAvailable)
 
             return
         }
 
         if let fantLabURL = URL.web(url.absoluteString, host: Hosts.portal) {
-            openSafeWebURL(url: fantLabURL)
+            openSafeWebURL(url: fantLabURL, entersReaderIfAvailable: entersReaderIfAvailable)
 
             return
         }
 
         if let detectedURL = url.absoluteString.detectURLs().first?.0, detectedURL.isWebSafe {
-            openSafeWebURL(url: detectedURL)
+            openSafeWebURL(url: detectedURL, entersReaderIfAvailable: entersReaderIfAvailable)
 
             return
         }
@@ -345,8 +345,11 @@ final class AppRouter {
         navigationController.present(alertVC, animated: true, completion: nil)
     }
 
-    private func openSafeWebURL(url: URL) {
-        let vc = SFSafariViewController(url: url)
+    private func openSafeWebURL(url: URL, entersReaderIfAvailable: Bool) {
+        let config = SFSafariViewController.Configuration()
+        config.entersReaderIfAvailable = entersReaderIfAvailable
+
+        let vc = SFSafariViewController(url: url, configuration: config)
         vc.preferredControlTintColor = Colors.flBlue
 
         navigationController.present(vc, animated: true, completion: nil)
@@ -489,7 +492,7 @@ final class AppRouter {
         navigationController.pushViewController(vc, animated: true)
     }
 
-    func openURL(_ url: URL) {
+    func openURL(_ url: URL, entersReaderIfAvailable: Bool = false) {
         if let workString = url.path.firstMatch(for: "work\\d+"), let workId = Int(workString.dropFirst(4)) {
             openWork(id: workId)
 
@@ -514,6 +517,6 @@ final class AppRouter {
             return
         }
 
-        openWebURL(url: url)
+        openWebURL(url: url, entersReaderIfAvailable: entersReaderIfAvailable)
     }
 }

@@ -75,8 +75,6 @@ final class AuthorViewController: ListViewController, AuthorContentBuilderDelega
         expandCollapseSubject.onNext(())
     }
 
-    // MARK: -
-
     private func loadAuthor() {
         if state.value.isLoading || state.value.isIdle {
             return

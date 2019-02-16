@@ -35,7 +35,7 @@ public final class UserProfilePropertiesLayoutSpec: ModelLayoutSpec<UserProfileM
         }
 
         if let onlineDate = model.onlineDate {
-            properties.append(("Последнее посещение", onlineDate.formatDayMonthAndYearIfNotCurrent()))
+            properties.append(("Последнее посещение", onlineDate.formatToHumanReadbleText()))
         }
 
         var textStackNodes: [LayoutNode] = []

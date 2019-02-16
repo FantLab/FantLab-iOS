@@ -9,8 +9,7 @@ private protocol ParseController {
 
 private protocol CharacterHandler {
     func accept(character: Character) -> Bool
-    func flush(to controller: ParseController)
-    func nextHandlerWith(terminator: Character) -> CharacterHandler
+    func commit(to controller: ParseController, terminator: Character?) -> CharacterHandler
 }
 
 private struct Consts {
@@ -73,9 +72,9 @@ private final class HTMLTagCharacterHandler: CharacterHandler {
         return true
     }
 
-    func flush(to controller: ParseController) {
+    func commit(to controller: ParseController, terminator: Character?) -> CharacterHandler {
         guard !name.isEmpty else {
-            return
+            return DefaultCharacterHandler(firstChar: nil)
         }
 
         let lowName = name.lowercased()
@@ -101,10 +100,12 @@ private final class HTMLTagCharacterHandler: CharacterHandler {
                 controller.open(tag: lowName, value: value)
             }
         }
+
+        return DefaultCharacterHandler(firstChar: nil)
     }
 
-    func nextHandlerWith(terminator: Character) -> CharacterHandler {
-        return DefaultCharacterHandler()
+    func nextHandlerWith(terminator: Character?) -> CharacterHandler {
+        return DefaultCharacterHandler(firstChar: nil)
     }
 }
 
@@ -141,9 +142,9 @@ private final class BBTagCharacterHandler: CharacterHandler {
         return true
     }
 
-    func flush(to controller: ParseController) {
+    func commit(to controller: ParseController, terminator: Character?) -> CharacterHandler {
         guard !name.isEmpty else {
-            return
+            return DefaultCharacterHandler(firstChar: nil)
         }
 
         let lowName = name.lowercased()
@@ -158,20 +159,27 @@ private final class BBTagCharacterHandler: CharacterHandler {
                 controller.open(tag: lowName, value: value)
             }
         }
-    }
 
-    func nextHandlerWith(terminator: Character) -> CharacterHandler {
-        return DefaultCharacterHandler()
+        return DefaultCharacterHandler(firstChar: nil)
     }
 }
 
 private final class DefaultCharacterHandler: CharacterHandler {
     private var string: String = ""
+    private var length: Int = 0
     private var hasLineBreak: Bool = false
+
+    init(firstChar: Character?) {
+        if let ch = firstChar {
+            string.append(ch)
+
+            length += 1
+        }
+    }
 
     func accept(character: Character) -> Bool {
         switch character {
-        case "[", "<", ":":
+        case "[", "<", ":", "&", ";":
             return false
         case "\r", "\n", "\r\n":
             hasLineBreak = true
@@ -179,12 +187,25 @@ private final class DefaultCharacterHandler: CharacterHandler {
             return false
         default:
             string.append(character)
+            length += 1
         }
 
         return true
     }
 
-    func flush(to controller: ParseController) {
+    func commit(to controller: ParseController, terminator: Character?) -> CharacterHandler {
+        if string.first == ":", terminator == ":", length < Emoticons.trie.maxKeyLength, let replacement = Emoticons.trie.valueFor(key: string + ":") {
+            controller.save(string: replacement)
+
+            return DefaultCharacterHandler(firstChar: nil)
+        }
+
+        if string.first == "&", terminator == ";", length < HTMLEntities.trie.maxKeyLength, let replacement = HTMLEntities.trie.valueFor(key: string + ";") {
+            controller.save(string: replacement)
+
+            return DefaultCharacterHandler(firstChar: nil)
+        }
+
         if !string.isEmpty {
             controller.save(string: string)
         }
@@ -192,67 +213,16 @@ private final class DefaultCharacterHandler: CharacterHandler {
         if hasLineBreak {
             controller.saveLineBreak()
         }
-    }
 
-    func nextHandlerWith(terminator: Character) -> CharacterHandler {
         switch terminator {
         case "[":
             return BBTagCharacterHandler()
         case "<":
             return HTMLTagCharacterHandler()
-        case ":":
-            return EmoticonCharacterHandler()
+        case ":", "&", ";":
+            return DefaultCharacterHandler(firstChar: terminator)
         default:
-            return DefaultCharacterHandler()
-        }
-    }
-}
-
-private final class EmoticonCharacterHandler: CharacterHandler {
-    private var string: String = ":"
-    private var hasLineBreak: Bool = false
-
-    func accept(character: Character) -> Bool {
-        switch character {
-        case "[", "<":
-            return false
-        case "\r", "\n", "\r\n":
-            hasLineBreak = true
-
-            return false
-        case ":":
-            string.append(character)
-
-            return false
-        default:
-            string.append(character)
-        }
-
-        return Emoticons.trie.hasPathFor(key: string)
-    }
-
-    func flush(to controller: ParseController) {
-        if let emoticon = Emoticons.trie.valueFor(key: string) {
-            controller.save(string: emoticon)
-        } else {
-            if !string.isEmpty {
-                controller.save(string: string)
-            }
-
-            if hasLineBreak {
-                controller.saveLineBreak()
-            }
-        }
-    }
-
-    func nextHandlerWith(terminator: Character) -> CharacterHandler {
-        switch terminator {
-        case "[":
-            return BBTagCharacterHandler()
-        case "<":
-            return HTMLTagCharacterHandler()
-        default:
-            return DefaultCharacterHandler()
+            return DefaultCharacterHandler(firstChar: nil)
         }
     }
 }
@@ -294,19 +264,19 @@ private final class Parser: ParseController {
 
         nodeStack.push(rootNode)
 
-        var handler: CharacterHandler = DefaultCharacterHandler()
+        var handler: CharacterHandler = DefaultCharacterHandler(firstChar: nil)
 
         string.forEach { character in
             if handler.accept(character: character) {
                 return
             }
 
-            handler.flush(to: self)
+            let nextHandler = handler.commit(to: self, terminator: character)
 
-            handler = handler.nextHandlerWith(terminator: character)
+            handler = nextHandler
         }
 
-        handler.flush(to: self)
+        _ = handler.commit(to: self, terminator: nil)
 
         return rootNode
     }

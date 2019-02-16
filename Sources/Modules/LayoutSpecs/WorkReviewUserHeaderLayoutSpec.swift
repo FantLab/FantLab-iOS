@@ -14,7 +14,7 @@ public final class WorkReviewUserHeaderLayoutSpec: ModelLayoutSpec<WorkReviewMod
             .foregroundColor(Colors.flBlue)
             .make()
 
-        let dateString = model.date?.formatDayMonthAndYearIfNotCurrent().attributed()
+        let dateString = model.date?.formatToHumanReadbleText().attributed()
             .font(Fonts.system.regular(size: 11))
             .foregroundColor(UIColor.lightGray)
             .make()

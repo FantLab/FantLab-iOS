@@ -9,6 +9,7 @@ public final class FLTextPreviewLayoutSpec: ModelLayoutSpec<String> {
     public override func makeNodeFrom(model: String, sizeConstraints: SizeConstraints) -> LayoutNode {
         let text = FLStringPreview(string: model).value.attributed()
             .font(Fonts.system.regular(size: 15))
+            .foregroundColor(UIColor.black)
             .lineSpacing(3)
             .paragraphSpacing(12)
             .make()
