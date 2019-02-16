@@ -25,6 +25,19 @@ final class StartViewController: ListViewController {
 
         setupStateMapping()
 
+        do {
+            let refresher = UIRefreshControl()
+            refresher.all_setEventHandler(for: .valueChanged) { [weak self, weak refresher] in
+                self?.loadNews()
+
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
+                    refresher?.endRefreshing()
+                })
+            }
+
+            adapter.collectionView.refreshControl = refresher
+        }
+
         loadNews()
     }
 
