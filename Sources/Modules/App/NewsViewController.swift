@@ -7,15 +7,14 @@ import FantLabWebAPI
 import FantLabUtils
 import FantLabModels
 import FantLabContentBuilders
+import FantLabStyle
 
-final class StartViewController: ListViewController {
+final class NewsViewController: ListViewController {
     private let state = ObservableValue<DataState<[NewsModel]>>(.initial)
     private let contentBuilder = DataStateContentBuilder(dataContentBuilder: NewsContentBuilder())
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        title = "FantLab"
 
         contentBuilder.dataContentBuilder.onURLTap = { url in
             AppRouter.shared.openURL(url, entersReaderIfAvailable: true)

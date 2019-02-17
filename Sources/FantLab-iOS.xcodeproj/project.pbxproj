@@ -200,7 +200,6 @@
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				en,
 			);
 			mainGroup = 14ECD1B42196D9C5007A8781;
 			productRefGroup = 14ECD1BE2196D9C5007A8781 /* Products */;

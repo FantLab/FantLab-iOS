@@ -391,11 +391,6 @@ public final class WorkContentBuilder: ListContentBuilder {
 
                 section.makeListItems()
             }
-
-            items.append(ListItem(
-                id: "work_sections_bottom_spacing",
-                layoutSpec: EmptySpaceLayoutSpec(model: (UIColor.white, 64))
-            ))
         case .reviews:
             let reviewItems = reviewContentBuilder.makeListItemsFrom(model: model.reviews)
 

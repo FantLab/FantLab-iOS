@@ -28,6 +28,11 @@ public enum DataState<T> {
 
     // MARK: -
 
+    public var error: Error? {
+        if case let .error(error) = self { return error }
+        return nil
+    }
+
     public var data: T? {
         if case let .idle(value) = self { return value }
         return nil

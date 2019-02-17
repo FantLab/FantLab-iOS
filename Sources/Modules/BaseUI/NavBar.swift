@@ -16,6 +16,26 @@ public final class NavBarItem {
     public private(set) lazy var view: UIView = makeView()
 }
 
+extension NavBarItem {
+    public convenience init(margin: CGFloat = 12,
+                            image: UIImage? = nil,
+                            title: NSAttributedString? = nil,
+                            contentEdgeInsets: UIEdgeInsets = .zero,
+                            size: CGSize,
+                            action: @escaping () -> Void) {
+        self.init(margin: margin) {
+            let button = UIButton(type: .system)
+            button.setImage(image?.withRenderingMode(.alwaysTemplate), for: [])
+            button.setAttributedTitle(title, for: [])
+            button.contentEdgeInsets = contentEdgeInsets
+            button.pin(.width).const(size.width).equal()
+            button.pin(.height).const(size.height).equal()
+            button.all_setEventHandler(for: .touchUpInside, action)
+            return button
+        }
+    }
+}
+
 public protocol NavBar: class {
     var titleView: UIView? { get set }
     var leftItems: [NavBarItem] { get set }
@@ -25,6 +45,7 @@ public protocol NavBar: class {
 extension NavBar {
     public func set(title: NSAttributedString?) {
         let label = (titleView as? UILabel) ?? UILabel(frame: .zero)
+        label.numberOfLines = 0
         label.attributedText = title
         titleView = label
     }

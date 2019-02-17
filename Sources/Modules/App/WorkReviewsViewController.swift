@@ -122,7 +122,9 @@ final class WorkReviewsViewController: ListViewController {
 
         sortSelectionControl.backgroundColor = UIColor.white
         sortSelectionControl.selectedSegmentIndex = 2
-        Appearance.setup(segmentedControl: sortSelectionControl)
+        sortSelectionControl.tintColor = Colors.flBlue
+        sortSelectionControl.setTitleTextAttributes([.font: Fonts.system.regular(size: 13)], for: .normal)
+        sortSelectionControl.setTitleTextAttributes([.font: Fonts.system.medium(size: 13)], for: .selected)
         view.addSubview(sortSelectionControl)
         sortSelectionControl.pin(.top).to(adapter.collectionView).const(8).equal()
         sortSelectionControl.pin(.left).to(view).const(16).equal()

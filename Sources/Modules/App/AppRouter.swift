@@ -11,164 +11,16 @@ import FantLabBaseUI
 import FantLabWebAPI
 import FantLabUtils
 
-private final class RootNavigationController: UINavigationController, UINavigationControllerDelegate, UIGestureRecognizerDelegate {
-    var backAction: (() -> Void)?
-    var goHomeAction: (() -> Void)?
-    var searchAction: (() -> Void)?
-    var shareAction: ((URL) -> Void)?
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        setNavigationBarHidden(true, animated: false)
-
-        view.backgroundColor = UIColor.white
-        Appearance.setup(navigationBar: navigationBar)
-        delegate = self
-        interactivePopGestureRecognizer?.delegate = self
-    }
-
-    // MARK: -
-
-    func popWithFadeAnimation() {
-        view.layer.add(makeFadeTransition(), forKey: nil)
-        _ = popViewController(animated: false)
-    }
-
-    func pushWithFadeAnimation(viewController: UIViewController) {
-        view.layer.add(makeFadeTransition(), forKey: nil)
-        pushViewController(viewController, animated: false)
-    }
-
-    private func makeFadeTransition() -> CATransition {
-        let transition = CATransition()
-        transition.duration = 0.3
-        transition.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-        transition.type = .fade
-        return transition
-    }
-
-    // MARK: -
-
-    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        guard gestureRecognizer === interactivePopGestureRecognizer else {
-            return false
-        }
-
-        return viewControllers.count > 1
-    }
-
-    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
-        guard let vc = viewController as? ListViewController else {
-            return
-        }
-
-        do {
-            var leftItems: [NavBarItem] = []
-
-            if viewControllers.count > 1 {
-                leftItems.append(makeBackItem())
-            }
-
-            if viewControllers.count > 2 {
-                leftItems.append(makeHomeItem())
-            }
-
-            if !leftItems.isEmpty {
-                vc.navBar.leftItems = leftItems
-            }
-        }
-
-        do {
-            var rightItems: [NavBarItem] = []
-
-            do {
-                let searchItem = makeSearchItem()
-
-                rightItems.append(searchItem)
-            }
-
-            if let urlProvider = viewController as? WebURLProvider {
-                let shareItem = makeShareItemFor(urlProvider: urlProvider)
-
-                rightItems.append(shareItem)
-            }
-
-            vc.navBar.rightItems = rightItems
-        }
-    }
-
-    // MARK: -
-
-    private func makeBackItem() -> NavBarItem {
-        return NavBarItem(margin: 0) { [weak self] in
-            let btn = UIButton(type: .system)
-            btn.setImage(UIImage(named: "arrow_left")?.withRenderingMode(.alwaysTemplate), for: .normal)
-            btn.contentEdgeInsets = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
-            btn.pin(.width).const(40).equal()
-            btn.pin(.height).const(40).equal()
-            btn.all_setEventHandler(for: .touchUpInside, {
-                self?.backAction?()
-            })
-            return btn
-        }
-    }
-
-    private func makeHomeItem() -> NavBarItem {
-        return NavBarItem(margin: 4) { [weak self] in
-            let btn = UIButton(type: .system)
-            btn.setImage(UIImage(named: "home")?.withRenderingMode(.alwaysTemplate).with(orientation: .down), for: .normal)
-            btn.contentEdgeInsets = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
-            btn.pin(.width).const(40).equal()
-            btn.pin(.height).const(40).equal()
-            btn.all_setEventHandler(for: .touchUpInside, {
-                self?.goHomeAction?()
-            })
-            return btn
-        }
-    }
-
-    private func makeSearchItem() -> NavBarItem {
-        return NavBarItem(margin: 4) { [weak self] in
-            let btn = UIButton(type: .system)
-            btn.setImage(UIImage(named: "search")?.withRenderingMode(.alwaysTemplate), for: .normal)
-            btn.contentEdgeInsets = UIEdgeInsets(top: 12, left: 12, bottom: 12, right: 12)
-            btn.pin(.width).const(40).equal()
-            btn.pin(.height).const(40).equal()
-            btn.all_setEventHandler(for: .touchUpInside, {
-                self?.searchAction?()
-            })
-            return btn
-        }
-    }
-
-    private func makeShareItemFor(urlProvider: WebURLProvider) -> NavBarItem {
-        return NavBarItem(margin: 8) { [weak self, weak urlProvider] in
-            let btn = UIButton(type: .system)
-            btn.setImage(UIImage(named: "share")?.withRenderingMode(.alwaysTemplate), for: .normal)
-            btn.contentEdgeInsets = UIEdgeInsets(top: 8, left: 12, bottom: 8, right: 12)
-            btn.pin(.width).const(40).equal()
-            btn.pin(.height).const(40).equal()
-            btn.all_setEventHandler(for: .touchUpInside, {
-                if let url = urlProvider?.webURL {
-                    self?.shareAction?(url)
-                }
-            })
-            return btn
-        }
-    }
-}
-
 final class AppRouter {
     static let shared = AppRouter()
 
     private init() {
         do {
             let imageVC = ImageBackgroundViewController()
-            imageVC.addChild(navigationController)
-            imageVC.contentView.addSubview(navigationController.view)
-            navigationController.view.pinEdges(to: imageVC.view)
-            navigationController.didMove(toParent: imageVC)
+            imageVC.addChild(rootNavigationController)
+            imageVC.contentView.addSubview(rootNavigationController.view)
+            rootNavigationController.view.pinEdges(to: imageVC.view)
+            rootNavigationController.didMove(toParent: imageVC)
             window.rootViewController = imageVC
         }
 
@@ -178,63 +30,130 @@ final class AppRouter {
         }
 
         do {
-            navigationController.backAction = { [weak self] in
-                _ = self?.navigationController.popViewController(animated: true)
-            }
-
-            navigationController.goHomeAction = { [weak self] in
-                self?.tryGoHome()
-            }
-
-            navigationController.searchAction = { [weak self] in
-                self?.showSearch()
-            }
-
-            navigationController.shareAction = { [weak self] url in
-                self?.share(url: url)
+            rootNavigationController.willShowVC = { [weak self] vc in
+                self?.setupNavigationItemsFor(viewController: vc)
             }
         }
 
         do {
-            let startVC = StartViewController()
+            var vcs: [UIViewController] = []
 
             do {
-                let cameraItem = NavBarItem(margin: 8) { [weak self] in
-                    let btn = UIButton(type: .system)
-                    btn.setImage(UIImage(named: "camera")?.withRenderingMode(.alwaysTemplate), for: .normal)
-                    btn.contentEdgeInsets = UIEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
-                    btn.pin(.width).const(40).equal()
-                    btn.pin(.height).const(40).equal()
-                    btn.all_setEventHandler(for: .touchUpInside, {
-                        self?.tryShowScanner()
-                    })
-                    return btn
+                let newsVC = NewsViewController()
+
+                newsVC.title = "Новости"
+
+                newsVC.tabBarItem = UITabBarItem(title: "Главная", image: UIImage(named: "home_tab"), tag: 1)
+
+                let cameraItem = navBarItemsFactory.makeCameraItem { [weak self] in
+                    self?.tryShowScanner()
                 }
 
-                startVC.navBar.leftItems = [cameraItem]
+                let searchItem = navBarItemsFactory.makeSearchItem { [weak self] in
+                    self?.showSearch()
+                }
+
+                newsVC.navBar.leftItems = [cameraItem]
+                newsVC.navBar.rightItems = [searchItem]
+
+                vcs.append(newsVC)
             }
 
-            navigationController.pushViewController(startVC, animated: false)
+            do {
+                let freshReviewsVC = FreshReviewsViewController()
+
+                freshReviewsVC.title = "Последние отзывы"
+
+                freshReviewsVC.tabBarItem = UITabBarItem(title: "Отзывы", image: UIImage(named: "reviews_tab"), tag: 2)
+
+                let searchItem = navBarItemsFactory.makeSearchItem { [weak self] in
+                    self?.showSearch()
+                }
+
+                freshReviewsVC.navBar.rightItems = [searchItem]
+
+                vcs.append(freshReviewsVC)
+            }
+
+            let tabVC = UITabBarController()
+            tabVC.view.tintColor = Colors.flOrange
+            tabVC.viewControllers = vcs
+
+            rootNavigationController.pushViewController(tabVC, animated: false)
         }
     }
 
     let window = UIWindow()
 
-    private let navigationController = RootNavigationController()
+    private let rootNavigationController = CustomNavigationController()
+    private let navBarItemsFactory = NavBarItemsFactory()
 
     // MARK: -
+
+    private func setupNavigationItemsFor(viewController: UIViewController) {
+        guard let vc = viewController as? ListViewController else {
+            return
+        }
+
+        do {
+            var leftItems: [NavBarItem] = []
+
+            if rootNavigationController.viewControllers.count > 1 {
+                let item = navBarItemsFactory.makeBackItem { [weak self] in
+                    _ = self?.rootNavigationController.popViewController(animated: true)
+                }
+
+                leftItems.append(item)
+            }
+
+            if rootNavigationController.viewControllers.count > 2 {
+                let item = navBarItemsFactory.makeHomeItem { [weak self] in
+                    self?.tryGoHome()
+                }
+
+                leftItems.append(item)
+            }
+
+            vc.navBar.leftItems = leftItems
+        }
+
+        do {
+            var rightItems: [NavBarItem] = []
+
+            do {
+                let item = navBarItemsFactory.makeSearchItem { [weak self] in
+                    self?.showSearch()
+                }
+
+                rightItems.append(item)
+            }
+
+            if let urlProvider = viewController as? WebURLProvider {
+                let item = navBarItemsFactory.makeShareItemFor { [weak self, weak urlProvider] in
+                    if let url = urlProvider?.webURL {
+                        self?.share(url: url)
+                    }
+                }
+
+                rightItems.append(item)
+            }
+
+            vc.navBar.rightItems = rightItems
+        }
+
+    }
 
     private func tryGoHome() {
         let alert = Alert()
             .set(title: "Вернуться на главный экран?")
             .add(positiveAction: "Да") { [weak self] in
-                _ = self?.navigationController.popToRootViewController(animated: true)
+                _ = self?.rootNavigationController.popToRootViewController(animated: true)
             }
             .set(cancelAction: "Нет") {}
 
         let alertVC = UIAlertController(alert: alert, preferredStyle: .alert)
 
-        navigationController.present(alertVC, animated: true, completion: nil)
+        rootNavigationController.present(alertVC, animated: true, completion: nil)
     }
 
     private func tryShowScanner() {
@@ -253,14 +172,14 @@ final class AppRouter {
                 vc.modalPresentationStyle = .overFullScreen
 
                 vc.close = { [weak self] code in
-                    self?.navigationController.dismiss(animated: true, completion: {
+                    self?.rootNavigationController.dismiss(animated: true, completion: {
                         code.flatMap({
                             self?.openEditionWith(isbn: $0)
                         })
                     })
                 }
 
-                navigationController.present(vc, animated: true, completion: nil)
+                rootNavigationController.present(vc, animated: true, completion: nil)
             } else {
                 let alert = Alert()
                     .set(title: "Камера не доступна")
@@ -268,7 +187,7 @@ final class AppRouter {
 
                 let alertVC = UIAlertController(alert: alert, preferredStyle: .alert)
 
-                navigationController.present(alertVC, animated: true, completion: nil)
+                rootNavigationController.present(alertVC, animated: true, completion: nil)
             }
         } else {
             let alert = Alert()
@@ -282,7 +201,7 @@ final class AppRouter {
 
             let alertVC = UIAlertController(alert: alert, preferredStyle: .alert)
 
-            navigationController.present(alertVC, animated: true, completion: nil)
+            rootNavigationController.present(alertVC, animated: true, completion: nil)
         }
     }
 
@@ -290,10 +209,10 @@ final class AppRouter {
         let vc = MainSearchViewController()
 
         vc.closeAction = { [weak self] in
-            self?.navigationController.popWithFadeAnimation()
+            self?.rootNavigationController.popWithFadeAnimation()
         }
 
-        navigationController.pushWithFadeAnimation(viewController: vc)
+        rootNavigationController.pushWithFadeAnimation(viewController: vc)
     }
 
     private func share(url: URL) {
@@ -301,7 +220,7 @@ final class AppRouter {
             .add(positiveAction: "Поделиться") { [weak self] in
                 let vc = UIActivityViewController(activityItems: [url], applicationActivities: nil)
 
-                self?.navigationController.present(vc, animated: true, completion: nil)
+                self?.rootNavigationController.present(vc, animated: true, completion: nil)
             }
             .add(positiveAction: "Открыть веб-версию") { [weak self] in
                 self?.openWebURL(url: url, entersReaderIfAvailable: false)
@@ -310,7 +229,7 @@ final class AppRouter {
 
         let alertVC = UIAlertController(alert: alert, preferredStyle: .actionSheet)
 
-        navigationController.present(alertVC, animated: true, completion: nil)
+        rootNavigationController.present(alertVC, animated: true, completion: nil)
     }
 
     private func openWebURL(url: URL, entersReaderIfAvailable: Bool) {
@@ -342,7 +261,7 @@ final class AppRouter {
 
         let alertVC = UIAlertController(alert: alert, preferredStyle: .alert)
 
-        navigationController.present(alertVC, animated: true, completion: nil)
+        rootNavigationController.present(alertVC, animated: true, completion: nil)
     }
 
     private func openSafeWebURL(url: URL, entersReaderIfAvailable: Bool) {
@@ -352,7 +271,7 @@ final class AppRouter {
         let vc = SFSafariViewController(url: url, configuration: config)
         vc.preferredControlTintColor = Colors.flBlue
 
-        navigationController.present(vc, animated: true, completion: nil)
+        rootNavigationController.present(vc, animated: true, completion: nil)
     }
 
     private func openAuthor(id: Int, isOpened: Bool) {
@@ -368,7 +287,7 @@ final class AppRouter {
 
         let alertVC = UIAlertController(alert: alert, preferredStyle: .alert)
 
-        navigationController.present(alertVC, animated: true, completion: nil)
+        rootNavigationController.present(alertVC, animated: true, completion: nil)
     }
 
     // MARK: -
@@ -376,31 +295,31 @@ final class AppRouter {
     func openWork(id: Int) {
         let vc = WorkViewController(workId: id)
 
-        navigationController.pushViewController(vc, animated: true)
+        rootNavigationController.pushViewController(vc, animated: true)
     }
 
     func openAuthor(id: Int) {
         let vc = AuthorViewController(authorId: id)
 
-        navigationController.pushViewController(vc, animated: true)
+        rootNavigationController.pushViewController(vc, animated: true)
     }
 
     func openEdition(id: Int) {
         let vc = EditionViewController(editionId: id)
 
-        navigationController.pushViewController(vc, animated: true)
+        rootNavigationController.pushViewController(vc, animated: true)
     }
 
     func openEditionWith(isbn: String) {
         let vc = EditionViewController(isbn: isbn)
 
-        navigationController.pushViewController(vc, animated: true)
+        rootNavigationController.pushViewController(vc, animated: true)
     }
 
     func openUserProfile(id: Int) {
         let vc = UserProfileViewController(userId: id)
 
-        navigationController.pushViewController(vc, animated: true)
+        rootNavigationController.pushViewController(vc, animated: true)
     }
 
     func openWorkAuthors(work: WorkModel) {
@@ -428,19 +347,19 @@ final class AppRouter {
 
         let alertVC = UIAlertController(alert: alert, preferredStyle: .actionSheet)
 
-        navigationController.present(alertVC, animated: true, completion: nil)
+        rootNavigationController.present(alertVC, animated: true, completion: nil)
     }
 
     func openWorkReviews(workId: Int, reviewsCount: Int) {
         let vc = WorkReviewsViewController(workId: workId, reviewsCount: reviewsCount)
 
-        navigationController.pushViewController(vc, animated: true)
+        rootNavigationController.pushViewController(vc, animated: true)
     }
 
     func openUserReviews(userId: Int, reviewsCount: Int) {
         let vc = WorkReviewsViewController(userId: userId, reviewsCount: reviewsCount)
 
-        navigationController.pushViewController(vc, animated: true)
+        rootNavigationController.pushViewController(vc, animated: true)
     }
 
     func openReview(model: WorkReviewModel, headerMode: WorkReviewHeaderMode) {
@@ -477,19 +396,19 @@ final class AppRouter {
 
         vc.title = title
 
-        navigationController.pushViewController(vc, animated: true)
+        rootNavigationController.pushViewController(vc, animated: true)
     }
 
     func openAwards(_ awards: [AwardPreviewModel]) {
         let vc = AwardListViewController(awards: awards)
 
-        navigationController.pushViewController(vc, animated: true)
+        rootNavigationController.pushViewController(vc, animated: true)
     }
 
     func openEditionList(_ editionBlocks: [EditionBlockModel]) {
         let vc = EditionListViewController(editionBlocks: editionBlocks)
 
-        navigationController.pushViewController(vc, animated: true)
+        rootNavigationController.pushViewController(vc, animated: true)
     }
 
     func openURL(_ url: URL, entersReaderIfAvailable: Bool = false) {
@@ -518,5 +437,57 @@ final class AppRouter {
         }
 
         openWebURL(url: url, entersReaderIfAvailable: entersReaderIfAvailable)
+    }
+}
+
+private final class NavBarItemsFactory {
+    func makeCameraItem(action: @escaping () -> Void) -> NavBarItem {
+        return NavBarItem(
+            margin: 8,
+            image: UIImage(named: "camera"),
+            contentEdgeInsets: UIEdgeInsets(top: 10, left: 0, bottom: 10, right: 0),
+            size: CGSize(width: 40, height: 40),
+            action: action
+        )
+    }
+
+    func makeBackItem(action: @escaping () -> Void) -> NavBarItem {
+        return NavBarItem(
+            margin: 0,
+            image: UIImage(named: "arrow_left"),
+            contentEdgeInsets: UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0),
+            size: CGSize(width: 40, height: 40),
+            action: action
+        )
+    }
+
+    func makeHomeItem(action: @escaping () -> Void) -> NavBarItem {
+        return NavBarItem(
+            margin: 4,
+            image: UIImage(named: "home")?.with(orientation: .down),
+            contentEdgeInsets: UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0),
+            size: CGSize(width: 40, height: 40),
+            action: action
+        )
+    }
+
+    func makeSearchItem(action: @escaping () -> Void) -> NavBarItem {
+        return NavBarItem(
+            margin: 4,
+            image: UIImage(named: "search"),
+            contentEdgeInsets: UIEdgeInsets(top: 12, left: 12, bottom: 12, right: 12),
+            size: CGSize(width: 40, height: 40),
+            action: action
+        )
+    }
+
+    func makeShareItemFor(action: @escaping () -> Void) -> NavBarItem {
+        return NavBarItem(
+            margin: 8,
+            image: UIImage(named: "share"),
+            contentEdgeInsets: UIEdgeInsets(top: 8, left: 12, bottom: 8, right: 12),
+            size: CGSize(width: 40, height: 40),
+            action: action
+        )
     }
 }
