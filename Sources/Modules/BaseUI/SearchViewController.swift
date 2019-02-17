@@ -15,6 +15,7 @@ open class SearchViewController: BaseViewController {
         return searchSubject
     }
 
+    public var scanAction: (() -> Void)?
     public var closeAction: (() -> Void)?
 
     public let adapter = CollectionViewAdapter()
@@ -93,8 +94,21 @@ open class SearchViewController: BaseViewController {
         textBackgroundView.backgroundColor = UIColor.white
         textBackgroundView.layer.cornerRadius = 16
         searchBarView.addSubview(textBackgroundView)
-        textBackgroundView.pinEdges(to: searchBarView, top: 6, left: 6, bottom: 6, right: .nan)
+        textBackgroundView.pin(.centerY).to(searchBarView).equal()
+        textBackgroundView.pin(.height).const(32).equal()
+        textBackgroundView.pin(.left).to(searchBarView).const(6).equal()
         textBackgroundView.pin(.right).to(cancelBtn, .left).const(-8).equal()
+
+        let cameraBtn = UIButton(type: .system)
+        cameraBtn.tintColor = UIColor.black
+        cameraBtn.setImage(UIImage(named: "barcode")?.withRenderingMode(.alwaysTemplate), for: [])
+        cameraBtn.contentEdgeInsets = UIEdgeInsets(top: 6, left: 8, bottom: 6, right: 4)
+        cameraBtn.all_setEventHandler(for: .touchUpInside) { [weak self] in
+            self?.scanAction?()
+        }
+        textBackgroundView.addSubview(cameraBtn)
+        cameraBtn.pinEdges(to: textBackgroundView, right: .nan)
+        cameraBtn.pin(.width).to(cameraBtn, .height).equal()
 
         let textField = UITextField()
         textField.font = Fonts.system.regular(size: 16)
@@ -103,7 +117,8 @@ open class SearchViewController: BaseViewController {
             self?.triggerSearch()
         }
         textBackgroundView.addSubview(textField)
-        textField.pinEdges(to: textBackgroundView, left: 12)
+        textField.pinEdges(to: textBackgroundView, left: .nan)
+        textField.pin(.left).to(cameraBtn, .right).const(4).equal()
         searchField = textField
 
         adapter.collectionView.backgroundColor = UIColor.white

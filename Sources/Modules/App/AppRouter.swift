@@ -66,10 +66,15 @@ final class AppRouter {
 
                 freshReviewsVC.tabBarItem = UITabBarItem(title: "Отзывы", image: UIImage(named: "reviews_tab"), tag: 2)
 
+                let cameraItem = navBarItemsFactory.makeCameraItem { [weak self] in
+                    self?.tryShowScanner()
+                }
+
                 let searchItem = navBarItemsFactory.makeSearchItem { [weak self] in
                     self?.showSearch()
                 }
 
+                freshReviewsVC.navBar.leftItems = [cameraItem]
                 freshReviewsVC.navBar.rightItems = [searchItem]
 
                 vcs.append(freshReviewsVC)
@@ -207,6 +212,10 @@ final class AppRouter {
 
     private func showSearch() {
         let vc = MainSearchViewController()
+
+        vc.scanAction = { [weak self] in
+            self?.tryShowScanner()
+        }
 
         vc.closeAction = { [weak self] in
             self?.rootNavigationController.popWithFadeAnimation()
@@ -444,8 +453,8 @@ private final class NavBarItemsFactory {
     func makeCameraItem(action: @escaping () -> Void) -> NavBarItem {
         return NavBarItem(
             margin: 8,
-            image: UIImage(named: "camera"),
-            contentEdgeInsets: UIEdgeInsets(top: 10, left: 0, bottom: 10, right: 0),
+            image: UIImage(named: "barcode"),
+            contentEdgeInsets: UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8),
             size: CGSize(width: 40, height: 40),
             action: action
         )

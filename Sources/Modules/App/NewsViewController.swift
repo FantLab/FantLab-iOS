@@ -21,6 +21,7 @@ final class NewsViewController: ListViewController {
         }
 
         adapter.collectionView.contentInset.top = 16
+        adapter.collectionView.showsVerticalScrollIndicator = false
 
         setupStateMapping()
 

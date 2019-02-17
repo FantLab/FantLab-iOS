@@ -22,10 +22,12 @@ final class FreshReviewsViewController: ListViewController {
         state: .initial
     ))
 
-    private let contentBuilder = WorkReviewsListContentBuilder(headerMode: WorkReviewHeaderMode.work)
+    private let contentBuilder = WorkReviewsListContentBuilder(headerMode: .work)
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        adapter.collectionView.showsVerticalScrollIndicator = false
 
         contentBuilder.stateContentBuilder.errorContentBuilder.onRetry = { [weak self] in
             self?.loadNextPage()
@@ -44,7 +46,7 @@ final class FreshReviewsViewController: ListViewController {
         }
 
         contentBuilder.singleReviewContentBuilder.onReviewTextTap = { review in
-            AppRouter.shared.openReview(model: review, headerMode: .work)
+            AppRouter.shared.openReview(model: review, headerMode: .user)
         }
 
         setupStateMapping()

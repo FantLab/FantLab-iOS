@@ -38,7 +38,7 @@ public final class WorkReviewContentBuilder: ListContentBuilder {
         switch headerMode {
         case .user:
             let item = ListItem(
-                id: "review_\(model.id)_user_header",
+                id: "review_\(model.id)_user_header_\(model.votes)",
                 layoutSpec: WorkReviewUserHeaderLayoutSpec(model: model)
             )
 
@@ -53,7 +53,7 @@ public final class WorkReviewContentBuilder: ListContentBuilder {
             items.append(item)
         case .work:
             let item = ListItem(
-                id: "review_\(model.id)_work_header",
+                id: "review_\(model.id)_work_header_\(model.votes)",
                 layoutSpec: WorkReviewWorkHeaderLayoutSpec(model: model)
             )
 
