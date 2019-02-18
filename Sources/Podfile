@@ -12,12 +12,18 @@ project 'Modules.xcodeproj'
 use_modular_headers!
 inhibit_all_warnings!
 
+def release_pods
+	pod 'Firebase/Core', :configurations => ['Adhoc', 'Release']
+    pod 'Fabric', :configurations => ['Adhoc', 'Release']
+    pod 'Crashlytics', :configurations => ['Adhoc', 'Release']
+end
+
 def all_pods
-    pod 'RxSwift', '4.4.0'
+	release_pods
+
+    pod 'RxSwift', '4.4.1'
     pod 'YYWebImage', '1.0.5'
     pod 'ALLKit', :git => 'https://github.com/geor-kasapidi/ALLKit', :commit => '06d8d4bce9aba4b973ee9389f11585c830954120'
-    pod 'Fabric'
-    pod 'Crashlytics'
 end
 
 target 'FantLab-iOS' do

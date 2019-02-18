@@ -78,7 +78,10 @@ def setup_build_settings(project)
 	for config in project.build_configurations
 		config.build_settings['PRODUCT_NAME'] = '$(TARGET_NAME)'
 		config.build_settings['SWIFT_VERSION'] = '4.2'
-		config.build_settings['SWIFT_ACTIVE_COMPILATION_CONDITIONS'] = 'DEBUG'
+
+		if config.name == 'Debug'
+			config.build_settings['SWIFT_ACTIVE_COMPILATION_CONDITIONS'] = 'DEBUG'
+		end
 	end
 
 	for target in project.targets

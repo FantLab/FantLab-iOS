@@ -1,8 +1,11 @@
 import UIKit
-import Fabric
-import Crashlytics
 import FantLabStyle
 import FantLabBaseUI
+#if !DEBUG
+import Firebase
+import Fabric
+import Crashlytics
+#endif
 
 public func runApp() {
     UIApplicationMain(CommandLine.argc,
@@ -20,8 +23,8 @@ private final class AppDelegate: UIResponder, UIApplicationDelegate, UINavigatio
 
         window = AppRouter.shared.window
 
-        #if DEBUG
-        #else
+        #if !DEBUG
+        FirebaseApp.configure()
         Fabric.with([Crashlytics.self])
         #endif
 

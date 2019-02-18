@@ -146,6 +146,7 @@
 				14ECD1BA2196D9C5007A8781 /* Frameworks */,
 				14ECD1BB2196D9C5007A8781 /* Resources */,
 				144CE72221AC115F005E36D5 /* Fabric */,
+				14591329221B142E0079CE94 /* Firebase */,
 			);
 			buildRules = (
 			);
@@ -199,6 +200,9 @@
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
 			mainGroup = 14ECD1B42196D9C5007A8781;
 			productRefGroup = 14ECD1BE2196D9C5007A8781 /* Products */;
 			projectDirPath = "";
@@ -247,6 +251,24 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "if [ \"${CONFIGURATION}\" == \"Debug\" ]; then\nexit 0;\nfi\n\n\"${PODS_ROOT}/Fabric/run\" e48f5ec42a49c05139083ca3c19049916013ca2a $(cat \"${SRCROOT}/Sources/fabric.buildsecret\")\n";
+		};
+		14591329221B142E0079CE94 /* Firebase */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = Firebase;
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ \"${CONFIGURATION}\" == \"Debug\" ]; then\nexit 0;\nfi\n\ncp -rf \"${SRCROOT}/GoogleService-Info.plist\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app\"\n";
 		};
 		4129E4DCDCDFDA26EBBE56D2 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
