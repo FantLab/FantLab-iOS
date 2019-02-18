@@ -100,7 +100,7 @@ open class SearchViewController: BaseViewController {
         textBackgroundView.pin(.right).to(cancelBtn, .left).const(-8).equal()
 
         let cameraBtn = UIButton(type: .system)
-        cameraBtn.tintColor = UIColor.black
+        cameraBtn.tintColor = Colors.flBlue
         cameraBtn.setImage(UIImage(named: "barcode")?.withRenderingMode(.alwaysTemplate), for: [])
         cameraBtn.contentEdgeInsets = UIEdgeInsets(top: 6, left: 8, bottom: 6, right: 4)
         cameraBtn.all_setEventHandler(for: .touchUpInside) { [weak self] in

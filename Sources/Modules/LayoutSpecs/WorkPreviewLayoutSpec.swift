@@ -90,7 +90,7 @@ public final class WorkPreviewLayoutSpec: ModelLayoutSpec<WorkPreviewModel> {
             view.clipsToBounds = true
             view.contentMode = .scaleAspectFit
 
-            view.yy_setImage(with: model.imageURL, placeholder: WorkCoverImageRule.coverFor(workType: model.workTypeKey), options: .setImageWithFadeAnimation, completion: nil)
+            view.yy_setImage(with: model.imageURL, placeholder: WorkCoverImageRule.coverFor(workTypeId: model.workTypeId), options: .setImageWithFadeAnimation, completion: nil)
         }
 
         let detailTextNode = LayoutNode(sizeProvider: detailString, config: nil) { (label: UILabel, _) in

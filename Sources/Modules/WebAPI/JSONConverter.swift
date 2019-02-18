@@ -178,7 +178,7 @@ final class JSONConverter {
                 name: $0.name.stringValue,
                 nameOrig: $0.name_orig.stringValue,
                 workType: $0.name_type.stringValue,
-                workTypeId: 0,
+                workTypeId: $0.name_type_id.intValue,
                 workTypeKey: $0.name_type_icon.stringValue,
                 imageURL: URL.web($0.image.stringValue),
                 year: $0.year.intValue,

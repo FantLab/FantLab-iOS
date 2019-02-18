@@ -166,7 +166,9 @@ final class AppRouter {
 
         if authorizationStatus == .notDetermined {
             AVCaptureDevice.requestAccess(for: .video) { [weak self] _ in
-                self?.tryShowScanner()
+                DispatchQueue.main.async {
+                    self?.tryShowScanner()
+                }
             }
 
             return
