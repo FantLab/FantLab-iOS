@@ -107,7 +107,7 @@ open class SearchViewController: BaseViewController {
             self?.scanAction?()
         }
         textBackgroundView.addSubview(cameraBtn)
-        cameraBtn.pinEdges(to: textBackgroundView, right: .nan)
+        cameraBtn.pinEdges(to: textBackgroundView, left: 4, right: .nan)
         cameraBtn.pin(.width).to(cameraBtn, .height).equal()
 
         let textField = UITextField()
