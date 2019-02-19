@@ -34,6 +34,8 @@ public final class ImageBackgroundViewController: UIViewController {
         }
     }
 
+    public var onImageDisplay: ((URL?) -> Void)?
+
     public func moveTo(position value: CGFloat) {
         guard imageView.image != nil else {
             return
@@ -45,5 +47,9 @@ public final class ImageBackgroundViewController: UIViewController {
         imageView.alpha = position
 
         imageView.isHidden = position.isZero
+
+        if position == 1 {
+            onImageDisplay?(imageURL)
+        }
     }
 }

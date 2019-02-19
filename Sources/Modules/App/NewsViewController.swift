@@ -28,6 +28,8 @@ final class NewsViewController: ListViewController {
         do {
             let refresher = UIRefreshControl()
             refresher.all_setEventHandler(for: .valueChanged) { [weak self, weak refresher] in
+                AppAnalytics.logNewsRefresh()
+                
                 self?.loadNews()
 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {

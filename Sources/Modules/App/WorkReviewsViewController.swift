@@ -228,6 +228,8 @@ final class WorkReviewsViewController: ListViewController {
             return
         }
 
+        AppAnalytics.logReviewsSortChange(name: sort.description)
+
         requestSubject.onNext(sort)
     }
 

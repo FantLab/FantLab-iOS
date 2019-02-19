@@ -6,10 +6,21 @@ import FantLabModels
 import FantLabStyle
 import FantLabLayoutSpecs
 
-public enum WorkContentTabIndex: String {
+public enum WorkContentTabIndex: String, CustomStringConvertible {
     case info
     case reviews
     case analogs
+
+    public var description: String {
+        switch self {
+        case .info:
+            return "Обзор"
+        case .reviews:
+            return "Отзывы"
+        case .analogs:
+            return "Похожие"
+        }
+    }
 }
 
 struct DataModel {

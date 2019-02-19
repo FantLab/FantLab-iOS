@@ -62,6 +62,14 @@ final class WorkViewController: ListViewController, WorkContentBuilderDelegate, 
     // MARK: -
 
     private func setupStateMapping() {
+        tabIndexSubject
+            .skip(1)
+            .distinctUntilChanged()
+            .subscribe(onNext: { tab in
+                AppAnalytics.logWorkTabOpen(name: tab.description)
+            })
+            .disposed(by: disposeBag)
+
         Observable.combineLatest(state.observable(),
                                  reviewsState.observable(),
                                  tabIndexSubject.distinctUntilChanged(),
@@ -140,6 +148,8 @@ final class WorkViewController: ListViewController, WorkContentBuilderDelegate, 
     // MARK: - WorkContentBuilderDelegate
 
     func onHeaderTap(work: WorkModel) {
+        AppAnalytics.logWorkAuthorsTap()
+        
         AppRouter.shared.openWorkAuthors(work: work)
     }
 
@@ -183,6 +193,8 @@ final class WorkViewController: ListViewController, WorkContentBuilderDelegate, 
         guard work.reviewsCount > 0 else {
             return
         }
+
+        AppAnalytics.logShowAllReviewsButtonTap()
 
         AppRouter.shared.openWorkReviews(workId: work.id, reviewsCount: work.reviewsCount)
     }

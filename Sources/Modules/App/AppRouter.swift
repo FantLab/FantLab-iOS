@@ -14,6 +14,13 @@ import FantLabUtils
 final class AppRouter {
     static let shared = AppRouter()
 
+    let window = UIWindow()
+
+    private let rootNavigationController = CustomNavigationController()
+    private let navBarItemsFactory = NavBarItemsFactory()
+    private let disposeBag = DisposeBag()
+    private let backgroundImageDisplaySubject = PublishSubject<URL?>()
+
     private init() {
         do {
             let imageVC = ImageBackgroundViewController()
@@ -22,6 +29,18 @@ final class AppRouter {
             rootNavigationController.view.pinEdges(to: imageVC.view)
             rootNavigationController.didMove(toParent: imageVC)
             window.rootViewController = imageVC
+
+            imageVC.onImageDisplay = { [weak self] url in
+                self?.backgroundImageDisplaySubject.onNext(url)
+            }
+
+            backgroundImageDisplaySubject
+                .filter({ $0 != nil })
+                .distinctUntilChanged()
+                .subscribe(onNext: { _ in
+                    AppAnalytics.logScrollToBackgroundImage()
+                })
+                .disposed(by: disposeBag)
         }
 
         do {
@@ -46,7 +65,7 @@ final class AppRouter {
                 newsVC.tabBarItem = UITabBarItem(title: "Главная", image: UIImage(named: "home_tab"), tag: 1)
 
                 let cameraItem = navBarItemsFactory.makeCameraItem { [weak self] in
-                    self?.tryShowScanner()
+                    self?.tryShowScanner(from: .mainScreen)
                 }
 
                 let searchItem = navBarItemsFactory.makeSearchItem { [weak self] in
@@ -67,7 +86,7 @@ final class AppRouter {
                 freshReviewsVC.tabBarItem = UITabBarItem(title: "Отзывы", image: UIImage(named: "reviews_tab"), tag: 2)
 
                 let cameraItem = navBarItemsFactory.makeCameraItem { [weak self] in
-                    self?.tryShowScanner()
+                    self?.tryShowScanner(from: .mainScreen)
                 }
 
                 let searchItem = navBarItemsFactory.makeSearchItem { [weak self] in
@@ -87,11 +106,6 @@ final class AppRouter {
             rootNavigationController.pushViewController(tabVC, animated: false)
         }
     }
-
-    let window = UIWindow()
-
-    private let rootNavigationController = CustomNavigationController()
-    private let navBarItemsFactory = NavBarItemsFactory()
 
     // MARK: -
 
@@ -145,13 +159,14 @@ final class AppRouter {
 
             vc.navBar.rightItems = rightItems
         }
-
     }
 
     private func tryGoHome() {
         let alert = Alert()
             .set(title: "Вернуться на главный экран?")
             .add(positiveAction: "Да") { [weak self] in
+                AppAnalytics.logGoHomeConfirmTap()
+
                 _ = self?.rootNavigationController.popToRootViewController(animated: true)
             }
             .set(cancelAction: "Нет") {}
@@ -161,13 +176,13 @@ final class AppRouter {
         rootNavigationController.present(alertVC, animated: true, completion: nil)
     }
 
-    private func tryShowScanner() {
+    private func tryShowScanner(from source: AppAnalytics.BarcodeScannerSource) {
         let authorizationStatus = AVCaptureDevice.authorizationStatus(for: .video)
 
         if authorizationStatus == .notDetermined {
             AVCaptureDevice.requestAccess(for: .video) { [weak self] _ in
                 DispatchQueue.main.async {
-                    self?.tryShowScanner()
+                    self?.tryShowScanner(from: source)
                 }
             }
 
@@ -186,7 +201,9 @@ final class AppRouter {
                     })
                 }
 
-                rootNavigationController.present(vc, animated: true, completion: nil)
+                rootNavigationController.present(vc, animated: true) {
+                    AppAnalytics.logOpenBarcodeScanner(from: source)
+                }
             } else {
                 let alert = Alert()
                     .set(title: "Камера не доступна")
@@ -216,7 +233,7 @@ final class AppRouter {
         let vc = MainSearchViewController()
 
         vc.scanAction = { [weak self] in
-            self?.tryShowScanner()
+            self?.tryShowScanner(from: .searchScreen)
         }
 
         vc.closeAction = { [weak self] in
@@ -229,11 +246,15 @@ final class AppRouter {
     private func share(url: URL) {
         let alert = Alert()
             .add(positiveAction: "Поделиться") { [weak self] in
+                AppAnalytics.logShareButtonTap(url: url)
+
                 let vc = UIActivityViewController(activityItems: [url], applicationActivities: nil)
 
                 self?.rootNavigationController.present(vc, animated: true, completion: nil)
             }
             .add(positiveAction: "Открыть веб-версию") { [weak self] in
+                AppAnalytics.logOpenWebVersionButtonTap(url: url)
+
                 self?.openWebURL(url: url, entersReaderIfAvailable: false)
             }
             .set(cancelAction: "Отмена") {}

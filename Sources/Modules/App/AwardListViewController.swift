@@ -27,6 +27,8 @@ final class AwardListViewController: ListViewController {
         title = "Премии (\(awards.count))"
 
         contentBuilder.onWorkTap = { id in
+            AppAnalytics.logWorkInAwardListTap()
+
             AppRouter.shared.openWork(id: id)
         }
 

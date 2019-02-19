@@ -54,6 +54,8 @@ final class FreshReviewsViewController: ListViewController {
         do {
             let refresher = UIRefreshControl()
             refresher.all_setEventHandler(for: .valueChanged) { [weak self, weak refresher] in
+                AppAnalytics.logFreshReviewsRefresh()
+
                 self?.refresh()
 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
