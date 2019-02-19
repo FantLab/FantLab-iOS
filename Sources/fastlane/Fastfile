@@ -22,4 +22,18 @@ platform :ios do
 			groups: 'fantlab-testers'
 			)
 	end
+
+	desc "Build for AppStore"
+	lane :build_tf do
+		gym(
+			workspace: "FantLab-iOS.xcworkspace",
+			configuration: "Release",
+			export_method: "app-store",
+			scheme: "FantLab-iOS",
+			silent: false,
+			clean: true,
+			output_directory: "./build",
+			output_name: "FantLab.ipa"
+			)
+	end
 end
