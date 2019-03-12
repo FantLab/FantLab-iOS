@@ -1,4 +1,4 @@
-import FantLabUtils
+import FLKit
 
 extension RussianPluralRule.Format {
     public static let marks = RussianPluralRule.Format(

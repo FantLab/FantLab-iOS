@@ -1,19 +1,25 @@
 import Foundation
-import FantLabUtils
-import FantLabModels
+import FLKit
+import FLModels
 
 public final class NewsFeedNetworkRequest: NetworkRequest {
     public typealias ModelType = [NewsModel]
 
-    public init() {}
+    private let page: Int
+
+    public init(page: Int) {
+        self.page = page
+    }
 
     public func makeURLRequest() -> URLRequest {
-        return URLRequest(url: URL(string: "https://fantlab.ru/news.rss")!)
+        return URLRequest(url: URL(string: "https://\(Hosts.api)/news?page=\(page)")!)
     }
 
     public func parse(response: URLResponse, data: Data) throws -> [NewsModel] {
-        let rss = try RSSParser(data: data)
+        let json = try DynamicJSON(jsonData: data)
+
+        let news = JSONConverter.makeNewsFrom(json: json)
         
-        return rss.news
+        return news
     }
 }

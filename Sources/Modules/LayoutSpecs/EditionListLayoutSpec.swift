@@ -2,13 +2,13 @@ import Foundation
 import UIKit
 import ALLKit
 import YYWebImage
-import FantLabModels
-import FantLabStyle
+import FLModels
+import FLStyle
 
 private final class EditionListView: UIView {
     private let adapter = CollectionViewAdapter(
         scrollDirection: .horizontal,
-        sectionInset: .zero,
+        sectionInset: UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 8),
         minimumLineSpacing: 0,
         minimumInteritemSpacing: 0
     )
@@ -36,7 +36,7 @@ private final class EditionListView: UIView {
 
         adapter.collectionView.frame = bounds
 
-        adapter.set(sizeConstraints: SizeConstraints(width: bounds.height * 0.75, height: bounds.height))
+        adapter.set(sizeConstraints: SizeConstraints(width: bounds.height * 0.7, height: bounds.height))
     }
 
     var openEdition: ((Int) -> Void)?
@@ -49,8 +49,8 @@ private final class EditionListView: UIView {
                     layoutSpec: EditionPreviewLayoutSpec(model: edition)
                 )
 
-                item.didSelect = { (cell, _) in
-                    CellSelection.scale(cell: cell, action: {
+                item.didSelect = { (view, _) in
+                    view.animated(action: { [weak self] in
                         self?.openEdition?(edition.id)
                     })
                 }
@@ -68,8 +68,8 @@ private final class EditionListView: UIView {
 public final class EditionListLayoutSpec: ModelLayoutSpec<([EditionPreviewModel], ((Int) -> Void)?)> {
     public override func makeNodeFrom(model: ([EditionPreviewModel], ((Int) -> Void)?), sizeConstraints: SizeConstraints) -> LayoutNode {
         let listNode = LayoutNode(config: { node in
-            node.height = 150
-            node.marginBottom = 16
+            node.height = 160
+            node.marginBottom = 8
         }) { (view: EditionListView, _) in
             view.openEdition = model.1
             view.set(editions: model.0)

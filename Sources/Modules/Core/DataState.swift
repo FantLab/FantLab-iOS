@@ -2,7 +2,7 @@ public enum DataState<T> {
     case initial
     case loading
     case error(Error)
-    case idle(T)
+    case success(T)
 
     // MARK: -
 
@@ -21,8 +21,8 @@ public enum DataState<T> {
         return false
     }
 
-    public var isIdle: Bool {
-        if case .idle = self { return true }
+    public var isSuccess: Bool {
+        if case .success = self { return true }
         return false
     }
 
@@ -34,7 +34,7 @@ public enum DataState<T> {
     }
 
     public var data: T? {
-        if case let .idle(value) = self { return value }
+        if case let .success(value) = self { return value }
         return nil
     }
 
@@ -46,8 +46,8 @@ public enum DataState<T> {
             return .loading
         case let .error(error):
             return .error(error)
-        case let .idle(data):
-            return .idle(transform(data))
+        case let .success(data):
+            return .success(transform(data))
         }
     }
 }

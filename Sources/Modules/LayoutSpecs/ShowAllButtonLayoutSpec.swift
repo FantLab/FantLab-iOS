@@ -1,13 +1,13 @@
 import Foundation
 import UIKit
 import ALLKit
-import FantLabStyle
+import FLStyle
 
 public final class ShowAllButtonLayoutSpec: ModelLayoutSpec<String> {
     public override func makeNodeFrom(model: String, sizeConstraints: SizeConstraints) -> LayoutNode {
         let titleString = model.attributed()
             .font(Fonts.system.medium(size: 17))
-            .foregroundColor(Colors.flOrange)
+            .foregroundColor(Colors.darkOrange)
             .make()
 
         let textNode = LayoutNode(sizeProvider: titleString, config: nil) { (label: UILabel, _) in

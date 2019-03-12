@@ -1,6 +1,6 @@
 import Foundation
-import FantLabUtils
-import FantLabModels
+import FLKit
+import FLModels
 
 public final class GetAuthorNetworkRequest: NetworkRequest {
     public typealias ModelType = AuthorModel

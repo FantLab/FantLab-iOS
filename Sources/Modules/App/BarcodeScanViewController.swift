@@ -1,7 +1,7 @@
 import UIKit
 import AVFoundation
-import FantLabUtils
-import FantLabStyle
+import FLKit
+import FLStyle
 
 final class BarcodeScannerViewController: UIViewController {
     private let scanner: BarcodeScanner

@@ -2,15 +2,16 @@ import Foundation
 import UIKit
 import ALLKit
 import RxSwift
-import FantLabUtils
-import FantLabStyle
-import FantLabModels
-import FantLabBaseUI
-import FantLabLayoutSpecs
-import FantLabContentBuilders
-import FantLabWebAPI
+import FLKit
+import FLStyle
+import FLModels
+import FLUIKit
+import FLLayoutSpecs
+import FLContentBuilders
+import FLWebAPI
+import FLMyBooks
 
-final class WorkViewController: ListViewController, WorkContentBuilderDelegate, WebURLProvider {
+final class WorkViewController: ListViewController<DataStateContentBuilder<WorkContentBuilder>>, WorkContentBuilderDelegate, WebURLProvider, NavBarItemsProvider {
     private struct DataModel {
         let work: WorkModel
         let analogs: [WorkPreviewModel]
@@ -18,25 +19,49 @@ final class WorkViewController: ListViewController, WorkContentBuilderDelegate, 
     }
 
     private let workId: Int
-    private let state = ObservableValue<DataState<DataModel>>(.initial)
-    private let reviewsState = ObservableValue<DataState<[WorkReviewModel]>>(.initial)
-    private let contentBuilder = DataStateContentBuilder(dataContentBuilder: WorkContentBuilder())
+    private let workDataSource: DataSource<DataModel>
+    private let reviewsDataSource: DataSource<[WorkReviewModel]>
     private let expandCollapseSubject = PublishSubject<Void>()
     private let tabIndexSubject = PublishSubject<WorkContentTabIndex>()
-
-    init(workId: Int) {
-        self.workId = workId
-
-        super.init(nibName: nil, bundle: nil)
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        fatalError()
-    }
+    private let favBtn = UIButton(type: .system)
+    private var favItem: NavBarItem?
 
     deinit {
         expandCollapseSubject.onCompleted()
         tabIndexSubject.onCompleted()
+    }
+
+    init(workId: Int) {
+        self.workId = workId
+
+        do {
+            let workRequest = NetworkClient.shared.perform(request: GetWorkNetworkRequest(workId: workId))
+            let analogsRequest = NetworkClient.shared.perform(request: GetWorkAnalogsNetworkRequest(workId: workId))
+
+            let loadObservable = Observable.zip(workRequest, analogsRequest).map { (work, analogs) -> DataModel in
+                DataModel(
+                    work: work,
+                    analogs: analogs,
+                    contentRoot: work.children.makeWorkTree()
+                )
+            }
+
+            workDataSource = DataSource(loadObservable: loadObservable)
+        }
+
+        do {
+            let loadObservable = NetworkClient.shared.perform(request: GetWorkReviewsNetworkRequest(workId: workId, page: 0, sort: .rating)).map { reviews -> [WorkReviewModel] in
+                Array(reviews.prefix(5))
+            }
+
+            reviewsDataSource = DataSource(loadObservable: loadObservable)
+        }
+
+        super.init(contentBuilder: DataStateContentBuilder(dataContentBuilder: WorkContentBuilder()))
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError()
     }
 
     // MARK: -
@@ -44,24 +69,34 @@ final class WorkViewController: ListViewController, WorkContentBuilderDelegate, 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = ""
-
         contentBuilder.dataContentBuilder.delegate = self
 
         contentBuilder.errorContentBuilder.onRetry = { [weak self] in
-            self?.loadWork()
+            self?.workDataSource.load()
         }
 
-        setupBackgroundImageWith(urlObservable: state.observable().map({ $0.data?.work.imageURL }))
+        setupUI()
+        bindUI()
 
-        setupStateMapping()
-
-        loadWork()
+        workDataSource.load()
     }
 
     // MARK: -
 
-    private func setupStateMapping() {
+    private func setupUI() {
+        favBtn.pin(.width).const(40).equal()
+        favBtn.pin(.height).const(40).equal()
+        favBtn.contentEdgeInsets = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
+        favBtn.all_setEventHandler(for: .touchUpInside) { [weak self] in
+            self?.toggleFavState()
+        }
+
+        let btn = favBtn
+
+        favItem = NavBarItem(margin: 8) { btn }
+    }
+
+    private func bindUI() {
         tabIndexSubject
             .skip(1)
             .distinctUntilChanged()
@@ -70,25 +105,31 @@ final class WorkViewController: ListViewController, WorkContentBuilderDelegate, 
             })
             .disposed(by: disposeBag)
 
-        Observable.combineLatest(state.observable(),
-                                 reviewsState.observable(),
+        MyBookService.shared.observeWorkIsMine(id: workId)
+            .distinctUntilChanged()
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: { [weak self] isFav in
+                self?.isFav = isFav
+            })
+            .disposed(by: disposeBag)
+
+        Observable.combineLatest(workDataSource.stateObservable,
+                                 reviewsDataSource.stateObservable,
                                  tabIndexSubject.distinctUntilChanged(),
                                  expandCollapseSubject)
-            .observeOn(SerialDispatchQueueScheduler(qos: .default))
-            .map({ [weak self] args -> [ListItem] in
-                let dataModel = args.0.map({ data -> WorkContentModel in
-                    let reviewsDataModel = args.1.map({ reviews -> WorkReviewsShortListContentModel in
-                        return (data.work, reviews, data.work.reviewsCount > reviews.count)
-                    })
-
-                    return (data.work, reviews: reviewsDataModel, analogs: data.analogs, workTree: data.contentRoot, tabIndex: args.2)
+            .map({ arg -> DataState<WorkViewState> in
+                return arg.0.map({ data -> WorkViewState in
+                    return WorkViewState(
+                        work: data.work,
+                        workTree: data.contentRoot,
+                        analogs: data.analogs,
+                        reviews: arg.1,
+                        tabIndex: arg.2
+                    )
                 })
-
-                return self?.contentBuilder.makeListItemsFrom(model: dataModel) ?? []
             })
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { [weak self] items in
-                self?.adapter.set(items: items)
+            .subscribe(onNext: { [weak self] viewState in
+                self?.apply(viewState: viewState)
             })
             .disposed(by: disposeBag)
 
@@ -98,51 +139,39 @@ final class WorkViewController: ListViewController, WorkContentBuilderDelegate, 
 
     // MARK: -
 
-    private func loadWork() {
-        if state.value.isLoading || state.value.isIdle {
-            return
+    private func toggleFavState() {
+        let id = workId
+
+        let alert = Alert()
+
+        if isFav {
+            alert.add(negativeAction: "Удалить") {
+                MyBookService.shared.removeWorkFromMine(id: id)
+            }
+        } else {
+            MyBookModel.Group.allCases.forEach { group in
+                alert.add(positiveAction: group.description, perform: {
+                    MyBookService.shared.markWorkAsMine(id: id, group: group)
+                })
+            }
         }
 
-        state.value = .loading
+        alert.set(cancelAction: "Отмена") {}
 
-        let workRequest = NetworkClient.shared.perform(request: GetWorkNetworkRequest(workId: workId))
-        let analogsRequest = NetworkClient.shared.perform(request: GetWorkAnalogsNetworkRequest(workId: workId))
+        let vc = UIAlertController(alert: alert, preferredStyle: .actionSheet)
 
-        Observable.zip(workRequest, analogsRequest)
-            .subscribe(
-                onNext: { [weak self] (work, analogs) in
-                    self?.state.value = .idle(DataModel(
-                        work: work,
-                        analogs: analogs,
-                        contentRoot: work.children.makeWorkTree()
-                    ))
-                },
-                onError: { [weak self] error in
-                    self?.state.value = .error(error)
-                }
-            )
-            .disposed(by: disposeBag)
+        present(vc, animated: true, completion: nil)
     }
 
-    private func loadReviews() {
-        if reviewsState.value.isLoading || reviewsState.value.isIdle {
-            return
+    private var isFav: Bool = false {
+        didSet {
+            let btn = favBtn
+            let isOn = isFav
+
+            UIView.transition(with: btn, duration: 0.2, options: [.beginFromCurrentState, .transitionCrossDissolve], animations: {
+                btn.setImage(UIImage(named: isOn ? "fav_on" : "fav_off"), for: [])
+            }) { _ in }
         }
-
-        reviewsState.value = .loading
-
-        let request = NetworkClient.shared.perform(request: GetWorkReviewsNetworkRequest(workId: workId, page: 0, sort: .rating))
-
-        request
-            .subscribe(
-                onNext: { [weak self] reviews in
-                    self?.reviewsState.value = .idle(Array(reviews.prefix(5)))
-                },
-                onError: { [weak self] error in
-                    self?.reviewsState.value = .error(error)
-                }
-            )
-            .disposed(by: disposeBag)
     }
 
     // MARK: - WorkContentBuilderDelegate
@@ -155,7 +184,7 @@ final class WorkViewController: ListViewController, WorkContentBuilderDelegate, 
 
     func onTabTap(tab: WorkContentTabIndex) {
         if tab == .reviews {
-            loadReviews()
+            reviewsDataSource.load()
         }
 
         tabIndexSubject.onNext(tab)
@@ -186,7 +215,7 @@ final class WorkViewController: ListViewController, WorkContentBuilderDelegate, 
     }
 
     func onReviewsErrorTap() {
-        loadReviews()
+        reviewsDataSource.load()
     }
 
     func onShowAllReviewsTap(work: WorkModel) {
@@ -215,5 +244,15 @@ final class WorkViewController: ListViewController, WorkContentBuilderDelegate, 
 
     var webURL: URL? {
         return URL(string: "https://\(Hosts.portal)/work\(workId)")
+    }
+
+    // MARK: - NavBarItemsProvider
+
+    var leftItems: [NavBarItem] {
+        return []
+    }
+
+    var rightItems: [NavBarItem] {
+        return [favItem].compactMap({ $0 })
     }
 }

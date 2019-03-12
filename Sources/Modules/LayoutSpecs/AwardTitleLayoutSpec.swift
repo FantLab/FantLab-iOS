@@ -2,9 +2,9 @@ import Foundation
 import UIKit
 import ALLKit
 import YYWebImage
-import FantLabModels
-import FantLabUtils
-import FantLabStyle
+import FLModels
+import FLKit
+import FLStyle
 
 public final class AwardTitleLayoutSpec: ModelLayoutSpec<AwardPreviewModel> {
     public override func makeNodeFrom(model: AwardPreviewModel, sizeConstraints: SizeConstraints) -> LayoutNode {

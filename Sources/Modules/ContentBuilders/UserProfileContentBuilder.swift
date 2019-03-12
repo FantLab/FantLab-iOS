@@ -1,10 +1,10 @@
 import Foundation
 import UIKit
 import ALLKit
-import FantLabUtils
-import FantLabModels
-import FantLabLayoutSpecs
-import FantLabStyle
+import FLKit
+import FLModels
+import FLLayoutSpecs
+import FLStyle
 
 public final class UserProfileContentBuilder: ListContentBuilder {
     public typealias ModelType = UserProfileModel
@@ -36,12 +36,12 @@ public final class UserProfileContentBuilder: ListContentBuilder {
         do {
             items.append(ListItem(
                 id: "profile_properties_sep",
-                layoutSpec: EmptySpaceLayoutSpec(model: (Colors.perfectGray, 8))
+                layoutSpec: ItemSeparatorLayoutSpec(model: Colors.separatorColor)
             ))
 
             items.append(ListItem(
                 id: "profile_properties",
-                layoutSpec: UserProfilePropertiesLayoutSpec(model: model)
+                layoutSpec: ObjectPropertiesLayoutSpec(model: model)
             ))
         }
 
@@ -50,7 +50,7 @@ public final class UserProfileContentBuilder: ListContentBuilder {
         if model.reviewsCount > 0 {
             items.append(ListItem(
                 id: "profile_reviews_sep",
-                layoutSpec: EmptySpaceLayoutSpec(model: (Colors.perfectGray, 8))
+                layoutSpec: ItemSeparatorLayoutSpec(model: Colors.separatorColor)
             ))
 
             let item = ListItem(
@@ -58,8 +58,8 @@ public final class UserProfileContentBuilder: ListContentBuilder {
                 layoutSpec: ShowAllButtonLayoutSpec(model: "Отзывы (\(model.reviewsCount))")
             )
 
-            item.didSelect = { [weak self] (cell, _) in
-                CellSelection.scale(cell: cell, action: {
+            item.didSelect = { [weak self] (view, _) in
+                view.animated(action: {
                     self?.onReviewsTap?(model.id, model.reviewsCount)
                 })
             }

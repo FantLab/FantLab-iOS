@@ -1,11 +1,12 @@
 import Foundation
+import FLKit
 
-public final class AuthorModel {
+public final class AuthorModel: ObjectPropertiesProvider {
     public final class SiteModel {
-        public let link: String
+        public let link: URL
         public let title: String
 
-        public init(link: String,
+        public init(link: URL,
                     title: String) {
 
             self.link = link
@@ -63,5 +64,31 @@ public final class AuthorModel {
         self.sites = sites
         self.awards = awards
         self.workBlocks = workBlocks
+    }
+
+    // MARK: -
+
+    public var objectProperties: [ObjectProperty] {
+        var properties: [ObjectProperty] = []
+
+        let pseudonymsString = pseudonyms.compactAndJoin("\n")
+
+        if !pseudonyms.isEmpty {
+            properties.append(("Псевдонимы", pseudonymsString))
+        }
+
+        if !countryName.isEmpty {
+            properties.append(("Страна", countryName))
+        }
+
+        if let date = birthDate {
+            properties.append(("Дата рождения", date.format(.dayMonthAndYear)))
+        }
+
+        if let date = deathDate {
+            properties.append(("Дата смерти", date.format(.dayMonthAndYear)))
+        }
+
+        return properties
     }
 }

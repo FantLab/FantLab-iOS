@@ -2,9 +2,9 @@ import Foundation
 import UIKit
 import ALLKit
 import YYWebImage
-import FantLabModels
-import FantLabUtils
-import FantLabStyle
+import FLModels
+import FLKit
+import FLStyle
 
 public final class AwardIconsLayoutSpec: ModelLayoutSpec<[AwardPreviewModel]> {
     public override func makeNodeFrom(model: [AwardPreviewModel], sizeConstraints: SizeConstraints) -> LayoutNode {
@@ -28,7 +28,7 @@ public final class AwardIconsLayoutSpec: ModelLayoutSpec<[AwardPreviewModel]> {
         let iconsNode = LayoutNode(children: iconNodes, config: { node in
             node.flexDirection = .row
             node.flexWrap = .wrap
-            node.padding(top: 6, left: 16, bottom: 16, right: nil)
+            node.padding(top: 6, left: 16, bottom: 8, right: nil)
         })
 
         return iconsNode

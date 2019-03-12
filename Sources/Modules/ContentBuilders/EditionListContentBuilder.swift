@@ -1,11 +1,11 @@
 import Foundation
 import UIKit
 import ALLKit
-import FantLabUtils
-import FantLabModels
-import FantLabStyle
-import FantLabLayoutSpecs
-import FantLabText
+import FLKit
+import FLModels
+import FLStyle
+import FLLayoutSpecs
+import FLText
 
 public final class EditionListContentBuilder: ListContentBuilder {
     public typealias ModelType = [EditionBlockModel]
@@ -52,8 +52,8 @@ public final class EditionListContentBuilder: ListContentBuilder {
                     return SizeConstraints(width: (width / CGFloat(columnsCount)).rounded(.down), height: (width / CGFloat(columnsCount - 1)).rounded(.down))
                 }
 
-                item.didSelect = { [weak self] (cell, _) in
-                    CellSelection.scale(cell: cell, action: {
+                item.didSelect = { [weak self] (view, _) in
+                    view.animated(action: {
                         self?.onEditionTap?(edition.id)
                     })
                 }
@@ -84,7 +84,7 @@ public final class EditionListContentBuilder: ListContentBuilder {
 
             let sepItem = ListItem(
                 id: "edition_block_\(i)_sep",
-                layoutSpec: EmptySpaceLayoutSpec(model: (Colors.perfectGray, 12))
+                layoutSpec: EmptySpaceLayoutSpec(model: (Colors.sectionSeparatorColor, 12))
             )
 
             items.append(sepItem)

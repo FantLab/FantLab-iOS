@@ -19,11 +19,11 @@ struct TagReplacements {
     static let preview: ReplacementRules = [
         "br": .lineBreak,
         "hr": .lineBreak,
-        "img": .string("ИЗОБРАЖЕНИЕ"),
-        "photo": .string("ИЗОБРАЖЕНИЕ"),
-        "video": .string("ВИДЕО"),
-        "h": .string("СКРЫТЫЙ ТЕКСТ"),
-        "spoiler": .string("СПОЙЛЕР")
+        "img": .string("..."),
+        "photo": .string("..."),
+        "video": .string("..."),
+        "h": .string("..."),
+        "spoiler": .string("...")
     ]
 }
 
@@ -47,7 +47,7 @@ final class FLPlainStringBuilder {
                 switch child {
                 case .string(let value):
                     if value.maybeHasContent {
-                        string.append(value)
+                    string.append(value)
                     }
                 case .lineBreak:
                     insertLineBreak(&string)

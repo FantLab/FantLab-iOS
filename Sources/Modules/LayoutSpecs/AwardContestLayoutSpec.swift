@@ -2,15 +2,17 @@ import Foundation
 import UIKit
 import ALLKit
 import YYWebImage
-import FantLabModels
-import FantLabUtils
-import FantLabStyle
+import FLModels
+import FLKit
+import FLStyle
 
 public final class AwardContestLayoutSpec: ModelLayoutSpec<AwardPreviewModel.ContestModel> {
     public override func makeNodeFrom(model: AwardPreviewModel.ContestModel, sizeConstraints: SizeConstraints) -> LayoutNode {
         let workNameText = model.workName.nilIfEmpty.flatMap({ "«" + $0 + "»" }) ?? ""
 
-        let nameString = [String(model.year), model.name, workNameText].compactAndJoin(" - ").attributed()
+        let yearString = model.year > 0 ? String(model.year) : ""
+
+        let nameString = [yearString, model.name, workNameText].compactAndJoin(" - ").attributed()
             .font(Fonts.system.regular(size: 13))
             .foregroundColor(UIColor.gray)
             .make()

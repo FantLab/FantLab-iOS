@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import FantLabUtils
+import FLKit
 
 public final class FLText {
     public static let linkAttribute: NSAttributedString.Key = NSAttributedString.Key(rawValue: "FLLink")
@@ -58,7 +58,7 @@ private final class FLTextBuilder {
                 case "s":
                     mutableString.addAttribute(.strikethroughStyle, value: NSNumber(value: 1), range: nsRange)
                 case "a", "url", "link":
-                    if let url = URL(string: node.tag.value) {
+                    if let url = URL(string: node.tag.value), canOpen(url: url) {
                         mutableString.addAttributes(decorator.linkAttributes, range: nsRange)
 
                         if setupLinkAttribute {
@@ -67,7 +67,7 @@ private final class FLTextBuilder {
                                                        range: nsRange)
                         }
                     }
-                case "autor", "work", "edition", "person", "user", "art", "dictor", "series", "film", "translator":
+                case "autor", "work", "edition", "user":
                     let link = "/\(node.tag.name)\(node.tag.value)"
 
                     if let url = URL(string: link) {
@@ -81,16 +81,6 @@ private final class FLTextBuilder {
                     }
                 default:
                     break
-                }
-            }
-
-            mutableString.string.detectURLs().forEach { (url, range) in
-                mutableString.addAttributes(decorator.linkAttributes, range: range)
-
-                if setupLinkAttribute {
-                    mutableString.addAttribute(FLText.linkAttribute,
-                                               value: url,
-                                               range: range)
                 }
             }
 
@@ -124,6 +114,14 @@ private final class FLTextBuilder {
         }
 
         return items
+    }
+
+    private static func canOpen(url: URL) -> Bool {
+        if let host = url.host, !host.isEmpty, !host.contains("fantlab") {
+            return true
+        }
+
+        return url.path.firstMatch(for: "(work|autor|edition|user)\\d+") != nil
     }
 
     private static func makeTextItemFromTag(node: FLTagNode, decorator: TextDecorator, photoIndex: Int) -> FLText.Item? {
@@ -199,7 +197,7 @@ private final class FLTextBuilder {
                 switch child {
                 case .string(let string):
                     if string.maybeHasContent {
-                        textData.string.append(string)
+                    textData.string.append(string)
                     }
                 case .lineBreak:
                     textData.lineBreaks.append((nil, textData.string.endIndex))

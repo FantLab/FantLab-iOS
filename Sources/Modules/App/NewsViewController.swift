@@ -2,78 +2,66 @@ import Foundation
 import UIKit
 import RxSwift
 import ALLKit
-import FantLabBaseUI
-import FantLabWebAPI
-import FantLabUtils
-import FantLabModels
-import FantLabContentBuilders
-import FantLabStyle
+import FLUIKit
+import FLWebAPI
+import FLKit
+import FLModels
+import FLContentBuilders
+import FLStyle
+import FLLayoutSpecs
 
-final class NewsViewController: ListViewController {
-    private let state = ObservableValue<DataState<[NewsModel]>>(.initial)
-    private let contentBuilder = DataStateContentBuilder(dataContentBuilder: NewsContentBuilder())
+final class NewsViewController: ListViewController<NewsContentBuilder> {
+    private let dataSource: PagedDataSource<NewsModel>
+
+    init() {
+        dataSource = PagedDataSource(loadObservable: { page -> Observable<[NewsModel]> in
+            NetworkClient.shared.perform(request: NewsFeedNetworkRequest(page: page))
+        })
+
+        super.init(contentBuilder: NewsContentBuilder())
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError()
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        contentBuilder.dataContentBuilder.onURLTap = { url in
-            AppRouter.shared.openURL(url, entersReaderIfAvailable: true)
+        contentBuilder.stateContentBuilder.errorContentBuilder.onRetry = { [weak self] in
+            self?.dataSource.loadNextPage()
         }
 
-        adapter.collectionView.contentInset.top = 16
-        adapter.collectionView.showsVerticalScrollIndicator = false
-
-        setupStateMapping()
-
-        do {
-            let refresher = UIRefreshControl()
-            refresher.all_setEventHandler(for: .valueChanged) { [weak self, weak refresher] in
-                AppAnalytics.logNewsRefresh()
-                
-                self?.loadNews()
-
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
-                    refresher?.endRefreshing()
-                })
-            }
-
-            adapter.collectionView.refreshControl = refresher
+        contentBuilder.onLastItemDisplay = { [weak self] in
+            self?.dataSource.loadNextPage()
         }
 
-        loadNews()
-    }
+        contentBuilder.onNewsTap = { news in
+            AppRouter.shared.openNews(model: news)
+        }
 
-    // MARK: -
+        scrollView.refreshControl = UIRefreshControl { [weak self] refresher in
+            AppAnalytics.logNewsRefresh()
 
-    private func setupStateMapping() {
-        state.observable()
-            .observeOn(SerialDispatchQueueScheduler(qos: .default))
-            .map({ [weak self] state -> [ListItem] in
-                return self?.contentBuilder.makeListItemsFrom(model: state) ?? []
+            self?.dataSource.loadFirstPage()
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
+                refresher.endRefreshing()
             })
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { [weak self] items in
-                self?.adapter.set(items: items)
+        }
+
+        dataSource.stateObservable
+            .map({ data -> NewsListViewState in
+                NewsListViewState(
+                    news: data.items,
+                    state: data.state
+                )
+            })
+            .subscribe(onNext: { [weak self] viewState in
+                self?.apply(viewState: viewState)
             })
             .disposed(by: disposeBag)
-    }
 
-    private func loadNews() {
-        if state.value.isLoading || state.value.isIdle {
-            return
-        }
-
-        state.value = .loading
-
-        NetworkClient.shared.perform(request: NewsFeedNetworkRequest())
-            .subscribe(
-                onNext: { [weak self] news in
-                    self?.state.value = .idle(news)
-                },
-                onError: { [weak self] error in
-                    self?.state.value = .error(error)
-                }
-            )
-            .disposed(by: disposeBag)
+        dataSource.loadFirstPage()
     }
 }

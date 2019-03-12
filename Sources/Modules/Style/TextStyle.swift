@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import FantLabText
+import FLText
 
 public final class TextStyle {
     public static let defaultTextDecorator: TextDecorator = {
@@ -28,7 +28,7 @@ public final class TextStyle {
                 .paragraphStyle: quoteParagraphStyle
             ],
             linkAttributes: [
-                .foregroundColor: Colors.flOrange,
+                .foregroundColor: Colors.darkOrange,
                 .underlineStyle: NSNumber(value: NSUnderlineStyle.single.rawValue)
             ],
             boldFont: Fonts.system.bold(size: 16),

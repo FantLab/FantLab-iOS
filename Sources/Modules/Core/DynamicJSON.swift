@@ -48,7 +48,11 @@ public class DynamicJSON: CustomDebugStringConvertible, CustomStringConvertible 
     // MARK: -
 
     public subscript(_ index: Int) -> DynamicJSON {
-        return DynamicJSON((object as? [Any])?[safe: index])
+        guard let arr = object as? [Any], arr.indices.contains(index) else {
+            return DynamicJSON(nil)
+        }
+
+        return DynamicJSON(arr[index])
     }
 
     public subscript(_ key: String) -> DynamicJSON {

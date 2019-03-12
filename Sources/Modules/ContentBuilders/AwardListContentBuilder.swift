@@ -1,17 +1,21 @@
 import Foundation
 import UIKit
 import ALLKit
-import FantLabUtils
-import FantLabModels
-import FantLabStyle
-import FantLabLayoutSpecs
+import FLKit
+import FLModels
+import FLStyle
+import FLLayoutSpecs
 
 public final class AwardListContentBuilder: ListContentBuilder {
     public typealias ModelType = [AwardPreviewModel]
 
     // MARK: -
 
-    public init() {}
+    private let useSectionSeparatorStyle: Bool
+
+    public init(useSectionSeparatorStyle: Bool) {
+        self.useSectionSeparatorStyle = useSectionSeparatorStyle
+    }
 
     // MARK: -
 
@@ -33,8 +37,8 @@ public final class AwardListContentBuilder: ListContentBuilder {
                 )
 
                 if contest.workId > 0 {
-                    item.didSelect = { [weak self] (cell, _) in
-                        CellSelection.scale(cell: cell, action: {
+                    item.didSelect = { [weak self] (view, _) in
+                        view.animated(action: { [weak self] in
                             self?.onWorkTap?(contest.workId)
                         })
                     }
@@ -43,9 +47,11 @@ public final class AwardListContentBuilder: ListContentBuilder {
                 return [item]
             })
 
+            let sepSpec: LayoutSpec = useSectionSeparatorStyle ? EmptySpaceLayoutSpec(model: (Colors.perfectGray, 8)) : ItemSeparatorLayoutSpec(model: Colors.separatorColor)
+
             let sepItem = ListItem(
                 id: "award_\(i)_sep",
-                layoutSpec: ItemSeparatorLayoutSpec(model: Colors.separatorColor)
+                layoutSpec: sepSpec
             )
 
             return [item] + contestItems + [sepItem]

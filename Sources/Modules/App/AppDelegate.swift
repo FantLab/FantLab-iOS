@@ -1,6 +1,7 @@
 import UIKit
-import FantLabStyle
-import FantLabBaseUI
+import GRDB
+import FLStyle
+import FLUIKit
 #if !DEBUG
 import Firebase
 import Fabric
@@ -23,7 +24,11 @@ private final class AppDelegate: UIResponder, UIApplicationDelegate, UINavigatio
 
         window = AppRouter.shared.window
 
-        #if !DEBUG
+        #if DEBUG
+        Database.logError = { (code, text) in
+            print("⚠️", code, text)
+        }
+        #else
         FirebaseApp.configure()
         Fabric.with([Crashlytics.self])
         #endif

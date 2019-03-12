@@ -2,8 +2,8 @@ import Foundation
 import UIKit
 import ALLKit
 import YYWebImage
-import FantLabModels
-import FantLabStyle
+import FLModels
+import FLStyle
 
 public final class EditionPreviewLayoutSpec: ModelLayoutSpec<EditionPreviewModel> {
     public override func makeNodeFrom(model: EditionPreviewModel, sizeConstraints: SizeConstraints) -> LayoutNode {

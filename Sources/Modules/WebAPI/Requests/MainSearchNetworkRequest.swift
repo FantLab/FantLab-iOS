@@ -1,6 +1,6 @@
 import Foundation
-import FantLabUtils
-import FantLabModels
+import FLKit
+import FLModels
 
 public struct MainSearchResult {
     public let searchText: String

@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 import ALLKit
-import FantLabStyle
+import FLStyle
 
 public final class FLTextCollapsedHiddenStringLayoutSpec: ModelLayoutSpec<String> {
     public override func makeNodeFrom(model: String, sizeConstraints: SizeConstraints) -> LayoutNode {
@@ -12,7 +12,7 @@ public final class FLTextCollapsedHiddenStringLayoutSpec: ModelLayoutSpec<String
 
         let showContentString = "Показать".attributed()
             .font(Fonts.system.medium(size: 17))
-            .foregroundColor(Colors.flOrange)
+            .foregroundColor(Colors.darkOrange)
             .make()
 
         let nameTextNode = LayoutNode(sizeProvider: nameString, config: { node in

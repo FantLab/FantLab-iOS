@@ -1,11 +1,11 @@
 import Foundation
 import UIKit
 import ALLKit
-import FantLabUtils
-import FantLabModels
-import FantLabStyle
-import FantLabLayoutSpecs
-import FantLabText
+import FLKit
+import FLModels
+import FLStyle
+import FLLayoutSpecs
+import FLText
 
 public final class EditionContentBuilder: ListContentBuilder {
     public typealias ModelType = EditionModel
@@ -33,7 +33,7 @@ public final class EditionContentBuilder: ListContentBuilder {
 
             listItems.append(ListItem(
                 id: "edition_header_sep",
-                layoutSpec: EmptySpaceLayoutSpec(model: (Colors.perfectGray, 8))
+                layoutSpec: ItemSeparatorLayoutSpec(model: Colors.separatorColor)
             ))
         }
 
@@ -42,7 +42,7 @@ public final class EditionContentBuilder: ListContentBuilder {
         do {
             listItems.append(ListItem(
                 id: "edition_properties",
-                layoutSpec: EditionPropertiesLayoutSpec(model: model)
+                layoutSpec: ObjectPropertiesLayoutSpec(model: model)
             ))
         }
 
@@ -59,7 +59,7 @@ public final class EditionContentBuilder: ListContentBuilder {
 
             listItems.append(ListItem(
                 id: "edition_text_sep",
-                layoutSpec: EmptySpaceLayoutSpec(model: (Colors.perfectGray, 8))
+                layoutSpec: ItemSeparatorLayoutSpec(model: Colors.separatorColor)
             ))
 
             listItems.append(ListItem(

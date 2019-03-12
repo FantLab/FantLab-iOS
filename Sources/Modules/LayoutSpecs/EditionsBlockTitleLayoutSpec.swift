@@ -2,8 +2,8 @@ import Foundation
 import UIKit
 import ALLKit
 import YYWebImage
-import FantLabModels
-import FantLabStyle
+import FLModels
+import FLStyle
 
 public struct EditionsBlockTitleLayoutModel {
     public let title: String
@@ -20,7 +20,7 @@ public struct EditionsBlockTitleLayoutModel {
 public final class EditionsBlockTitleLayoutSpec: ModelLayoutSpec<EditionsBlockTitleLayoutModel> {
     public override func makeNodeFrom(model: EditionsBlockTitleLayoutModel, sizeConstraints: SizeConstraints) -> LayoutNode {
         let titleString = model.title.attributed()
-            .font(Fonts.system.bold(size: 18))
+            .font(Fonts.system.bold(size: 20))
             .foregroundColor(UIColor.black)
             .make()
 

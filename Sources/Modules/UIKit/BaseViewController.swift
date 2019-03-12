@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 import RxSwift
-import FantLabStyle
+import FLStyle
 
 open class BaseViewController: UIViewController {
     open override var preferredStatusBarStyle: UIStatusBarStyle {

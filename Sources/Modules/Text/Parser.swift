@@ -1,4 +1,4 @@
-import FantLabUtils
+import FLKit
 
 private protocol ParseController {
     func save(string: String)
@@ -14,7 +14,7 @@ private protocol CharacterHandler {
 
 private struct Consts {
     static let singleHTMLTags: Set<String> = ["img", "hr", "br"]
-    static let singleBBTags: Set<String> = ["*", "photo", "video"]
+    static let pairBBTags: Set<String> = ["b", "i", "u", "s", "p", "q", "h", "spoiler", "list", "img", "a", "link", "url", "autor", "work", "edition", "person", "user", "art", "dictor", "series", "film", "translator"]
 }
 
 private final class HTMLTagCharacterHandler: CharacterHandler {
@@ -149,15 +149,15 @@ private final class BBTagCharacterHandler: CharacterHandler {
 
         let lowName = name.lowercased()
 
-        if Consts.singleBBTags.contains(lowName) {
-            controller.open(tag: lowName, value: value)
-            controller.close(tag: lowName)
-        } else {
+        if Consts.pairBBTags.contains(lowName) {
             if isCloseTag {
                 controller.close(tag: lowName)
             } else {
                 controller.open(tag: lowName, value: value)
             }
+        } else {
+            controller.open(tag: lowName, value: value)
+            controller.close(tag: lowName)
         }
 
         return DefaultCharacterHandler(firstChar: nil)

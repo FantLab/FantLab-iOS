@@ -3,18 +3,17 @@ import UIKit
 import ALLKit
 import RxSwift
 import YYWebImage
-import FantLabUtils
-import FantLabStyle
-import FantLabText
-import FantLabBaseUI
-import FantLabLayoutSpecs
-import FantLabContentBuilders
+import FLKit
+import FLStyle
+import FLText
+import FLUIKit
+import FLLayoutSpecs
+import FLContentBuilders
 
-final class TextListViewController: ListViewController, TextListContentBuilderDelegate {
+final class TextListViewController: ListViewController<DataStateContentBuilder<TextListContentBuilder>>, TextListContentBuilderDelegate {
     private let textSubject = PublishSubject<FLText>()
     private let hiddenTextSubject = PublishSubject<Int>()
     private let imageSubject = PublishSubject<(Int, UIImage?)>()
-    private let contentBuilder = TextListContentBuilder()
     private let originalString: String
     private let headerListItems: [ListItem]
     private let makeURLFromPhotoIndex: ((Int) -> URL)?
@@ -24,7 +23,7 @@ final class TextListViewController: ListViewController, TextListContentBuilderDe
         headerListItems = customHeaderListItems
         makeURLFromPhotoIndex = makePhotoURL
 
-        super.init(nibName: nil, bundle: nil)
+        super.init(contentBuilder: DataStateContentBuilder(dataContentBuilder: TextListContentBuilder()))
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -42,11 +41,11 @@ final class TextListViewController: ListViewController, TextListContentBuilderDe
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        contentBuilder.delegate = self
-
-        adapter.set(items: [ListItem(id: UUID().uuidString, layoutSpec: SpinnerLayoutSpec())])
+        contentBuilder.dataContentBuilder.delegate = self
 
         setupStateMapping()
+
+        apply(viewState: .loading)
 
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             self?.setupText()
@@ -64,16 +63,17 @@ final class TextListViewController: ListViewController, TextListContentBuilderDe
             $0[$1.0] = $1.1
         }
 
-        Observable.combineLatest(textSubject, hiddenTextObservable, imagesObservable)
-            .observeOn(SerialDispatchQueueScheduler(qos: .default))
-            .map({ [weak self] args -> [ListItem] in
-                return self?.contentBuilder.makeListItemsFrom(model: args) ?? []
+        Observable.combineLatest(textSubject, hiddenTextObservable, imagesObservable, Observable.just(headerListItems))
+            .map({ (text, spoilers, images, headerItems) -> TextListViewState in
+                TextListViewState(
+                    text: text,
+                    expandedTextIndices: spoilers,
+                    images: images,
+                    customHeaderItems: headerItems
+                )
             })
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { [weak self] items in
-                let allItems = (self?.headerListItems ?? []) + items
-
-                self?.adapter.set(items: allItems)
+            .subscribe(onNext: { [weak self] viewState in
+                self?.apply(viewState: .success(viewState))
             })
             .disposed(by: disposeBag)
     }

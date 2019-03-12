@@ -1,9 +1,9 @@
 import Foundation
 import UIKit
 import ALLKit
-import FantLabModels
-import FantLabStyle
-import FantLabUtils
+import FLModels
+import FLStyle
+import FLKit
 
 public final class AuthorPreviewLayoutSpec: ModelLayoutSpec<AuthorPreviewModel> {
     public override func makeNodeFrom(model: AuthorPreviewModel, sizeConstraints: SizeConstraints) -> LayoutNode {

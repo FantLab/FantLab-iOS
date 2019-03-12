@@ -3,19 +3,41 @@ import UIKit
 import Vision
 import RxSwift
 import ALLKit
-import FantLabWebAPI
-import FantLabModels
-import FantLabUtils
-import FantLabStyle
-import FantLabBaseUI
-import FantLabLayoutSpecs
-import FantLabContentBuilders
+import FLWebAPI
+import FLModels
+import FLKit
+import FLStyle
+import FLUIKit
+import FLLayoutSpecs
+import FLContentBuilders
 
-final class MainSearchViewController: SearchViewController {
-    private let contentBuilder = DataStateContentBuilder(dataContentBuilder: SearchResultContentBuilder())
+final class MainSearchViewController: ListViewController<DataStateContentBuilder<SearchResultContentBuilder>> {
+    init() {
+        super.init(contentBuilder: DataStateContentBuilder(dataContentBuilder: SearchResultContentBuilder()))
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError()
+    }
+
+    deinit {
+        searchSubject.onCompleted()
+    }
+
+    public var scanAction: (() -> Void)?
+    public var closeAction: (() -> Void)?
+
+    private let searchSubject = PublishSubject<String>()
+    private lazy var searchBarView = SearchBarView()
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        topPanelView.subviews.forEach {
+            $0.removeFromSuperview()
+        }
+        topPanelView.addSubview(searchBarView)
+        searchBarView.pinEdges(to: topPanelView)
 
         contentBuilder.dataContentBuilder.onAuthorTap = { [weak self] id in
             self?.openAuthor(id: id)
@@ -29,21 +51,55 @@ final class MainSearchViewController: SearchViewController {
             self?.triggerSearch()
         }
 
-        placeholderText = "Поиск авторов и произведений"
+        searchBarView.cancelBtn.all_setEventHandler(for: .touchUpInside) { [weak self] in
+            self?.closeAction?()
+        }
 
-        setupStateMapping()
+        searchBarView.cameraBtn.all_setEventHandler(for: .touchUpInside) { [weak self] in
+            self?.scanAction?()
+        }
+
+        searchBarView.textField.all_setEventHandler(for: .editingChanged) { [weak self] in
+            self?.triggerSearch()
+        }
+
+        scrollView.showsVerticalScrollIndicator = false
+        scrollView.contentInset.bottom = UIScreen.main.bounds.size.height
+
+        searchBarView.textField.attributedPlaceholder = "Поиск авторов и произведений".attributed()
+            .font(Fonts.system.regular(size: 16))
+            .foregroundColor(UIColor.lightGray)
+            .make()
+
+        bindUI()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        searchBarView.textField.becomeFirstResponder()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        searchBarView.textField.resignFirstResponder()
     }
 
     // MARK: -
 
-    private func setupStateMapping() {
-        let loadingObservable: Observable<DataState<MainSearchResult>> = searchTextObservable.map({ _ in DataState<MainSearchResult>.loading })
+    private func triggerSearch() {
+        searchSubject.onNext(searchBarView.textField.text ?? "")
+    }
 
-        let dataObservable: Observable<DataState<MainSearchResult>> = searchTextObservable
+    private func bindUI() {
+        let loadingObservable: Observable<DataState<MainSearchResult>> = searchSubject.map({ _ in DataState<MainSearchResult>.loading })
+
+        let dataObservable: Observable<DataState<MainSearchResult>> = searchSubject
             .debounce(0.5, scheduler: MainScheduler.instance)
             .flatMapLatest({ searchText -> Observable<DataState<MainSearchResult>> in
                 return NetworkClient.shared.perform(request: MainSearchNetworkRequest(searchText: searchText))
-                    .map({ DataState<MainSearchResult>.idle($0) })
+                    .map({ DataState<MainSearchResult>.success($0) })
                     .catchError({ error -> Observable<DataState<MainSearchResult>> in
                         return .just(DataState<MainSearchResult>.error(error))
                     })
@@ -53,17 +109,13 @@ final class MainSearchViewController: SearchViewController {
             .distinctUntilChanged({ (x, y) -> Bool in
                 return x.isLoading && y.isLoading
             })
-            .observeOn(SerialDispatchQueueScheduler(qos: .default))
-            .map({ [weak self] state -> [ListItem] in
-                let dataModel = state.map({ result -> SearchResultContentModel in
-                    (result.authors, result.works)
+            .map({ state -> DataState<SearchResultsViewState> in
+                return state.map({
+                    SearchResultsViewState(authors: $0.authors, works: $0.works)
                 })
-
-                return self?.contentBuilder.makeListItemsFrom(model: dataModel) ?? []
             })
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { [weak self] listItems in
-                self?.adapter.set(items: listItems)
+            .subscribe(onNext: { [weak self] viewState in
+                self?.apply(viewState: viewState)
             })
             .disposed(by: disposeBag)
     }
@@ -76,5 +128,61 @@ final class MainSearchViewController: SearchViewController {
 
     private func openWork(id: Int) {
         AppRouter.shared.openWork(id: id)
+    }
+}
+
+private final class SearchBarView: UIView {
+    private let backgroundView = UIView()
+    let textField = UITextField()
+    let cameraBtn = UIButton(type: .system)
+    let cancelBtn = UIButton(type: .system)
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        addSubview(cancelBtn)
+        addSubview(backgroundView)
+        backgroundView.addSubview(cameraBtn)
+        backgroundView.addSubview(textField)
+
+        do {
+            backgroundView.backgroundColor = UIColor.white
+            backgroundView.layer.cornerRadius = 16
+            backgroundView.pin(.centerY).to(self).equal()
+            backgroundView.pin(.height).const(32).equal()
+            backgroundView.pin(.left).to(self).const(6).equal()
+            backgroundView.pin(.right).to(cancelBtn, .left).const(-8).equal()
+        }
+
+        do {
+            cancelBtn.setAttributedTitle("Отмена".attributed()
+                .font(Fonts.system.regular(size: 17))
+                .foregroundColor(UIColor.white)
+                .make(), for: .normal)
+            cancelBtn.pin(.right).to(self, .right).const(-10).equal()
+            cancelBtn.pin(.centerY).to(self).equal()
+            cancelBtn.setContentHuggingPriority(.required, for: .horizontal)
+            cancelBtn.setContentCompressionResistancePriority(.required, for: .horizontal)
+        }
+
+        do {
+            cameraBtn.tintColor = Colors.fantasticBlue
+            cameraBtn.setImage(UIImage(named: "barcode")?.withRenderingMode(.alwaysTemplate), for: [])
+            cameraBtn.contentEdgeInsets = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 4)
+            cameraBtn.pinEdges(to: backgroundView, left: 3, right: .nan)
+            cameraBtn.pin(.width).to(cameraBtn, .height).equal()
+        }
+
+        do {
+            textField.tintColor = Colors.fantasticBlue
+            textField.font = Fonts.system.regular(size: 16)
+            textField.clearButtonMode = .whileEditing
+            textField.pinEdges(to: backgroundView, left: .nan)
+            textField.pin(.left).to(cameraBtn, .right).const(4).equal()
+        }
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError()
     }
 }

@@ -1,6 +1,14 @@
 import Foundation
 import UIKit
-import FantLabUtils
+
+public protocol NavBarProvider {
+    var navBar: NavBar { get }
+}
+
+public protocol NavBarItemsProvider {
+    var leftItems: [NavBarItem] { get }
+    var rightItems: [NavBarItem] { get }
+}
 
 public final class NavBarItem {
     let margin: CGFloat
@@ -45,13 +53,15 @@ public protocol NavBar: class {
 extension NavBar {
     public func set(title: NSAttributedString?) {
         let label = (titleView as? UILabel) ?? UILabel(frame: .zero)
-        label.numberOfLines = 0
+        label.numberOfLines = 1
+        label.adjustsFontSizeToFitWidth = true
+        label.minimumScaleFactor = 0.5
         label.attributedText = title
         titleView = label
     }
 }
 
-final class NavBarView: UIView, NavBar {
+public final class NavBarView: UIView, NavBar {
     private class StackView: UIView {
         override class var layerClass: AnyClass {
             return CAShapeLayer.self
@@ -65,7 +75,7 @@ final class NavBarView: UIView, NavBar {
     private let leftStack = StackView(frame: .zero)
     private let rightStack = StackView(frame: .zero)
 
-    override init(frame: CGRect) {
+    public override init(frame: CGRect) {
         super.init(frame: frame)
 
         clipsToBounds = true
@@ -77,50 +87,35 @@ final class NavBarView: UIView, NavBar {
         rightStack.pinEdges(to: self, left: .nan)
     }
 
-    required init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         fatalError()
     }
 
     // MARK: -
 
-    override var intrinsicContentSize: CGSize {
-        return CGSize(width: UIView.noIntrinsicMetric, height: 44)
-    }
-
-    override func layoutSubviews() {
+    public override func layoutSubviews() {
         super.layoutSubviews()
 
         guard !bounds.isEmpty else {
             return
         }
 
-        // it's ok
-
-        titleViewWidthConstraint.flatMap {
+        titleWidthConstraint.flatMap {
             let sideOffset = max(leftStack.bounds.width, rightStack.bounds.width) + 12
 
             $0.constant = max(0, bounds.width - 2 * sideOffset)
         }
     }
 
-    private var titleCenterYConstraint: NSLayoutConstraint?
-    private var titleViewWidthConstraint: NSLayoutConstraint?
+    private var titleWidthConstraint: NSLayoutConstraint?
 
     // MARK: -
 
-    var titleViewOffset: CGFloat = 0 {
-        didSet {
-            titleCenterYConstraint?.constant = titleViewOffset
-        }
-    }
-
-    // MARK: -
-
-    var titleView: UIView? {
+    public var titleView: UIView? {
         didSet {
             oldValue?.removeFromSuperview()
 
-            titleViewWidthConstraint = nil
+            titleWidthConstraint = nil
 
             guard let titleView = titleView else {
                 return
@@ -128,15 +123,9 @@ final class NavBarView: UIView, NavBar {
 
             addSubview(titleView)
 
-            titleView.pin(.centerX).to(self).equal()
+            titleView.pinCenter(to: self)
 
-            titleCenterYConstraint = titleView
-                .pin(.centerY)
-                .to(self)
-                .const(titleViewOffset)
-                .equal()
-
-            titleViewWidthConstraint = titleView
+            titleWidthConstraint = titleView
                 .pin(.width)
                 .const(.greatestFiniteMagnitude)
                 .lessThanOrEqual()
@@ -145,7 +134,7 @@ final class NavBarView: UIView, NavBar {
         }
     }
 
-    var leftItems: [NavBarItem] = [] {
+    public var leftItems: [NavBarItem] = [] {
         didSet {
             leftStack.subviews.forEach { $0.removeFromSuperview() }
 
@@ -169,7 +158,7 @@ final class NavBarView: UIView, NavBar {
         }
     }
 
-    var rightItems: [NavBarItem] = [] {
+    public var rightItems: [NavBarItem] = [] {
         didSet {
             rightStack.subviews.forEach { $0.removeFromSuperview() }
 

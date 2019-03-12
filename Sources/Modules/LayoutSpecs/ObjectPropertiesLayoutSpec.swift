@@ -1,52 +1,24 @@
 import Foundation
 import UIKit
 import ALLKit
-import FantLabModels
-import FantLabStyle
-import FantLabText
+import FLKit
+import FLModels
+import FLStyle
+import FLText
 
-public final class UserProfilePropertiesLayoutSpec: ModelLayoutSpec<UserProfileModel> {
-    public override func makeNodeFrom(model: UserProfileModel, sizeConstraints: SizeConstraints) -> LayoutNode {
-        var properties: [(String, String)] = []
-
-        if !model.name.isEmpty {
-            properties.append(("ФИО", model.name))
-        }
-
-        if let sex = model.sex {
-            switch sex {
-            case .male:
-                properties.append(("Пол", "Мужской"))
-            case .female:
-                properties.append(("Пол", "Женский"))
-            }
-        }
-
-        if let birthDate = model.birthDate {
-            properties.append(("День рождения", birthDate.format(.dayMonthAndYear)))
-        }
-
-        if !model.location.isEmpty {
-            properties.append(("Место жительства", model.location))
-        }
-
-        if let registrationDate = model.registrationDate {
-            properties.append(("Дата регистрации", registrationDate.format(.dayMonthAndYear)))
-        }
-
-        if let onlineDate = model.onlineDate {
-            properties.append(("Последнее посещение", onlineDate.formatToHumanReadbleText()))
-        }
+public final class ObjectPropertiesLayoutSpec: ModelLayoutSpec<ObjectPropertiesProvider> {
+    public override func makeNodeFrom(model: ObjectPropertiesProvider, sizeConstraints: SizeConstraints) -> LayoutNode {
+        let properties = model.objectProperties
 
         var textStackNodes: [LayoutNode] = []
 
         properties.enumerated().forEach { (index, property) in
-            let titleString = property.0.capitalizedFirstLetter().attributed()
+            let titleString = property.name.capitalizedFirstLetter().attributed()
                 .font(Fonts.system.regular(size: 14))
                 .foregroundColor(UIColor.lightGray)
                 .make()
 
-            let contentString = property.1.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).capitalizedFirstLetter().attributed()
+            let contentString = property.value.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).capitalizedFirstLetter().attributed()
                 .font(Fonts.system.regular(size: 14))
                 .foregroundColor(UIColor.black)
                 .make()

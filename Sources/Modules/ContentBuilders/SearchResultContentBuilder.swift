@@ -1,15 +1,25 @@
 import Foundation
 import UIKit
 import ALLKit
-import FantLabUtils
-import FantLabModels
-import FantLabStyle
-import FantLabLayoutSpecs
+import FLKit
+import FLModels
+import FLStyle
+import FLLayoutSpecs
 
-public typealias SearchResultContentModel = (authors: [AuthorPreviewModel], works: [WorkPreviewModel])
+public struct SearchResultsViewState {
+    public let authors: [AuthorPreviewModel]
+    public let works: [WorkPreviewModel]
+
+    public init(authors: [AuthorPreviewModel],
+                works: [WorkPreviewModel]) {
+
+        self.authors = authors
+        self.works = works
+    }
+}
 
 public final class SearchResultContentBuilder: ListContentBuilder {
-    public typealias ModelType = SearchResultContentModel
+    public typealias ModelType = SearchResultsViewState
 
     // MARK: -
 
@@ -22,7 +32,7 @@ public final class SearchResultContentBuilder: ListContentBuilder {
 
     // MARK: -
 
-    public func makeListItemsFrom(model: SearchResultContentModel) -> [ListItem] {
+    public func makeListItemsFrom(model: SearchResultsViewState) -> [ListItem] {
         var items: [ListItem] = []
 
         model.authors.forEach { author in
@@ -31,8 +41,8 @@ public final class SearchResultContentBuilder: ListContentBuilder {
                 layoutSpec: AuthorPreviewLayoutSpec(model: author)
             )
 
-            item.didSelect = { [weak self] cell, _ in
-                CellSelection.scale(cell: cell, action: {
+            item.didSelect = { [weak self] view, _ in
+                view.animated(action: {
                     self?.onAuthorTap?(author.id)
                 })
             }
@@ -60,8 +70,8 @@ public final class SearchResultContentBuilder: ListContentBuilder {
                 layoutSpec: WorkPreviewLayoutSpec(model: work)
             )
 
-            item.didSelect = { [weak self] cell, _ in
-                CellSelection.scale(cell: cell, action: {
+            item.didSelect = { [weak self] view, _ in
+                view.animated(action: {
                     self?.onWorkTap?(work.id)
                 })
             }

@@ -2,31 +2,37 @@ import Foundation
 import UIKit
 import ALLKit
 import RxSwift
-import FantLabUtils
-import FantLabStyle
-import FantLabModels
-import FantLabBaseUI
-import FantLabLayoutSpecs
-import FantLabContentBuilders
-import FantLabWebAPI
+import FLKit
+import FLStyle
+import FLModels
+import FLUIKit
+import FLLayoutSpecs
+import FLContentBuilders
+import FLWebAPI
 
-final class EditionViewController: ListViewController, WebURLProvider {
-    private let state = ObservableValue<DataState<EditionModel>>(.initial)
-    private let loadEditionObservable: Observable<EditionModel>
-    private let contentBuilder = DataStateContentBuilder(dataContentBuilder: EditionContentBuilder())
+final class EditionViewController: ListViewController<DataStateContentBuilder<EditionContentBuilder>>, WebURLProvider {
+    private let dataSource: DataSource<EditionModel>
 
     init(editionId: Int) {
-        loadEditionObservable = NetworkClient.shared.perform(request: GetEditionNetworkRequest(editionId: editionId))
+        do {
+            let loadObservable = NetworkClient.shared.perform(request: GetEditionNetworkRequest(editionId: editionId))
 
-        super.init(nibName: nil, bundle: nil)
+            dataSource = DataSource(loadObservable: loadObservable)
+        }
+
+        super.init(contentBuilder: DataStateContentBuilder(dataContentBuilder: EditionContentBuilder()))
     }
 
     init(isbn: String) {
-        loadEditionObservable = NetworkClient.shared.perform(request: ISBNEditionNetworkRequest(isbn: isbn)).flatMap({ editionId -> Observable<EditionModel> in
-            NetworkClient.shared.perform(request: GetEditionNetworkRequest(editionId: editionId))
-        })
+        do {
+            let loadObservable = NetworkClient.shared.perform(request: ISBNEditionNetworkRequest(isbn: isbn)).flatMap({ editionId -> Observable<EditionModel> in
+                NetworkClient.shared.perform(request: GetEditionNetworkRequest(editionId: editionId))
+            })
 
-        super.init(nibName: nil, bundle: nil)
+            dataSource = DataSource(loadObservable: loadObservable)
+        }
+
+        super.init(contentBuilder: DataStateContentBuilder(dataContentBuilder: EditionContentBuilder()))
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -40,63 +46,29 @@ final class EditionViewController: ListViewController, WebURLProvider {
 
         title = "Издание"
 
-        contentBuilder.dataContentBuilder.onURLTap = { [weak self] url in
-            self?.open(url: url)
+        contentBuilder.dataContentBuilder.onURLTap = { url in
+            AppRouter.shared.openURL(url)
         }
 
         contentBuilder.errorContentBuilder.onRetry = { [weak self] in
-            self?.loadEdition()
+            self?.dataSource.load()
         }
 
-        setupBackgroundImageWith(urlObservable: state.observable().map({ $0.data?.biggestImageURL }))
+        setupBackgroundImageWith(urlObservable: dataSource.stateObservable.map({ $0.data?.biggestImageURL }))
 
-        setupStateMapping()
-
-        loadEdition()
-    }
-
-    // MARK: -
-
-    private func setupStateMapping() {
-        state.observable()
-            .observeOn(SerialDispatchQueueScheduler(qos: .default))
-            .map({ [weak self] state -> [ListItem] in
-                return self?.contentBuilder.makeListItemsFrom(model: state) ?? []
-            })
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { [weak self] items in
-                self?.adapter.set(items: items)
+        dataSource.stateObservable
+            .subscribe(onNext: { [weak self] state in
+                self?.apply(viewState: state)
             })
             .disposed(by: disposeBag)
-    }
 
-    private func loadEdition() {
-        if state.value.isLoading || state.value.isIdle {
-            return
-        }
-
-        state.value = .loading
-
-        loadEditionObservable
-            .subscribe(
-                onNext: { [weak self] edition in
-                    self?.state.value = .idle(edition)
-                },
-                onError: { [weak self] error in
-                    self?.state.value = .error(error)
-                }
-            )
-            .disposed(by: disposeBag)
-    }
-
-    private func open(url: URL) {
-        AppRouter.shared.openURL(url)
+        dataSource.load()
     }
 
     // MARK: - WebURLProvider
 
     var webURL: URL? {
-        guard let data = state.value.data else {
+        guard let data = dataSource.state.data else {
             return nil
         }
 

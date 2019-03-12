@@ -67,7 +67,7 @@ class TextParserTests: XCTestCase {
     func testSingleEmoticon() {
         let text = FLStringPreview(string: "lorem :smile: ipsum")
 
-        XCTAssert(text.value == "lorem \(Emoticons.table[":smile:"]!) ipsum")
+        XCTAssert(text.value == "lorem 😊 ipsum")
     }
 
     func testSingleUnknownEmoticon() {
@@ -79,19 +79,19 @@ class TextParserTests: XCTestCase {
     func testEmoticons() {
         let text = FLStringPreview(string: "lorem :smile::help::hmm: ipsum")
 
-        XCTAssert(text.value == "lorem \(Emoticons.table[":smile:"]!)\(Emoticons.table[":help:"]!)\(Emoticons.table[":hmm:"]!) ipsum")
+        XCTAssert(text.value == "lorem 😊🆘🤔 ipsum")
     }
 
     func testHybridText() {
         let text = FLStringPreview(string: "lorem <a href='link'>ipsum</a> dolor [b]sit[/b] amet, consectetur adipiscing <b><i>:smile:</i></b>:foo")
 
-        XCTAssert(text.value == "lorem ipsum dolor sit amet, consectetur adipiscing \(Emoticons.table[":smile:"]!):foo")
+        XCTAssert(text.value == "lorem ipsum dolor sit amet, consectetur adipiscing 😊:foo")
     }
 
     func testHiddenTag() {
         let text = FLStringPreview(string: "lorem [h]ipsum <b>dolor</b> sit[/h] amet")
 
-        XCTAssert(text.value == "lorem СКРЫТЫЙ ТЕКСТ amet")
+        XCTAssert(text.value == "lorem ... amet")
     }
 
     func testSingleBBTags1() {
@@ -103,13 +103,13 @@ class TextParserTests: XCTestCase {
     func testSingleBBTags2() {
         let text = FLStringPreview(string: "my [IMG]link[/IMG] and my [VIDEO=video_link] !!!")
 
-        XCTAssert(text.value == "my ИЗОБРАЖЕНИЕ and my ВИДЕО !!!")
+        XCTAssert(text.value == "my ... and my ... !!!")
     }
 
     func testSingleHTMLTags() {
         let text = FLStringPreview(string: "my <img src'link'/> and <br> !!!")
 
-        XCTAssert(text.value == "my ИЗОБРАЖЕНИЕ and \n !!!")
+        XCTAssert(text.value == "my ... and \n !!!")
     }
 
     func testHtmlEntities() {

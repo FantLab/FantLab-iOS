@@ -1,12 +1,12 @@
 import Foundation
 import UIKit
 import ALLKit
-import FantLabStyle
-import FantLabUtils
-import FantLabLayoutSpecs
+import FLStyle
+import FLKit
+import FLLayoutSpecs
 
-public final class DataStateContentBuilder<DataType, BuilderType: ListContentBuilder>: ListContentBuilder where BuilderType.ModelType == DataType {
-    public typealias ModelType = DataState<DataType>
+public final class DataStateContentBuilder<BuilderType: ListContentBuilder>: ListContentBuilder {
+    public typealias ModelType = DataState<BuilderType.ModelType>
 
     public init(dataContentBuilder: BuilderType) {
         self.dataContentBuilder = dataContentBuilder
@@ -18,7 +18,7 @@ public final class DataStateContentBuilder<DataType, BuilderType: ListContentBui
     private let loadingId = UUID().uuidString
     private let errorId = UUID().uuidString
 
-    public func makeListItemsFrom(model: DataState<DataType>) -> [ListItem] {
+    public func makeListItemsFrom(model: DataState<BuilderType.ModelType>) -> [ListItem] {
         switch model {
         case .initial:
             return []
@@ -26,7 +26,7 @@ public final class DataStateContentBuilder<DataType, BuilderType: ListContentBui
             return [ListItem(id: loadingId, layoutSpec: SpinnerLayoutSpec())]
         case let .error(error):
             return errorContentBuilder.makeListItemsFrom(model: error)
-        case let .idle(data):
+        case let .success(data):
             return dataContentBuilder.makeListItemsFrom(model: data)
         }
     }

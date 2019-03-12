@@ -1,17 +1,17 @@
 import Foundation
 import UIKit
 import ALLKit
-import FantLabStyle
-import FantLabText
-import FantLabUtils
-import FantLabModels
+import FLStyle
+import FLText
+import FLKit
+import FLModels
 import YYWebImage
 
 public final class WorkReviewUserHeaderLayoutSpec: ModelLayoutSpec<WorkReviewModel> {
     public override func makeNodeFrom(model: WorkReviewModel, sizeConstraints: SizeConstraints) -> LayoutNode {
         let userNameString = model.user.name.attributed()
             .font(Fonts.system.medium(size: 14))
-            .foregroundColor(Colors.flBlue)
+            .foregroundColor(Colors.fantasticBlue)
             .make()
 
         let dateString = model.date?.formatToHumanReadbleText().attributed()

@@ -1,6 +1,7 @@
 import Foundation
+import FLKit
 
-public final class EditionModel {
+public final class EditionModel: ObjectPropertiesProvider {
     public final class ImageModel {
         public let url: URL?
         public let urlOrig: URL?
@@ -78,6 +79,48 @@ public final class EditionModel {
         self.description = description
         self.notes = notes
         self.planDescription = planDescription
+    }
+
+    // MARK: -
+
+    public var objectProperties: [ObjectProperty] {
+        var properties: [ObjectProperty] = []
+
+        if !lang.isEmpty {
+            properties.append(("Язык", lang))
+        }
+
+        if !planDate.isEmpty {
+            properties.append(("Дата выхода", planDate))
+        } else if year > 0 {
+            properties.append(("Год", String(year)))
+        }
+
+        if !publisher.isEmpty {
+            properties.append(("Издатель", publisher))
+        }
+
+        if !coverType.isEmpty {
+            properties.append(("Тип обложки", coverType))
+        }
+
+        if copies > 0 {
+            properties.append(("Тираж", String(copies)))
+        }
+
+        if pages > 0 {
+            properties.append(("Страниц", String(pages)))
+        }
+
+        if !format.isEmpty {
+            properties.append(("Формат", format))
+        }
+
+        if !isbn.isEmpty {
+            properties.append(("ISBN", isbn))
+        }
+
+        return properties
     }
 }
 

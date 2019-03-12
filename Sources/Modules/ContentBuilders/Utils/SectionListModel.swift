@@ -1,4 +1,4 @@
-import FantLabLayoutSpecs
+import FLLayoutSpecs
 
 struct SectionListModel {
     let layoutModel: ListSectionTitleLayoutModel

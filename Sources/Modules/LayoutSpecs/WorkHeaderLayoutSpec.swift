@@ -2,27 +2,27 @@ import Foundation
 import UIKit
 import ALLKit
 import YYWebImage
-import FantLabUtils
-import FantLabStyle
-import FantLabModels
+import FLKit
+import FLStyle
+import FLModels
 
-public final class WorkHeaderLayoutSpec: ModelLayoutSpec<WorkModel> {
-    public override func makeNodeFrom(model: WorkModel, sizeConstraints: SizeConstraints) -> LayoutNode {
+public final class WorkHeaderLayoutSpec: ModelLayoutSpec<(WorkModel, () -> Void)> {
+    public override func makeNodeFrom(model: (WorkModel, () -> Void), sizeConstraints: SizeConstraints) -> LayoutNode {
         let nameString: NSAttributedString
         let origNameString: NSAttributedString?
         let infoString: NSAttributedString
         let authorString: NSAttributedString?
 
         do {
-            let nameText = model.name.nilIfEmpty ?? model.origName
+            let nameText = model.0.name.nilIfEmpty ?? model.0.origName
 
             nameString = nameText.attributed()
                 .font(Fonts.system.bold(size: TitleFontSizeRule.fontSizeFor(length: nameText.count)))
                 .foregroundColor(UIColor.black)
                 .make()
 
-            if !model.origName.isEmpty && model.origName != nameText {
-                origNameString = model.origName.attributed()
+            if !model.0.origName.isEmpty && model.0.origName != nameText {
+                origNameString = model.0.origName.attributed()
                     .font(Fonts.system.medium(size: 12))
                     .foregroundColor(UIColor.lightGray)
                     .make()
@@ -30,20 +30,20 @@ public final class WorkHeaderLayoutSpec: ModelLayoutSpec<WorkModel> {
                 origNameString = nil
             }
 
-            let yearText = model.year > 0 ? String(model.year) : ""
-            let infoText = ([model.workType, yearText] + model.publishStatuses).compactAndJoin(", ")
+            let yearText = model.0.year > 0 ? String(model.0.year) : ""
+            let infoText = ([model.0.workType, yearText] + model.0.publishStatuses).compactAndJoin(", ")
 
             infoString = infoText.attributed()
                 .font(Fonts.system.regular(size: 14))
                 .foregroundColor(UIColor.gray)
                 .make()
 
-            let authors = model.authors.map { $0.name }.compactAndJoin(", ")
+            let authors = model.0.authors.map { $0.name }.compactAndJoin(", ")
 
             if !authors.isEmpty {
                 authorString = authors.attributed()
                     .font(Fonts.system.medium(size: 15))
-                    .foregroundColor(Colors.flBlue)
+                    .foregroundColor(Colors.fantasticBlue)
                     .make()
             } else {
                 authorString = nil
@@ -57,8 +57,7 @@ public final class WorkHeaderLayoutSpec: ModelLayoutSpec<WorkModel> {
         }) { (view: UIImageView, _) in
             view.clipsToBounds = true
             view.contentMode = .scaleAspectFit
-
-            view.yy_setImage(with: model.imageURL, placeholder: WorkCoverImageRule.coverFor(workType: model.workTypeKey), options: .setImageWithFadeAnimation, completion: nil)
+            view.image = WorkCoverImageRule.coverFor(workType: model.0.workTypeKey)
         }
 
         let nameNode = LayoutNode(sizeProvider: nameString, config: { node in
@@ -89,6 +88,10 @@ public final class WorkHeaderLayoutSpec: ModelLayoutSpec<WorkModel> {
         }) { (label: UILabel, _) in
             label.numberOfLines = 0
             label.attributedText = authorString
+            label.isUserInteractionEnabled = true
+            label.all_addGestureRecognizer({ (_: UITapGestureRecognizer) in
+                model.1()
+            })
         }
 
         let textStackNode = LayoutNode(children: [nameNode, origNameNode, infoNode, authorNode], config: { node in

@@ -63,3 +63,11 @@ extension Range where Bound == String.Index {
         return NSMakeRange(lowerBound.encodedOffset, upperBound.encodedOffset - lowerBound.encodedOffset)
     }
 }
+
+extension CharacterSet {
+    public static let whitespacesAndNewlinesInverted = CharacterSet.whitespacesAndNewlines.inverted
+
+    public func contains(_ character: Character) -> Bool {
+        return character.unicodeScalars.contains(where: self.contains)
+    }
+}

@@ -1,15 +1,28 @@
 import Foundation
 import UIKit
 import ALLKit
-import FantLabUtils
-import FantLabModels
-import FantLabStyle
-import FantLabLayoutSpecs
+import FLKit
+import FLModels
+import FLStyle
+import FLLayoutSpecs
 
-public typealias WorkReviewsShortListContentModel = (work: WorkModel, reviews: [WorkReviewModel], hasShowAllButton: Bool)
+public struct WorkReviewsShortListViewState {
+    public let work: WorkModel
+    public let reviews: [WorkReviewModel]
+    public let hasShowAllButton: Bool
+
+    public init(work: WorkModel,
+                reviews: [WorkReviewModel],
+                hasShowAllButton: Bool) {
+
+        self.work = work
+        self.reviews = reviews
+        self.hasShowAllButton = hasShowAllButton
+    }
+}
 
 public final class WorkReviewsShortListContentBuilder: ListContentBuilder {
-    public typealias ModelType = WorkReviewsShortListContentModel
+    public typealias ModelType = WorkReviewsShortListViewState
 
     // MARK: -
 
@@ -19,7 +32,7 @@ public final class WorkReviewsShortListContentBuilder: ListContentBuilder {
 
     // MARK: -
 
-    public func makeListItemsFrom(model: WorkReviewsShortListContentModel) -> [ListItem] {
+    public func makeListItemsFrom(model: WorkReviewsShortListViewState) -> [ListItem] {
         var items: [ListItem] = []
 
         model.reviews.forEach { review in
@@ -37,8 +50,8 @@ public final class WorkReviewsShortListContentBuilder: ListContentBuilder {
                 layoutSpec: ShowAllButtonLayoutSpec(model: "Все отзывы")
             )
 
-            item.didSelect = { [weak self] cell, _ in
-                CellSelection.scale(cell: cell, action: {
+            item.didSelect = { [weak self] view, _ in
+                view.animated(action: {
                     self?.onShowAllReviewsTap?(model.work)
                 })
             }

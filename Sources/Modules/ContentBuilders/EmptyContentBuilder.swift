@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 import ALLKit
-import FantLabUtils
+import FLKit
 
 public final class EmptyContentBuilder: ListContentBuilder {
     public typealias ModelType = Void

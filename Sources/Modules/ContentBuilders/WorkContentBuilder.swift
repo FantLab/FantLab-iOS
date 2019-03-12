@@ -1,10 +1,11 @@
 import Foundation
 import UIKit
 import ALLKit
-import FantLabUtils
-import FantLabModels
-import FantLabStyle
-import FantLabLayoutSpecs
+import FLKit
+import FLModels
+import FLStyle
+import FLLayoutSpecs
+import FLText
 
 public enum WorkContentTabIndex: String, CustomStringConvertible {
     case info
@@ -23,13 +24,26 @@ public enum WorkContentTabIndex: String, CustomStringConvertible {
     }
 }
 
-struct DataModel {
-    let work: WorkModel
-    let analogs: [WorkPreviewModel]
-    let contentRoot: WorkTreeNode
-}
+public struct WorkViewState {
+    public let work: WorkModel
+    public let workTree: WorkTreeNode
+    public let analogs: [WorkPreviewModel]
+    public var reviews: DataState<[WorkReviewModel]>
+    public var tabIndex: WorkContentTabIndex
 
-public typealias WorkContentModel = (info: WorkModel, reviews: DataState<WorkReviewsShortListContentModel>, analogs: [WorkPreviewModel], workTree: WorkTreeNode, tabIndex: WorkContentTabIndex)
+    public init(work: WorkModel,
+                workTree: WorkTreeNode,
+                analogs: [WorkPreviewModel],
+                reviews: DataState<[WorkReviewModel]>,
+                tabIndex: WorkContentTabIndex) {
+
+        self.work = work
+        self.workTree = workTree
+        self.analogs = analogs
+        self.reviews = reviews
+        self.tabIndex = tabIndex
+    }
+}
 
 public protocol WorkContentBuilderDelegate: class {
     func onHeaderTap(work: WorkModel)
@@ -47,7 +61,7 @@ public protocol WorkContentBuilderDelegate: class {
 }
 
 public final class WorkContentBuilder: ListContentBuilder {
-    public typealias ModelType = WorkContentModel
+    public typealias ModelType = WorkViewState
 
     // MARK: -
 
@@ -77,17 +91,17 @@ public final class WorkContentBuilder: ListContentBuilder {
 
     // MARK: -
 
-    public func makeListItemsFrom(model: WorkContentModel) -> [ListItem] {
-        let infoString = [model.info.descriptionText, model.info.notes].compactAndJoin("\n")
+    public func makeListItemsFrom(model: WorkViewState) -> [ListItem] {
+        let infoString = [model.work.descriptionText, model.work.notes].compactAndJoin("\n")
 
-        let hasRating = model.info.rating > 0 && model.info.votes > 0
+        let hasRating = model.work.rating > 0 && model.work.votes > 0
         let hasDescription = !infoString.isEmpty
-        let hasClassification = !model.info.classificatory.isEmpty
-        let hasAwards = !model.info.awards.isEmpty
-        let parentsCount = model.info.parents.compactMap({ $0.count }).reduce(0, +)
+        let hasClassification = !model.work.classificatory.isEmpty
+        let hasAwards = !model.work.awards.isEmpty
+        let parentsCount = model.work.parents.compactMap({ $0.count }).reduce(0, +)
         let childrenCount = model.workTree.count
-        let hasEditions = model.info.editionBlocks.contains { !$0.list.isEmpty }
-        let hasReviews = model.info.reviewsCount > 0
+        let hasEditions = model.work.editionBlocks.contains { !$0.list.isEmpty }
+        let hasReviews = model.work.reviewsCount > 0
         let hasAnalogs = !model.analogs.isEmpty
 
         var items: [ListItem] = []
@@ -97,12 +111,10 @@ public final class WorkContentBuilder: ListContentBuilder {
         do {
             let item = ListItem(
                 id: "work_header",
-                layoutSpec: WorkHeaderLayoutSpec(model: model.info)
+                layoutSpec: WorkHeaderLayoutSpec(model: (model.work, { [weak self] in
+                    self?.delegate?.onHeaderTap(work: model.work)
+                }))
             )
-
-            item.didSelect = { [weak self] cell, _ in
-                self?.delegate?.onHeaderTap(work: model.info)
-            }
 
             items.append(item)
         }
@@ -112,7 +124,7 @@ public final class WorkContentBuilder: ListContentBuilder {
         if hasRating {
             let item = ListItem(
                 id: "work_rating",
-                layoutSpec: WorkRatingLayoutSpec(model: model.info)
+                layoutSpec: WorkRatingLayoutSpec(model: model.work)
             )
 
             items.append(item)
@@ -132,12 +144,12 @@ public final class WorkContentBuilder: ListContentBuilder {
                     if hasDescription {
                         let item = ListItem(
                             id: "work_description",
-                            layoutSpec: FLTextPreviewLayoutSpec(model: infoString)
+                            layoutSpec: FLTextPreviewLayoutSpec(model: FLStringPreview(string: infoString))
                         )
 
-                        item.didSelect = { [weak self] cell, _ in
-                            CellSelection.scale(cell: cell, action: {
-                                self?.delegate?.onDescriptionTap(work: model.info)
+                        item.didSelect = { [weak self] view, _ in
+                            view.animated(action: {
+                                self?.delegate?.onDescriptionTap(work: model.work)
                             })
                         }
 
@@ -154,7 +166,7 @@ public final class WorkContentBuilder: ListContentBuilder {
 
                         items.append(ListItem(
                             id: "work_classification",
-                            layoutSpec: WorkGenresLayoutSpec(model: model.info)
+                            layoutSpec: ObjectPropertiesLayoutSpec(model: model.work)
                         ))
                     }
                 }
@@ -163,7 +175,7 @@ public final class WorkContentBuilder: ListContentBuilder {
             }
 
             if hasEditions {
-                let count = model.info.editionBlocks.reduce(into: 0) {
+                let count = model.work.editionBlocks.reduce(into: 0) {
                     $0 += $1.list.count
                 }
 
@@ -171,7 +183,7 @@ public final class WorkContentBuilder: ListContentBuilder {
 
                 let maxCount = 10
 
-                outer: for block in model.info.editionBlocks {
+                outer: for block in model.work.editionBlocks {
                     for edition in block.list {
                         editionList.append(edition)
 
@@ -186,7 +198,7 @@ public final class WorkContentBuilder: ListContentBuilder {
                     count: count,
                     hasArrow: true
                     ), tapAction: ({ [weak self] in
-                        self?.delegate?.onEditionsTap(work: model.info)
+                        self?.delegate?.onEditionsTap(work: model.work)
                     })) {
                         let item = ListItem(
                             id: "work_editions",
@@ -204,19 +216,19 @@ public final class WorkContentBuilder: ListContentBuilder {
             if hasAwards {
                 let section = SectionListModel(layoutModel: ListSectionTitleLayoutModel(
                     title: "Премии",
-                    count: model.info.awards.count,
+                    count: model.work.awards.count,
                     hasArrow: true
                     ), tapAction: ({ [weak self] in
-                        self?.delegate?.onAwardsTap(work: model.info)
+                        self?.delegate?.onAwardsTap(work: model.work)
                     })) {
                         let item = ListItem(
                             id: "work_awards",
-                            layoutSpec: AwardIconsLayoutSpec(model: model.info.awards)
+                            layoutSpec: AwardIconsLayoutSpec(model: model.work.awards)
                         )
 
-                        item.didSelect = { [weak self] cell, _ in
-                            CellSelection.scale(cell: cell, action: {
-                                self?.delegate?.onAwardsTap(work: model.info)
+                        item.didSelect = { [weak self] view, _ in
+                            view.animated(action: {
+                                self?.delegate?.onAwardsTap(work: model.work)
                             })
                         }
 
@@ -258,10 +270,10 @@ public final class WorkContentBuilder: ListContentBuilder {
                         )
 
                         if work.id > 0 {
-                            item.didSelect = { [weak self] cell, _ in
-                                CellSelection.alpha(cell: cell, action: {
+                            item.didSelect = { [weak self] view, _ in
+                                view.animated(action: {
                                     self?.delegate?.onWorkTap(id: work.id)
-                                })
+                                }, alpha: 0.3)
                             }
                         }
 
@@ -285,7 +297,7 @@ public final class WorkContentBuilder: ListContentBuilder {
                     count: parentsCount,
                     hasArrow: false
                 ), tapAction: nil) {
-                    model.info.parents.forEach { parents in
+                    model.work.parents.forEach { parents in
                         parents.enumerated().forEach({ (index, parent) in
                             let itemId = "work_parent_\(parent.id)"
 
@@ -299,10 +311,10 @@ public final class WorkContentBuilder: ListContentBuilder {
                             )
 
                             if parent.id > 0 {
-                                item.didSelect = { [weak self] cell, _ in
-                                    CellSelection.alpha(cell: cell, action: {
+                                item.didSelect = { [weak self] view, _ in
+                                    view.animated(action: {
                                         self?.delegate?.onWorkTap(id: parent.id)
-                                    })
+                                    }, alpha: 0.3)
                                 }
                             }
 
@@ -347,7 +359,7 @@ public final class WorkContentBuilder: ListContentBuilder {
             if hasReviews {
                 tabs.append(TabLayoutModel(
                     name: "Отзывы",
-                    count: model.info.reviewsCount,
+                    count: model.work.reviewsCount,
                     isSelected: model.tabIndex == .reviews,
                     action: ({ [weak self] in
                         self?.delegate?.onTabTap(tab: .reviews)
@@ -383,7 +395,7 @@ public final class WorkContentBuilder: ListContentBuilder {
                 if index > 0 || !hasTabs {
                     items.append(ListItem(
                         id: sectionId + "_sep",
-                        layoutSpec: EmptySpaceLayoutSpec(model: (Colors.perfectGray, 8))
+                        layoutSpec: EmptySpaceLayoutSpec(model: (Colors.sectionSeparatorColor, 8))
                     ))
 
                     let titleItem = ListItem(
@@ -392,8 +404,8 @@ public final class WorkContentBuilder: ListContentBuilder {
                     )
 
                     if let tapAction = section.tapAction {
-                        titleItem.didSelect = { (cell, _) in
-                            CellSelection.scale(cell: cell, action: tapAction)
+                        titleItem.didSelect = { (view, _) in
+                            view.animated(action: tapAction)
                         }
                     }
 
@@ -403,7 +415,15 @@ public final class WorkContentBuilder: ListContentBuilder {
                 section.makeListItems()
             }
         case .reviews:
-            let reviewItems = reviewContentBuilder.makeListItemsFrom(model: model.reviews)
+            let reviewsState = model.reviews.map {
+                WorkReviewsShortListViewState(
+                    work: model.work,
+                    reviews: $0,
+                    hasShowAllButton: $0.count < model.work.reviewsCount
+                )
+            }
+
+            let reviewItems = reviewContentBuilder.makeListItemsFrom(model: reviewsState)
 
             items.append(contentsOf: reviewItems)
         case .analogs:
@@ -415,8 +435,8 @@ public final class WorkContentBuilder: ListContentBuilder {
                     layoutSpec: WorkPreviewLayoutSpec(model: analog)
                 )
 
-                item.didSelect = { [weak self] cell, _ in
-                    CellSelection.scale(cell: cell, action: {
+                item.didSelect = { [weak self] view, _ in
+                    view.animated(action: {
                         self?.delegate?.onWorkTap(id: analog.id)
                     })
                 }

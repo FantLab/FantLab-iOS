@@ -13,35 +13,37 @@ use_modular_headers!
 inhibit_all_warnings!
 
 def release_pods
-	pod 'Firebase/Core', :configurations => ['Adhoc', 'Release']
+    pod 'Firebase/Core', :configurations => ['Adhoc', 'Release']
     pod 'Fabric', :configurations => ['Adhoc', 'Release']
     pod 'Crashlytics', :configurations => ['Adhoc', 'Release']
 end
 
 def all_pods
-	release_pods
+    release_pods
 
     pod 'RxSwift', '4.4.1'
+    pod 'GRDB', :podspec => 'podspecs/GRDB.podspec'
+    pod 'RxGRDB', :podspec => 'podspecs/RxGRDB.podspec'
     pod 'YYWebImage', '1.0.5'
-    pod 'ALLKit', :git => 'https://github.com/geor-kasapidi/ALLKit', :commit => '06d8d4bce9aba4b973ee9389f11585c830954120'
+    pod 'ALLKit', :git => 'https://github.com/geor-kasapidi/ALLKit', :commit => 'f42aad8fcadb109becb342fa9452113e0014ebcf'
 end
 
 target 'FantLab-iOS' do
-	project 'FantLab-iOS.xcodeproj'
+    project 'FantLab-iOS.xcodeproj'
 
-	all_pods
+    all_pods
 
-	target 'FantLab-iOSTests' do
-		inherit! :search_paths
-	end
+    target 'FantLab-iOSTests' do
+        inherit! :search_paths
+    end
 end
 
 modules = YAML.load_file('Modules.yaml')
 
 modules.keys.sort.each do |target_name|
-	target target_name do
-		project 'Modules.xcodeproj'
+    target target_name do
+        project 'Modules.xcodeproj'
 
-		all_pods
-	end
+        all_pods
+    end
 end

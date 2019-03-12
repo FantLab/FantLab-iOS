@@ -2,9 +2,9 @@ import Foundation
 import UIKit
 import ALLKit
 import yoga
-import FantLabModels
-import FantLabUtils
-import FantLabStyle
+import FLModels
+import FLKit
+import FLStyle
 
 public final class WorkPreviewLayoutSpec: ModelLayoutSpec<WorkPreviewModel> {
     public override func makeNodeFrom(model: WorkPreviewModel, sizeConstraints: SizeConstraints) -> LayoutNode {
@@ -14,22 +14,22 @@ public final class WorkPreviewLayoutSpec: ModelLayoutSpec<WorkPreviewModel> {
         let detailString: NSAttributedString?
         
         do {
-            nameString = (model.name.nilIfEmpty ?? model.nameOrig).attributed()
+            nameString = model.name.attributed()
                 .font(Fonts.system.medium(size: 15))
                 .foregroundColor(UIColor.black)
                 .make()
 
             let yearText = model.year > 0 ? String(model.year) : ""
-            let infoText = [model.workType, yearText].compactAndJoin(", ")
+            let infoText = [model.type, yearText].compactAndJoin(", ")
 
             infoString = infoText.capitalizedFirstLetter().attributed()
                 .font(Fonts.system.regular(size: 12))
-                .foregroundColor(UIColor.lightGray)
+                .foregroundColor(UIColor.gray)
                 .make()
 
             authorString = model.authors.compactAndJoin(", ").nilIfEmpty?.attributed()
                 .font(Fonts.system.medium(size: 12))
-                .foregroundColor(Colors.flBlue)
+                .foregroundColor(Colors.fantasticBlue)
                 .make()
 
             if model.rating > 0 && model.votes > 0 {
@@ -59,7 +59,7 @@ public final class WorkPreviewLayoutSpec: ModelLayoutSpec<WorkPreviewModel> {
         }
 
         let infoNode = LayoutNode(sizeProvider: infoString, config: { node in
-            node.marginTop = 4
+            node.marginTop = 6
             node.isHidden = infoString == nil
         }) { (label: UILabel, _) in
             label.numberOfLines = 0
@@ -89,8 +89,7 @@ public final class WorkPreviewLayoutSpec: ModelLayoutSpec<WorkPreviewModel> {
         }) { (view: UIImageView, _) in
             view.clipsToBounds = true
             view.contentMode = .scaleAspectFit
-
-            view.yy_setImage(with: model.imageURL, placeholder: WorkCoverImageRule.coverFor(workTypeId: model.workTypeId), options: .setImageWithFadeAnimation, completion: nil)
+            view.image = WorkCoverImageRule.coverFor(workTypeId: model.typeId)
         }
 
         let detailTextNode = LayoutNode(sizeProvider: detailString, config: nil) { (label: UILabel, _) in

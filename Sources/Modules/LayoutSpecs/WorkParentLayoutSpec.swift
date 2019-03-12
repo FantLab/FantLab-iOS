@@ -2,8 +2,8 @@ import Foundation
 import UIKit
 import ALLKit
 import yoga
-import FantLabModels
-import FantLabStyle
+import FLModels
+import FLStyle
 
 public struct WorkParentModelLayoutModel {
     public let work: WorkModel.ParentWorkModel

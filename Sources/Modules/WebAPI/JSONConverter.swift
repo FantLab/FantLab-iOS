@@ -1,6 +1,6 @@
 import Foundation
-import FantLabUtils
-import FantLabModels
+import FLKit
+import FLModels
 
 final class JSONConverter {
     private init() {}
@@ -15,7 +15,6 @@ final class JSONConverter {
             name: json.work_name.stringValue,
             origName: json.work_name_orig.stringValue,
             year: json.work_year.intValue,
-            imageURL: URL.web(json.image.stringValue),
             workType: json.work_type.stringValue,
             workTypeKey: json.work_type_name.stringValue,
             publishStatuses: json.publish_statuses.array.map({ $0.stringValue }),
@@ -155,17 +154,13 @@ final class JSONConverter {
                 ),
                 work: WorkPreviewModel(
                     id: $0.work_id.intValue,
-                    name: $0.work_name.stringValue,
-                    nameOrig: $0.work_name_orig.stringValue,
-                    workType: $0.work_type.stringValue,
-                    workTypeId: $0.work_type_id.intValue,
-                    workTypeKey: "",
-                    imageURL: URL.web($0.work_image.stringValue),
+                    name: $0.work_name.stringValue.nilIfEmpty ?? $0.work_name_orig.stringValue,
+                    type: $0.work_type.stringValue,
+                    typeId: $0.work_type_id.intValue,
                     year: $0.work_year.intValue,
                     authors: [$0.work_author.string ?? $0.work_author_orig.stringValue],
                     rating: 0,
-                    votes: 0,
-                    reviewsCount: 0
+                    votes: 0
                 )
             )
         }
@@ -175,12 +170,9 @@ final class JSONConverter {
         return json.array.map {
             return WorkPreviewModel(
                 id: $0.id.intValue,
-                name: $0.name.stringValue,
-                nameOrig: $0.name_orig.stringValue,
-                workType: $0.name_type.stringValue,
-                workTypeId: $0.name_type_id.intValue,
-                workTypeKey: $0.name_type_icon.stringValue,
-                imageURL: URL.web($0.image.stringValue),
+                name: $0.name.stringValue.nilIfEmpty ?? $0.name_orig.stringValue,
+                type: $0.name_type.stringValue,
+                typeId: $0.name_type_id.intValue,
                 year: $0.year.intValue,
                 authors: $0.creators.authors.array.filter({
                     isAuthorValid(id: $0.id.intValue)
@@ -188,8 +180,7 @@ final class JSONConverter {
                     $0.name.string ?? $0.name_orig.stringValue
                 }),
                 rating: $0.stat.rating.floatValue,
-                votes: $0.stat.voters.intValue,
-                reviewsCount: $0.stat.responses.intValue
+                votes: $0.stat.voters.intValue
             )
         }
     }
@@ -219,10 +210,16 @@ final class JSONConverter {
             bio: json.biography.stringValue,
             notes: json.biography_notes.stringValue,
             compiler: json.compiler.stringValue,
-            sites: json.sites.array.map({
-                AuthorModel.SiteModel(
-                    link: $0.site.stringValue,
-                    title: $0.descr.stringValue
+            sites: json.sites.array.compactMap({
+                let title = $0.descr.stringValue
+
+                guard let url = URL(string: $0.site.stringValue), !title.isEmpty else {
+                    return nil
+                }
+
+                return AuthorModel.SiteModel(
+                    link: url,
+                    title: title
                 )
             }),
             awards: makeAwardListFrom(json: json.awards.win.array + json.awards.nom.array),
@@ -347,5 +344,22 @@ final class JSONConverter {
             isBlocked: json.block.boolValue,
             reviewsCount: json.responsecount.intValue
         )
+    }
+
+    static func makeNewsFrom(json: DynamicJSON) -> [NewsModel] {
+        return json.items.array.compactMap({
+            guard let date = Date.from(string: $0.date.stringValue, format: "yyyy-MM-dd HH:mm:ss") else {
+                return nil
+            }
+
+            return NewsModel(
+                id: $0.id.intValue,
+                title: $0.title.stringValue,
+                text: $0.news_text.stringValue,
+                image: URL.web($0.image.stringValue),
+                date: date,
+                category: $0.category.stringValue
+            )
+        })
     }
 }

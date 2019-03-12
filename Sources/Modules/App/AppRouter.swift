@@ -4,12 +4,13 @@ import SafariServices
 import AVFoundation
 import RxSwift
 import ALLKit
-import FantLabModels
-import FantLabContentBuilders
-import FantLabStyle
-import FantLabBaseUI
-import FantLabWebAPI
-import FantLabUtils
+import FLModels
+import FLContentBuilders
+import FLStyle
+import FLUIKit
+import FLWebAPI
+import FLKit
+import FLLayoutSpecs
 
 final class AppRouter {
     static let shared = AppRouter()
@@ -44,7 +45,7 @@ final class AppRouter {
         }
 
         do {
-            window.tintColor = Colors.flBlue
+            window.tintColor = Colors.fantasticBlue
             window.makeKeyAndVisible()
         }
 
@@ -57,50 +58,28 @@ final class AppRouter {
         do {
             var vcs: [UIViewController] = []
 
-            do {
-                let newsVC = NewsViewController()
-
-                newsVC.title = "Новости"
-
-                newsVC.tabBarItem = UITabBarItem(title: "Главная", image: UIImage(named: "home_tab"), tag: 1)
-
-                let cameraItem = navBarItemsFactory.makeCameraItem { [weak self] in
-                    self?.tryShowScanner(from: .mainScreen)
-                }
-
-                let searchItem = navBarItemsFactory.makeSearchItem { [weak self] in
-                    self?.showSearch()
-                }
-
-                newsVC.navBar.leftItems = [cameraItem]
-                newsVC.navBar.rightItems = [searchItem]
-
-                vcs.append(newsVC)
-            }
+            // новости
 
             do {
-                let freshReviewsVC = FreshReviewsViewController()
-
-                freshReviewsVC.title = "Последние отзывы"
-
-                freshReviewsVC.tabBarItem = UITabBarItem(title: "Отзывы", image: UIImage(named: "reviews_tab"), tag: 2)
-
-                let cameraItem = navBarItemsFactory.makeCameraItem { [weak self] in
-                    self?.tryShowScanner(from: .mainScreen)
-                }
-
-                let searchItem = navBarItemsFactory.makeSearchItem { [weak self] in
-                    self?.showSearch()
-                }
-
-                freshReviewsVC.navBar.leftItems = [cameraItem]
-                freshReviewsVC.navBar.rightItems = [searchItem]
-
-                vcs.append(freshReviewsVC)
+                let vc = NewsViewController()
+                vc.title = "Новости"
+                vc.tabBarItem = UITabBarItem(title: "Новости", image: UIImage(named: "news_tab"), tag: 1)
+                setupNavigationItemsForTab(viewController: vc)
+                vcs.append(vc)
             }
 
+            // отзывы
+
+            do {
+                let vc = FreshReviewsViewController()
+                vc.title = "Отзывы"
+                vc.tabBarItem = UITabBarItem(title: "Отзывы", image: UIImage(named: "reviews_tab"), tag: 2)
+                setupNavigationItemsForTab(viewController: vc)
+                vcs.append(vc)
+            }
+            
             let tabVC = UITabBarController()
-            tabVC.view.tintColor = Colors.flOrange
+            tabVC.view.tintColor = Colors.darkOrange
             tabVC.viewControllers = vcs
 
             rootNavigationController.pushViewController(tabVC, animated: false)
@@ -109,8 +88,25 @@ final class AppRouter {
 
     // MARK: -
 
+    private func setupNavigationItemsForTab(viewController: UIViewController) {
+        guard let vc = viewController as? NavBarProvider else {
+            return
+        }
+
+        let cameraItem = navBarItemsFactory.makeCameraItem { [weak self] in
+            self?.tryShowScanner(from: .mainScreen)
+        }
+
+        let searchItem = navBarItemsFactory.makeSearchItem { [weak self] in
+            self?.showSearch()
+        }
+
+        vc.navBar.leftItems = [cameraItem]
+        vc.navBar.rightItems = [searchItem]
+    }
+
     private func setupNavigationItemsFor(viewController: UIViewController) {
-        guard let vc = viewController as? ListViewController else {
+        guard let vc = viewController as? NavBarProvider else {
             return
         }
 
@@ -132,6 +128,8 @@ final class AppRouter {
 
                 leftItems.append(item)
             }
+
+            leftItems += (vc as? NavBarItemsProvider)?.leftItems ?? []
 
             vc.navBar.leftItems = leftItems
         }
@@ -157,8 +155,16 @@ final class AppRouter {
                 rightItems.append(item)
             }
 
+            rightItems += (vc as? NavBarItemsProvider)?.rightItems ?? []
+
             vc.navBar.rightItems = rightItems
         }
+    }
+
+    private func show(alert: Alert, preferredStyle: UIAlertController.Style) {
+        let vc = UIAlertController(alert: alert, preferredStyle: preferredStyle)
+
+        rootNavigationController.present(vc, animated: true, completion: nil)
     }
 
     private func tryGoHome() {
@@ -171,9 +177,7 @@ final class AppRouter {
             }
             .set(cancelAction: "Нет") {}
 
-        let alertVC = UIAlertController(alert: alert, preferredStyle: .alert)
-
-        rootNavigationController.present(alertVC, animated: true, completion: nil)
+        show(alert: alert, preferredStyle: .alert)
     }
 
     private func tryShowScanner(from source: AppAnalytics.BarcodeScannerSource) {
@@ -209,9 +213,7 @@ final class AppRouter {
                     .set(title: "Камера не доступна")
                     .set(cancelAction: "Закрыть") {}
 
-                let alertVC = UIAlertController(alert: alert, preferredStyle: .alert)
-
-                rootNavigationController.present(alertVC, animated: true, completion: nil)
+                show(alert: alert, preferredStyle: .alert)
             }
         } else {
             let alert = Alert()
@@ -223,9 +225,7 @@ final class AppRouter {
                 }
                 .set(cancelAction: "Закрыть") {}
 
-            let alertVC = UIAlertController(alert: alert, preferredStyle: .alert)
-
-            rootNavigationController.present(alertVC, animated: true, completion: nil)
+            show(alert: alert, preferredStyle: .alert)
         }
     }
 
@@ -259,9 +259,7 @@ final class AppRouter {
             }
             .set(cancelAction: "Отмена") {}
 
-        let alertVC = UIAlertController(alert: alert, preferredStyle: .actionSheet)
-
-        rootNavigationController.present(alertVC, animated: true, completion: nil)
+        show(alert: alert, preferredStyle: .actionSheet)
     }
 
     private func openWebURL(url: URL, entersReaderIfAvailable: Bool) {
@@ -291,9 +289,7 @@ final class AppRouter {
             }
             .set(cancelAction: "Закрыть") {}
 
-        let alertVC = UIAlertController(alert: alert, preferredStyle: .alert)
-
-        rootNavigationController.present(alertVC, animated: true, completion: nil)
+        show(alert: alert, preferredStyle: .alert)
     }
 
     private func openSafeWebURL(url: URL, entersReaderIfAvailable: Bool) {
@@ -301,7 +297,7 @@ final class AppRouter {
         config.entersReaderIfAvailable = entersReaderIfAvailable
 
         let vc = SFSafariViewController(url: url, configuration: config)
-        vc.preferredControlTintColor = Colors.flBlue
+        vc.preferredControlTintColor = Colors.fantasticBlue
 
         rootNavigationController.present(vc, animated: true, completion: nil)
     }
@@ -317,9 +313,7 @@ final class AppRouter {
             .set(title: "Страница автора находится в разработке")
             .set(cancelAction: "OK") {}
 
-        let alertVC = UIAlertController(alert: alert, preferredStyle: .alert)
-
-        rootNavigationController.present(alertVC, animated: true, completion: nil)
+        show(alert: alert, preferredStyle: .alert)
     }
 
     // MARK: -
@@ -354,6 +348,32 @@ final class AppRouter {
         rootNavigationController.pushViewController(vc, animated: true)
     }
 
+    func openAuthorWebsites(_ author: AuthorModel) {
+        guard !author.sites.isEmpty else {
+            return
+        }
+
+        if author.sites.count == 1 {
+            openURL(author.sites[0].link)
+
+            return
+        }
+
+        let alert = Alert()
+
+        author.sites.forEach { site in
+            alert.add(positiveAction: site.title.capitalizedFirstLetter(), perform: { [weak self] in
+                self?.openURL(site.link)
+            })
+        }
+
+        alert.set(cancelAction: "Закрыть") {}
+
+        let alertVC = UIAlertController(alert: alert, preferredStyle: .actionSheet)
+
+        rootNavigationController.present(alertVC, animated: true, completion: nil)
+    }
+
     func openWorkAuthors(work: WorkModel) {
         guard !work.authors.isEmpty else {
             return
@@ -377,9 +397,7 @@ final class AppRouter {
 
         alert.set(cancelAction: "Закрыть") {}
 
-        let alertVC = UIAlertController(alert: alert, preferredStyle: .actionSheet)
-
-        rootNavigationController.present(alertVC, animated: true, completion: nil)
+        show(alert: alert, preferredStyle: .actionSheet)
     }
 
     func openWorkReviews(workId: Int, reviewsCount: Int) {
@@ -414,6 +432,15 @@ final class AppRouter {
                  string: model.text,
                  customHeaderListItems: reviewItems,
                  makePhotoURL: nil)
+    }
+
+    func openNews(model: NewsModel) {
+        let headerItem = ListItem(
+            id: "news_header",
+            layoutSpec: NewsHeaderLayoutSpec(model: model)
+        )
+
+        openText(title: "Новость", string: model.text, customHeaderListItems: [headerItem], makePhotoURL: nil)
     }
 
     func openText(title: String,
@@ -477,7 +504,7 @@ private final class NavBarItemsFactory {
         return NavBarItem(
             margin: 8,
             image: UIImage(named: "barcode"),
-            contentEdgeInsets: UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8),
+            contentEdgeInsets: UIEdgeInsets(top: 10, left: 6, bottom: 10, right: 8),
             size: CGSize(width: 40, height: 40),
             action: action
         )
@@ -515,9 +542,9 @@ private final class NavBarItemsFactory {
 
     func makeShareItemFor(action: @escaping () -> Void) -> NavBarItem {
         return NavBarItem(
-            margin: 8,
+            margin: 4,
             image: UIImage(named: "share"),
-            contentEdgeInsets: UIEdgeInsets(top: 8, left: 12, bottom: 8, right: 12),
+            contentEdgeInsets: UIEdgeInsets(top: 6, left: 10, bottom: 10, right: 10),
             size: CGSize(width: 40, height: 40),
             action: action
         )

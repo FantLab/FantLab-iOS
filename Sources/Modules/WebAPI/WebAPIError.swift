@@ -1,4 +1,4 @@
-import FantLabUtils
+import FLKit
 
 public enum WebAPIError: Error, ErrorHumanReadableTextConvertible {
     case notFound

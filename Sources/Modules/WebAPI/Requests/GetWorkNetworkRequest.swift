@@ -1,6 +1,6 @@
 import Foundation
-import FantLabUtils
-import FantLabModels
+import FLKit
+import FLModels
 
 public final class GetWorkNetworkRequest: NetworkRequest {
     public typealias ModelType = WorkModel

@@ -1,9 +1,9 @@
 import Foundation
 import UIKit
 import ALLKit
-import FantLabStyle
-import FantLabUtils
-import FantLabLayoutSpecs
+import FLStyle
+import FLKit
+import FLLayoutSpecs
 
 public final class ErrorContentBuilder: ListContentBuilder {
     public typealias ModelType = Error
@@ -23,8 +23,8 @@ public final class ErrorContentBuilder: ListContentBuilder {
         )
 
         if canRetry {
-            item.didSelect = { [weak self] (cell, _) in
-                CellSelection.scale(cell: cell, action: {
+            item.didSelect = { [weak self] (view, _) in
+                view.animated(action: {
                     self?.onRetry?()
                 })
             }

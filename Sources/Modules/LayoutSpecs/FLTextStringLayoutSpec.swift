@@ -1,10 +1,10 @@
 import Foundation
 import UIKit
 import ALLKit
-import FantLabUtils
-import FantLabText
+import FLKit
+import FLText
 
-private final class TextView: UIView {
+private final class RichTextView: UIView {
     var onURLTap: ((URL) -> Void)?
 
     var textStack: InteractiveTextStack! {
@@ -36,9 +36,9 @@ private final class TextView: UIView {
     // MARK: -
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        super.touchesBegan(touches, with: event)
-
         guard let linkRange = linkRangeFrom(touch: touches.first) else {
+            super.touchesBegan(touches, with: event)
+
             return
         }
 
@@ -53,25 +53,25 @@ private final class TextView: UIView {
     }
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        super.touchesEnded(touches, with: event)
+        guard let linkRange = linkRangeFrom(touch: touches.first) else {
+            selectionLayer.path = nil
 
-        let linkRange = linkRangeFrom(touch: touches.first)
+            super.touchesEnded(touches, with: event)
+
+            return
+        }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
             self?.selectionLayer.path = nil
 
-            linkRange.flatMap({
-                self?.onURLTap?($0.url)
-            })
+            self?.onURLTap?(linkRange.url)
         }
     }
 
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        super.touchesCancelled(touches, with: event)
+        selectionLayer.path = nil
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-            self?.selectionLayer.path = nil
-        }
+        super.touchesCancelled(touches, with: event)
     }
 }
 
@@ -94,9 +94,8 @@ public final class FLTextStringLayoutSpec: ModelLayoutSpec<FLTextStringLayoutMod
     public override func makeNodeFrom(model: FLTextStringLayoutModel, sizeConstraints: SizeConstraints) -> LayoutNode {
         let textStack = InteractiveTextStack(string: model.string, linkAttribute: FLText.linkAttribute)
 
-        let textNode = LayoutNode(sizeProvider: textStack, config: nil) { (view: TextView, _) in
+        let textNode = LayoutNode(sizeProvider: textStack, config: nil) { (view: RichTextView, _) in
             view.onURLTap = model.openURL
-
             view.textStack = textStack
         }
 

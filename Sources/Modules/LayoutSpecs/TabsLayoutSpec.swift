@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 import ALLKit
 import yoga
-import FantLabStyle
+import FLStyle
 
 public struct TabLayoutModel {
     public let name: String
@@ -78,7 +78,7 @@ public final class TabsLayoutSpec: ModelLayoutSpec<[TabLayoutModel]> {
                     node.bottom = 0
                     node.right = 0
                 }) { (view: UIView, _) in
-                    view.backgroundColor = Colors.flOrange
+                    view.backgroundColor = Colors.darkOrange
                 }
             } else {
                 selectionLineNode = nil

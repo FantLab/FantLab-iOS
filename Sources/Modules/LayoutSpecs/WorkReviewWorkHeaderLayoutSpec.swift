@@ -1,10 +1,10 @@
 import Foundation
 import UIKit
 import ALLKit
-import FantLabStyle
-import FantLabText
-import FantLabUtils
-import FantLabModels
+import FLStyle
+import FLText
+import FLKit
+import FLModels
 import YYWebImage
 
 public final class WorkReviewWorkHeaderLayoutSpec: ModelLayoutSpec<WorkReviewModel> {
@@ -15,22 +15,22 @@ public final class WorkReviewWorkHeaderLayoutSpec: ModelLayoutSpec<WorkReviewMod
         let markString: NSAttributedString?
 
         do {
-            nameString = (model.work.name.nilIfEmpty ?? model.work.nameOrig).attributed()
-                .font(Fonts.system.medium(size: 15))
+            nameString = model.work.name.attributed()
+                .font(Fonts.system.bold(size: 15))
                 .foregroundColor(UIColor.black)
                 .make()
 
             let yearText = model.work.year > 0 ? String(model.work.year) : ""
-            let infoText = [model.work.workType, yearText].compactAndJoin(", ")
+            let infoText = [model.work.type, yearText].compactAndJoin(", ")
 
             infoString = infoText.capitalizedFirstLetter().attributed()
                 .font(Fonts.system.regular(size: 12))
-                .foregroundColor(UIColor.lightGray)
+                .foregroundColor(UIColor.gray)
                 .make()
 
             authorString = model.work.authors.compactAndJoin(", ").nilIfEmpty?.attributed()
                 .font(Fonts.system.medium(size: 12))
-                .foregroundColor(Colors.flBlue)
+                .foregroundColor(Colors.fantasticBlue)
                 .make()
 
             if model.mark > 0 {
@@ -65,7 +65,7 @@ public final class WorkReviewWorkHeaderLayoutSpec: ModelLayoutSpec<WorkReviewMod
         }
 
         let infoNode = LayoutNode(sizeProvider: infoString, config: { node in
-            node.marginTop = 4
+            node.marginTop = 6
             node.isHidden = infoString == nil
         }) { (label: UILabel, _) in
             label.numberOfLines = 0
@@ -95,8 +95,7 @@ public final class WorkReviewWorkHeaderLayoutSpec: ModelLayoutSpec<WorkReviewMod
         }) { (view: UIImageView, _) in
             view.clipsToBounds = true
             view.contentMode = .scaleAspectFit
-
-            view.yy_setImage(with: model.work.imageURL, placeholder: WorkCoverImageRule.coverFor(workTypeId: model.work.workTypeId), options: .setImageWithFadeAnimation, completion: nil)
+            view.image = WorkCoverImageRule.coverFor(workTypeId: model.work.typeId)
         }
 
         let markNode = LayoutNode(sizeProvider: markString, config: { node in

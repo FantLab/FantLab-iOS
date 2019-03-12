@@ -1,28 +1,15 @@
 import Foundation
 import UIKit
 import ALLKit
-import FantLabModels
-import FantLabStyle
-import FantLabBaseUI
-import FantLabLayoutSpecs
-import FantLabContentBuilders
+import FLModels
+import FLStyle
+import FLUIKit
+import FLLayoutSpecs
+import FLContentBuilders
 
-final class AwardListViewController: ListViewController {
-    private let awards: [AwardPreviewModel]
-    private let contentBuilder = AwardListContentBuilder()
-
+final class AwardListViewController: ListViewController<AwardListContentBuilder> {
     init(awards: [AwardPreviewModel]) {
-        self.awards = awards
-
-        super.init(nibName: nil, bundle: nil)
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        fatalError()
-    }
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
+        super.init(contentBuilder: AwardListContentBuilder(useSectionSeparatorStyle: false))
 
         title = "Премии (\(awards.count))"
 
@@ -32,18 +19,10 @@ final class AwardListViewController: ListViewController {
             AppRouter.shared.openWork(id: id)
         }
 
-        DispatchQueue.global().async { [weak self] in
-            self?.setupUI()
-        }
+        apply(viewState: awards)
     }
 
-    // MARK: -
-
-    private func setupUI() {
-        let items = contentBuilder.makeListItemsFrom(model: awards)
-
-        DispatchQueue.main.async { [weak self] in
-            self?.adapter.set(items: items)
-        }
+    required init?(coder aDecoder: NSCoder) {
+        fatalError()
     }
 }

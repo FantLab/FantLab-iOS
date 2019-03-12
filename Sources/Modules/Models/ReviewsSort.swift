@@ -1,4 +1,4 @@
-public enum ReviewsSort: String, CustomStringConvertible {
+public enum ReviewsSort: String, CaseIterable, CustomStringConvertible {
     case date
     case rating
     case mark

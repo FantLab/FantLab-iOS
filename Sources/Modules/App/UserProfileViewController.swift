@@ -2,22 +2,27 @@ import Foundation
 import UIKit
 import RxSwift
 import ALLKit
-import FantLabBaseUI
-import FantLabStyle
-import FantLabUtils
-import FantLabModels
-import FantLabWebAPI
-import FantLabContentBuilders
+import FLUIKit
+import FLStyle
+import FLKit
+import FLModels
+import FLWebAPI
+import FLContentBuilders
 
-final class UserProfileViewController: ListViewController, WebURLProvider {
+final class UserProfileViewController: ListViewController<DataStateContentBuilder<UserProfileContentBuilder>>, WebURLProvider {
     private let userId: Int
-    private let state = ObservableValue<DataState<UserProfileModel>>(.initial)
-    private let contentBuilder = DataStateContentBuilder(dataContentBuilder: UserProfileContentBuilder())
+    private let dataSource: DataSource<UserProfileModel>
 
     init(userId: Int) {
         self.userId = userId
 
-        super.init(nibName: nil, bundle: nil)
+        do {
+            let loadObservable = NetworkClient.shared.perform(request: GetUserProfileNetworkRequest(userId: userId))
+
+            dataSource = DataSource(loadObservable: loadObservable)
+        }
+
+        super.init(contentBuilder: DataStateContentBuilder(dataContentBuilder: UserProfileContentBuilder()))
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -32,48 +37,18 @@ final class UserProfileViewController: ListViewController, WebURLProvider {
         }
 
         contentBuilder.errorContentBuilder.onRetry = { [weak self] in
-            self?.loadUserProfile()
+            self?.dataSource.load()
         }
 
-        setupBackgroundImageWith(urlObservable: state.observable().map({ $0.data?.avatar }))
+        setupBackgroundImageWith(urlObservable: dataSource.stateObservable.map({ $0.data?.avatar }))
 
-        setupStateMapping()
-
-        loadUserProfile()
-    }
-
-    // MARK: -
-
-    private func setupStateMapping() {
-        state.observable()
-            .observeOn(SerialDispatchQueueScheduler(qos: .default))
-            .map({ [weak self] state -> [ListItem] in
-                return self?.contentBuilder.makeListItemsFrom(model: state) ?? []
-            })
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { [weak self] items in
-                self?.adapter.set(items: items)
+        dataSource.stateObservable
+            .subscribe(onNext: { [weak self] state in
+                self?.apply(viewState: state)
             })
             .disposed(by: disposeBag)
-    }
 
-    private func loadUserProfile() {
-        if state.value.isLoading || state.value.isIdle {
-            return
-        }
-
-        state.value = .loading
-
-        NetworkClient.shared.perform(request: GetUserProfileNetworkRequest(userId: userId))
-            .subscribe(
-                onNext: { [weak self] userProfile in
-                    self?.state.value = .idle(userProfile)
-                },
-                onError: { [weak self] error in
-                    self?.state.value = .error(error)
-                }
-            )
-            .disposed(by: disposeBag)
+        dataSource.load()
     }
 
     // MARK: - WebURLProvider

@@ -1,14 +1,15 @@
 import Foundation
 import UIKit
 import ALLKit
-import FantLabUtils
-import FantLabModels
-import FantLabLayoutSpecs
-import FantLabStyle
+import FLKit
+import FLModels
+import FLLayoutSpecs
+import FLStyle
 
 public enum WorkReviewHeaderMode {
     case user
     case work
+    case userAndWork
 }
 
 public final class WorkReviewContentBuilder: ListContentBuilder {
@@ -44,8 +45,8 @@ public final class WorkReviewContentBuilder: ListContentBuilder {
 
             let onTap = onReviewUserTap
 
-            item.didSelect = { (cell, _) in
-                CellSelection.scale(cell: cell, action: {
+            item.didSelect = { (view, _) in
+                view.animated(action: {
                     onTap?(model.user.id)
                 })
             }
@@ -59,13 +60,47 @@ public final class WorkReviewContentBuilder: ListContentBuilder {
 
             let onTap = onReviewWorkTap
 
-            item.didSelect = { (cell, _) in
-                CellSelection.scale(cell: cell, action: {
+            item.didSelect = { (view, _) in
+                view.animated(action: {
                     onTap?(model.work.id)
                 })
             }
 
             items.append(item)
+        case .userAndWork:
+            do {
+                let item = ListItem(
+                    id: "review_\(model.id)_user_header_\(model.votes)",
+                    layoutSpec: WorkReviewUserHeaderLayoutSpec(model: model)
+                )
+
+                let onTap = onReviewUserTap
+
+                item.didSelect = { (view, _) in
+                    view.animated(action: {
+                        onTap?(model.user.id)
+                    })
+                }
+
+                items.append(item)
+            }
+
+            do {
+                let item = ListItem(
+                    id: "review_\(model.id)_work_short_header_\(model.votes)",
+                    layoutSpec: WorkReviewWorkShortHeaderLayoutSpec(model: model)
+                )
+
+                let onTap = onReviewWorkTap
+
+                item.didSelect = { (view, _) in
+                    view.animated(action: {
+                        onTap?(model.work.id)
+                    })
+                }
+
+                items.append(item)
+            }
         }
 
         if showText {
@@ -74,8 +109,8 @@ public final class WorkReviewContentBuilder: ListContentBuilder {
                 layoutSpec: WorkReviewTextLayoutSpec(model: model)
             )
 
-            item.didSelect = { [weak self] (cell, _) in
-                CellSelection.scale(cell: cell, action: {
+            item.didSelect = { [weak self] (view, _) in
+                view.animated(action: {
                     self?.onReviewTextTap?(model)
                 })
             }

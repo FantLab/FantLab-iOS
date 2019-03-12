@@ -1,87 +1,58 @@
-FantLabApp:
-  display_name: App
+FLApp:
   sources: Modules/App
   dependencies:
-    - FantLabStyle
-    - FantLabUtils
-    - FantLabModels
-    - FantLabText
-    - FantLabWebAPI
-    - FantLabBaseUI
-    - FantLabLayoutSpecs
-    - FantLabContentBuilders
-  system_frameworks:
-    - Foundation
-    - UIKit
-    - AVFoundation
-FantLabBaseUI:
-  display_name: BaseUI
-  sources: Modules/BaseUI
+    - FLStyle
+    - FLKit
+    - FLModels
+    - FLText
+    - FLWebAPI
+    - FLUIKit
+    - FLLayoutSpecs
+    - FLContentBuilders
+    - FLMyBooks
+FLUIKit:
+  sources: Modules/UIKit
   dependencies:
-    - FantLabUtils
-    - FantLabStyle
-  system_frameworks:
-    - Foundation
-    - UIKit
-FantLabText:
-  display_name: Text
+    - FLKit
+    - FLStyle
+FLText:
   sources: Modules/Text
   dependencies:
-    - FantLabUtils
-  system_frameworks:
-    - Foundation
-    - UIKit
-FantLabContentBuilders:
-  display_name: ContentBuilders
+    - FLKit
+FLContentBuilders:
   sources: Modules/ContentBuilders
   dependencies:
-    - FantLabUtils
-    - FantLabStyle
-    - FantLabModels
-    - FantLabText
-    - FantLabLayoutSpecs
-  system_frameworks:
-    - Foundation
-    - UIKit
-FantLabLayoutSpecs:
-  display_name: LayoutSpecs
+    - FLKit
+    - FLStyle
+    - FLModels
+    - FLText
+    - FLLayoutSpecs
+FLLayoutSpecs:
   sources: Modules/LayoutSpecs
   dependencies:
-    - FantLabUtils
-    - FantLabStyle
-    - FantLabModels
-    - FantLabText
-  system_frameworks:
-    - Foundation
-    - UIKit
-FantLabStyle:
-  display_name: Style
+    - FLKit
+    - FLStyle
+    - FLModels
+    - FLText
+FLStyle:
   sources: Modules/Style
   dependencies:
-    - FantLabUtils
-    - FantLabText
-  system_frameworks:
-    - Foundation
-    - UIKit
-FantLabWebAPI:
-  display_name: WebAPI
+    - FLKit
+    - FLText
+FLWebAPI:
   sources: Modules/WebAPI
   dependencies:
-    - FantLabModels
-    - FantLabUtils
-  system_frameworks:
-    - Foundation    
-FantLabModels:
-  display_name: Models
+    - FLModels
+    - FLKit   
+FLModels:
   sources: Modules/Models
   dependencies:
-  system_frameworks:
-    - Foundation
-FantLabUtils:
-  display_name: Utils
-  sources: Modules/Utils
+  - FLKit
+FLKit:
+  sources: Modules/Core
   dependencies:
-  system_frameworks:
-    - Foundation
-    - UIKit
-    - AVFoundation
+FLMyBooks:
+  sources: Modules/MyBooks
+  dependencies:
+    - FLModels
+    - FLKit

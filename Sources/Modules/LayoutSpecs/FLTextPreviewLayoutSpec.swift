@@ -1,13 +1,13 @@
 import Foundation
 import UIKit
 import ALLKit
-import FantLabModels
-import FantLabText
-import FantLabStyle
+import FLModels
+import FLText
+import FLStyle
 
-public final class FLTextPreviewLayoutSpec: ModelLayoutSpec<String> {
-    public override func makeNodeFrom(model: String, sizeConstraints: SizeConstraints) -> LayoutNode {
-        let text = FLStringPreview(string: model).value.attributed()
+public final class FLTextPreviewLayoutSpec: ModelLayoutSpec<FLStringPreview> {
+    public override func makeNodeFrom(model: FLStringPreview, sizeConstraints: SizeConstraints) -> LayoutNode {
+        let text = model.value.attributed()
             .font(Fonts.system.regular(size: 15))
             .foregroundColor(UIColor.black)
             .lineSpacing(3)

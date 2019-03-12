@@ -2,28 +2,38 @@ import Foundation
 import UIKit
 import ALLKit
 import RxSwift
-import FantLabUtils
-import FantLabStyle
-import FantLabModels
-import FantLabBaseUI
-import FantLabContentBuilders
-import FantLabWebAPI
+import FLKit
+import FLStyle
+import FLModels
+import FLUIKit
+import FLContentBuilders
+import FLWebAPI
 
-final class AuthorViewController: ListViewController, AuthorContentBuilderDelegate, WebURLProvider {
+final class AuthorViewController: ListViewController<DataStateContentBuilder<AuthorContentBuilder>>, AuthorContentBuilderDelegate, WebURLProvider {
     private struct DataModel {
         let author: AuthorModel
         let contentRoot: WorkTreeNode
     }
 
     private let authorId: Int
-    private let state = ObservableValue<DataState<DataModel>>(.initial)
+    private let dataSource: DataSource<DataModel>
     private let expandCollapseSubject = PublishSubject<Void>()
-    private let contentBuilder = DataStateContentBuilder(dataContentBuilder: AuthorContentBuilder())
 
     init(authorId: Int) {
         self.authorId = authorId
 
-        super.init(nibName: nil, bundle: nil)
+        do {
+            let loadObservable = NetworkClient.shared.perform(request: GetAuthorNetworkRequest(authorId: authorId)).map({ author -> DataModel in
+                DataModel(
+                    author: author,
+                    contentRoot: author.workBlocks.makeWorkTree()
+                )
+            })
+
+            dataSource = DataSource(loadObservable: loadObservable)
+        }
+
+        super.init(contentBuilder: DataStateContentBuilder(dataContentBuilder: AuthorContentBuilder()))
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -44,62 +54,32 @@ final class AuthorViewController: ListViewController, AuthorContentBuilderDelega
         contentBuilder.dataContentBuilder.delegate = self
 
         contentBuilder.errorContentBuilder.onRetry = { [weak self] in
-            self?.loadAuthor()
+            self?.dataSource.load()
         }
 
-        setupBackgroundImageWith(urlObservable: state.observable().map({ $0.data?.author.imageURL }))
+        setupBackgroundImageWith(urlObservable: dataSource.stateObservable.map({ $0.data?.author.imageURL }))
 
-        setupStateMapping()
-
-        loadAuthor()
-    }
-
-    // MARK: -
-
-    private func setupStateMapping() {
-        Observable.combineLatest(state.observable(), expandCollapseSubject)
-            .observeOn(SerialDispatchQueueScheduler(qos: .default))
-            .map({ [weak self] args -> [ListItem] in
-                let dataModel = args.0.map({ data -> AuthorContentModel in
-                    return (data.author, data.contentRoot)
+        Observable.combineLatest(dataSource.stateObservable, expandCollapseSubject)
+            .map({ args -> DataState<AuthorViewState> in
+                args.0.map({ data -> AuthorViewState in
+                    return AuthorViewState(info: data.author, workTree: data.contentRoot)
                 })
-
-                return self?.contentBuilder.makeListItemsFrom(model: dataModel) ?? []
             })
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { [weak self] items in
-                self?.adapter.set(items: items)
+            .subscribe(onNext: { [weak self] state in
+                self?.apply(viewState: state)
             })
             .disposed(by: disposeBag)
 
         expandCollapseSubject.onNext(())
-    }
 
-    private func loadAuthor() {
-        if state.value.isLoading || state.value.isIdle {
-            return
-        }
-
-        state.value = .loading
-
-        let authorRequest = NetworkClient.shared.perform(request: GetAuthorNetworkRequest(authorId: authorId))
-
-        authorRequest
-            .subscribe(
-                onNext: { [weak self] author in
-                    self?.state.value = .idle(DataModel(
-                        author: author,
-                        contentRoot: author.workBlocks.makeWorkTree()
-                    ))
-                },
-                onError: { [weak self] error in
-                    self?.state.value = .error(error)
-                }
-            )
-            .disposed(by: disposeBag)
+        dataSource.load()
     }
 
     // MARK: - AuthorContentBuilderDelegate
+
+    func onWebsitesTap(author: AuthorModel) {
+        AppRouter.shared.openAuthorWebsites(author)
+    }
 
     func onDescriptionTap(author: AuthorModel) {
         let string = [author.bio,
@@ -134,7 +114,7 @@ final class AuthorViewController: ListViewController, AuthorContentBuilderDelega
     // MARK: - WebURLProvider
 
     var webURL: URL? {
-        guard let data = state.value.data else {
+        guard let data = dataSource.state.data else {
             return nil
         }
 

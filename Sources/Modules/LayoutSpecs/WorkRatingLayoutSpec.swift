@@ -1,9 +1,9 @@
 import Foundation
 import UIKit
 import ALLKit
-import FantLabModels
-import FantLabUtils
-import FantLabStyle
+import FLModels
+import FLKit
+import FLStyle
 
 public final class WorkRatingLayoutSpec: ModelLayoutSpec<WorkModel> {
     public override func makeNodeFrom(model: WorkModel, sizeConstraints: SizeConstraints) -> LayoutNode {

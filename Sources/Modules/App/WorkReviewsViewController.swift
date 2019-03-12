@@ -2,71 +2,69 @@ import Foundation
 import UIKit
 import RxSwift
 import ALLKit
-import FantLabUtils
-import FantLabStyle
-import FantLabModels
-import FantLabText
-import FantLabBaseUI
-import FantLabLayoutSpecs
-import FantLabStyle
-import FantLabContentBuilders
-import FantLabWebAPI
+import FLKit
+import FLStyle
+import FLModels
+import FLText
+import FLUIKit
+import FLLayoutSpecs
+import FLStyle
+import FLContentBuilders
+import FLWebAPI
 
-final class WorkReviewsViewController: ListViewController {
-    private struct DataModel {
-        var reviews: [WorkReviewModel] = []
-        var listIsFull: Bool = false
-        var sort: ReviewsSort = .date
-        var page: Int = 0
-        var state: DataState<Void> = .initial
-    }
-
-    private let state = ObservableValue(DataModel(
-        reviews: [],
-        listIsFull: false,
-        sort: .rating,
-        page: 0,
-        state: .initial
-    ))
-
+final class WorkReviewsViewController: SegmentedListViewController<ReviewsSort, WorkReviewsListContentBuilder> {
+    private let sortSubject = PublishSubject<ReviewsSort>()
+    private let dataSource: PagedComboDataSource<WorkReviewModel>
     private let reviewsCount: Int
     private let reviewHeaderMode: WorkReviewHeaderMode
-    private let makeRequestObservable: (Int, ReviewsSort) -> Observable<[WorkReviewModel]>
-    private let requestSubject = PublishSubject<ReviewsSort>()
-    private let contentBuilder: WorkReviewsListContentBuilder
+
+    deinit {
+        sortSubject.onCompleted()
+    }
 
     init(workId: Int, reviewsCount: Int) {
         self.reviewsCount = reviewsCount
 
-        makeRequestObservable = { (page, sort) in
-            return NetworkClient.shared.perform(request: GetWorkReviewsNetworkRequest(
-                workId: workId,
-                page: page,
-                sort: sort
-            ))
+        do {
+            let dataSourceObservable = sortSubject.map { sort -> PagedDataSource<WorkReviewModel> in
+                PagedDataSource(loadObservable: { page -> Observable<[WorkReviewModel]> in
+                    NetworkClient.shared.perform(request: GetWorkReviewsNetworkRequest(
+                        workId: workId,
+                        page: page,
+                        sort: sort
+                    ))
+                })
+
+            }
+            dataSource = PagedComboDataSource(dataSourceObservable: dataSourceObservable)
         }
 
         reviewHeaderMode = .user
-        contentBuilder = WorkReviewsListContentBuilder(headerMode: .user)
 
-        super.init(nibName: nil, bundle: nil)
+        super.init(defaultValue: .rating, contentBuilder: WorkReviewsListContentBuilder(headerMode: .user))
     }
 
     init(userId: Int, reviewsCount: Int) {
         self.reviewsCount = reviewsCount
 
-        makeRequestObservable = { (page, sort) in
-            return NetworkClient.shared.perform(request: GetUserReviewsNetworkRequest(
-                userId: userId,
-                page: page,
-                sort: sort
-            ))
+        do {
+            let dataSourceObservable = sortSubject.map { sort -> PagedDataSource<WorkReviewModel> in
+                PagedDataSource(loadObservable: { page -> Observable<[WorkReviewModel]> in
+                    NetworkClient.shared.perform(request: GetUserReviewsNetworkRequest(
+                        userId: userId,
+                        page: page,
+                        sort: sort
+                    ))
+                })
+
+            }
+
+            dataSource = PagedComboDataSource(dataSourceObservable: dataSourceObservable)
         }
 
         reviewHeaderMode = .work
-        contentBuilder = WorkReviewsListContentBuilder(headerMode: .work)
 
-        super.init(nibName: nil, bundle: nil)
+        super.init(defaultValue: .rating, contentBuilder: WorkReviewsListContentBuilder(headerMode: .work, useSectionSeparatorStyle: true))
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -81,11 +79,11 @@ final class WorkReviewsViewController: ListViewController {
         title = "Отзывы (\(reviewsCount))"
 
         contentBuilder.stateContentBuilder.errorContentBuilder.onRetry = { [weak self] in
-            self?.loadNextPage()
+            self?.dataSource.loadNextPage()
         }
 
         contentBuilder.onLastItemDisplay = { [weak self] in
-            self?.loadNextPage()
+            self?.dataSource.loadNextPage()
         }
 
         contentBuilder.singleReviewContentBuilder.onReviewUserTap = { userId in
@@ -102,162 +100,25 @@ final class WorkReviewsViewController: ListViewController {
             AppRouter.shared.openReview(model: review, headerMode: headerMode)
         }
 
-        setupUI()
-        setupRequest()
-        setupStateMapping()
+        selectedSegmentObservable
+            .distinctUntilChanged()
+            .subscribe(onNext: { [weak self] sort in
+                AppAnalytics.logReviewsSortChange(name: sort.description)
 
-        loadNextPage()
-    }
-
-    // MARK: -
-
-    private func setupUI() {
-        view.backgroundColor = UIColor.white
-
-        adapter.collectionView.contentInset.top = 48
-
-        adapter.scrollEvents.didScroll = { [weak self] scrollView in
-            self?.isSortSelectionControlHidden = scrollView.contentOffset.y > -32
-        }
-
-        sortSelectionControl.backgroundColor = UIColor.white
-        sortSelectionControl.selectedSegmentIndex = 2
-        sortSelectionControl.tintColor = Colors.flBlue
-        sortSelectionControl.setTitleTextAttributes([.font: Fonts.system.regular(size: 13)], for: .normal)
-        sortSelectionControl.setTitleTextAttributes([.font: Fonts.system.medium(size: 13)], for: .selected)
-        view.addSubview(sortSelectionControl)
-        sortSelectionControl.pin(.top).to(adapter.collectionView).const(8).equal()
-        sortSelectionControl.pin(.left).to(view).const(16).equal()
-        sortSelectionControl.pin(.right).to(view).const(-16).equal()
-
-        sortSelectionControl.all_setEventHandler(for: .valueChanged) { [weak self] in
-            guard let strongSelf = self else { return }
-
-            let selectedSegmentIndex = strongSelf.sortSelectionControl.selectedSegmentIndex
-
-            let sort: ReviewsSort
-
-            switch selectedSegmentIndex {
-            case 0:
-                sort = .mark
-            case 2:
-                sort = .rating
-            default:
-                sort = .date
-            }
-
-            strongSelf.sort(by: sort)
-        }
-    }
-
-    private func setupStateMapping() {
-        state.observable()
-            .observeOn(SerialDispatchQueueScheduler(qos: .default))
-            .map { [weak self] data -> [ListItem] in
-                return self?.contentBuilder.makeListItemsFrom(model: (data.reviews, data.state)) ?? []
-            }
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { [weak self] items in
-                self?.adapter.set(items: items)
+                self?.sortSubject.onNext(sort)
             })
             .disposed(by: disposeBag)
-    }
 
-    // MARK: -
-
-    private func setupRequest() {
-        requestSubject
-            .flatMapLatest { [weak self] sort -> Observable<Void> in
-                return self?.makeRequest(sort: sort) ?? .empty()
-            }
-            .subscribe()
-            .disposed(by: disposeBag)
-    }
-
-    private func makeRequest(sort: ReviewsSort) -> Observable<Void> {
-        let pageToLoad: Int
-
-        do {
-            var value = state.value
-
-            if sort != value.sort {
-                value = DataModel(
-                    reviews: [],
-                    listIsFull: false,
-                    sort: sort,
-                    page: 0,
-                    state: .loading
+        dataSource.stateObservable
+            .map { data -> WorkReviewsListViewState in
+                WorkReviewsListViewState(
+                    reviews: data.items,
+                    state: data.state
                 )
-            } else {
-                value.state = .loading
             }
-
-            state.value = value
-
-            pageToLoad = value.page + 1
-        }
-
-        return makeRequestObservable(pageToLoad, sort)
-            .do(
-                onNext: ({ [weak self] reviews in
-                    guard let strongSelf = self else { return }
-
-                    var value = strongSelf.state.value
-                    value.reviews.append(contentsOf: reviews)
-                    value.listIsFull = reviews.isEmpty
-                    value.page = pageToLoad
-                    value.state = .idle(())
-                    strongSelf.state.value = value
-                }),
-                onError: ({ [weak self] error in
-                    guard let strongSelf = self else { return }
-
-                    var value = strongSelf.state.value
-                    value.state = .error(error)
-                    strongSelf.state.value = value
-                })
-            )
-            .map({ _ in })
-            .catchErrorJustReturn(())
-    }
-
-    // MARK: -
-
-    private func sort(by sort: ReviewsSort) {
-        guard sort != state.value.sort else {
-            return
-        }
-
-        AppAnalytics.logReviewsSortChange(name: sort.description)
-
-        requestSubject.onNext(sort)
-    }
-
-    private func loadNextPage() {
-        let data = self.state.value
-
-        guard !data.state.isLoading && !data.listIsFull else {
-            return
-        }
-
-        requestSubject.onNext(data.sort)
-    }
-
-    // MARK: -
-
-    private var isSortSelectionControlHidden: Bool = false {
-        didSet {
-            guard isSortSelectionControlHidden != oldValue else {
-                return
-            }
-
-            let alpha: CGFloat = isSortSelectionControlHidden ? 0 : 1
-            let transform: CGAffineTransform = isSortSelectionControlHidden ? CGAffineTransform(translationX: 0, y: -40) : .identity
-
-            UIView.animate(withDuration: 0.2, delay: 0, options: .beginFromCurrentState, animations: { [sortSelectionControl] in
-                sortSelectionControl.alpha = alpha
-                sortSelectionControl.transform = transform
+            .subscribe(onNext: { [weak self] viewState in
+                self?.apply(viewState: viewState)
             })
-        }
+            .disposed(by: disposeBag)
     }
 }

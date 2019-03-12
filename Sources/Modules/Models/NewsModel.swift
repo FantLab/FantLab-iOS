@@ -1,19 +1,32 @@
 import Foundation
+import FLKit
 
-public final class NewsModel {
+public final class NewsModel: IntegerIdProvider {
+    public let id: Int
     public let title: String
     public let text: String
+    public let image: URL?
     public let date: Date
-    public let url: URL
+    public let category: String
 
-    public init(title: String,
+    public init(id: Int,
+                title: String,
                 text: String,
+                image: URL?,
                 date: Date,
-                url: URL) {
+                category: String) {
 
+        self.id = id
         self.title = title
         self.text = text
+        self.image = image
         self.date = date
-        self.url = url
+        self.category = category
+    }
+
+    // MARK: -
+
+    public var intId: Int {
+        return id
     }
 }

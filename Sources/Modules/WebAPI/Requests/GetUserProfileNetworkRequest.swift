@@ -1,6 +1,6 @@
 import Foundation
-import FantLabUtils
-import FantLabModels
+import FLKit
+import FLModels
 
 public final class GetUserProfileNetworkRequest: NetworkRequest {
     public typealias ModelType = UserProfileModel

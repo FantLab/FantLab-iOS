@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 import ALLKit
-import FantLabStyle
+import FLStyle
 
 public final class FLTextExpandedHiddenStringLayoutSpec: ModelLayoutSpec<(NSAttributedString, String)> {
     public override func makeNodeFrom(model: (NSAttributedString, String), sizeConstraints: SizeConstraints) -> LayoutNode {

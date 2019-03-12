@@ -1,60 +1,43 @@
 import Foundation
 import UIKit
 import ALLKit
-import FantLabModels
-import FantLabStyle
+import FLModels
+import FLStyle
 
-public final class AuthorHeaderLayoutSpec: ModelLayoutSpec<AuthorModel> {
-    public override func makeNodeFrom(model: AuthorModel, sizeConstraints: SizeConstraints) -> LayoutNode {
+public final class AuthorHeaderLayoutSpec: ModelLayoutSpec<(AuthorModel, () -> Void)> {
+    public override func makeNodeFrom(model: (AuthorModel, () -> Void), sizeConstraints: SizeConstraints) -> LayoutNode {
         let nameString: NSAttributedString
-        let otherNamesString: NSAttributedString?
-        let dateString: NSAttributedString?
+        let websiteString: NSAttributedString?
 
         do {
-            let nameText = model.name.nilIfEmpty ?? model.origName
+            let nameText = model.0.name.nilIfEmpty ?? model.0.origName
 
             nameString = nameText.attributed()
                 .font(Fonts.system.bold(size: TitleFontSizeRule.fontSizeFor(length: nameText.count)))
                 .foregroundColor(UIColor.black)
                 .make()
 
-            let otherNamesText = (model.name != model.origName ? [model.origName] + model.pseudonyms : model.pseudonyms).compactAndJoin("\n")
-
-            if !otherNamesText.isEmpty {
-                otherNamesString = otherNamesText.attributed()
-                    .font(Fonts.system.medium(size: 11))
-                    .foregroundColor(UIColor.lightGray)
+            if !model.0.sites.isEmpty {
+                websiteString = "Веб-сайт".attributed()
+                    .font(Fonts.system.medium(size: 15))
+                    .foregroundColor(Colors.fantasticBlue)
                     .make()
             } else {
-                otherNamesString = nil
-            }
-
-            let birthDayString = model.birthDate.flatMap({ $0.format("dd.MM.yyyy") }) ?? ""
-            let deathDayString = model.deathDate.flatMap({ $0.format("dd.MM.yyyy") }) ?? ""
-
-            let dateText = [birthDayString, deathDayString].compactAndJoin(" - ")
-
-            if !dateText.isEmpty {
-                dateString = dateText.attributed()
-                    .font(Fonts.system.medium(size: 11))
-                    .foregroundColor(UIColor.gray)
-                    .make()
-            } else {
-                dateString = nil
+                websiteString = nil
             }
         }
 
         let imageNode = LayoutNode(config: { node in
-            node.width = 100
-            node.height = 100
+            node.width = 80
+            node.height = 80
             node.marginLeft = 16
         }) { (view: UIImageView, _) in
             view.clipsToBounds = true
             view.contentMode = .scaleAspectFill
-            view.layer.cornerRadius = 50
+            view.layer.cornerRadius = 40
             view.backgroundColor = Colors.perfectGray
 
-            view.yy_setImage(with: model.imageURL, options: .setImageWithFadeAnimation)
+            view.yy_setImage(with: model.0.imageURL, options: .setImageWithFadeAnimation)
         }
 
         let nameNode = LayoutNode(sizeProvider: nameString, config: nil) { (label: UILabel, _) in
@@ -62,33 +45,19 @@ public final class AuthorHeaderLayoutSpec: ModelLayoutSpec<AuthorModel> {
             label.attributedText = nameString
         }
 
-        let otherNamesNode: LayoutNode?
-
-        if let string = otherNamesString {
-            otherNamesNode = LayoutNode(sizeProvider: string, config: { node in
-                node.marginTop = 8
-            }) { (label: UILabel, _) in
-                label.numberOfLines = 0
-                label.attributedText = string
-            }
-        } else {
-            otherNamesNode = nil
+        let websiteNode = LayoutNode(sizeProvider: websiteString, config: { node in
+            node.isHidden = websiteString == nil
+            node.marginTop = 12
+        }) { (label: UILabel, _) in
+            label.numberOfLines = 0
+            label.isUserInteractionEnabled = true
+            label.attributedText = websiteString
+            label.all_addGestureRecognizer({ (_: UITapGestureRecognizer) in
+                model.1()
+            })
         }
 
-        let dateNode: LayoutNode?
-
-        if let string = dateString {
-            dateNode = LayoutNode(sizeProvider: string, config: { node in
-                node.marginTop = 16
-            }) { (label: UILabel, _) in
-                label.numberOfLines = 0
-                label.attributedText = string
-            }
-        } else {
-            dateNode = nil
-        }
-
-        let textStackNode = LayoutNode(children: [nameNode, otherNamesNode, dateNode], config: { node in
+        let textStackNode = LayoutNode(children: [nameNode, websiteNode], config: { node in
             node.flexDirection = .column
             node.alignItems = .flexStart
             node.flex = 1
@@ -97,7 +66,7 @@ public final class AuthorHeaderLayoutSpec: ModelLayoutSpec<AuthorModel> {
         let contentNode = LayoutNode(children: [textStackNode, imageNode], config: { node in
             node.flexDirection = .row
             node.alignItems = .center
-            node.padding(all: 16)
+            node.padding(top: 32, left: 16, bottom: 32, right: 16)
         })
 
         return contentNode

@@ -1,6 +1,7 @@
 import Foundation
+import FLKit
 
-public final class WorkModel {
+public final class WorkModel: ObjectPropertiesProvider {
     public final class AuthorModel {
         public let id: Int
         public let name: String
@@ -69,7 +70,6 @@ public final class WorkModel {
     public let name: String
     public let origName: String
     public let year: Int
-    public let imageURL: URL?
     public let workType: String
     public let workTypeKey: String
     public let publishStatuses: [String]
@@ -90,7 +90,6 @@ public final class WorkModel {
                 name: String,
                 origName: String,
                 year: Int,
-                imageURL: URL?,
                 workType: String,
                 workTypeKey: String,
                 publishStatuses: [String],
@@ -111,7 +110,6 @@ public final class WorkModel {
         self.name = name
         self.origName = origName
         self.year = year
-        self.imageURL = imageURL
         self.workType = workType
         self.workTypeKey = workTypeKey
         self.publishStatuses = publishStatuses
@@ -127,5 +125,13 @@ public final class WorkModel {
         self.classificatory = classificatory
         self.awards = awards
         self.editionBlocks = editionBlocks
+    }
+
+    // MARK: -
+
+    public var objectProperties: [ObjectProperty] {
+        return classificatory.map({ genreGroup -> ObjectProperty in
+            return (genreGroup.title, genreGroup.genres.map({ $0.label }).prefix(2).joined(separator: "\n"))
+        })
     }
 }

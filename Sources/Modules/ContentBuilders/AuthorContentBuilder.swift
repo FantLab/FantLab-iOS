@@ -1,15 +1,27 @@
 import Foundation
 import UIKit
 import ALLKit
-import FantLabUtils
-import FantLabModels
-import FantLabStyle
-import FantLabLayoutSpecs
+import FLKit
+import FLModels
+import FLStyle
+import FLLayoutSpecs
+import FLText
 
-public typealias AuthorContentModel = (info: AuthorModel, workTree: WorkTreeNode)
+public struct AuthorViewState {
+    public let info: AuthorModel
+    public let workTree: WorkTreeNode
+
+    public init(info: AuthorModel,
+                workTree: WorkTreeNode) {
+
+        self.info = info
+        self.workTree = workTree
+    }
+}
 
 public protocol AuthorContentBuilderDelegate: class {
     func onDescriptionTap(author: AuthorModel)
+    func onWebsitesTap(author: AuthorModel)
     func onExpandOrCollapse()
     func onWorkTap(id: Int)
     func onAwardsTap(author: AuthorModel)
@@ -17,7 +29,7 @@ public protocol AuthorContentBuilderDelegate: class {
 }
 
 public final class AuthorContentBuilder: ListContentBuilder {
-    public typealias ModelType = AuthorContentModel
+    public typealias ModelType = AuthorViewState
 
     // MARK: -
 
@@ -29,21 +41,23 @@ public final class AuthorContentBuilder: ListContentBuilder {
 
     // MARK: -
 
-    public func makeListItemsFrom(model: AuthorContentModel) -> [ListItem] {
+    public func makeListItemsFrom(model: AuthorViewState) -> [ListItem] {
         var items: [ListItem] = []
 
-        // хедер
+        // header
 
         do {
             let item = ListItem(
                 id: "author_header",
-                layoutSpec: AuthorHeaderLayoutSpec(model: model.info)
+                layoutSpec: AuthorHeaderLayoutSpec(model: (model.info, { [weak self] in
+                    self?.delegate?.onWebsitesTap(author: model.info)
+                }))
             )
 
             items.append(item)
         }
 
-        // биография
+        // bio
 
         let info = [model.info.bio, model.info.notes].compactAndJoin("\n")
 
@@ -55,11 +69,11 @@ public final class AuthorContentBuilder: ListContentBuilder {
 
             let item = ListItem(
                 id: "author_bio",
-                layoutSpec: FLTextPreviewLayoutSpec(model: info)
+                layoutSpec: FLTextPreviewLayoutSpec(model: FLStringPreview(string: info))
             )
 
-            item.didSelect = { [weak self] cell, _ in
-                CellSelection.scale(cell: cell, action: {
+            item.didSelect = { [weak self] view, _ in
+                view.animated(action: {
                     self?.delegate?.onDescriptionTap(author: model.info)
                 })
             }
@@ -67,32 +81,18 @@ public final class AuthorContentBuilder: ListContentBuilder {
             items.append(item)
         }
 
-        // сайты
+        // properties
 
-        model.info.sites.enumerated().forEach { (index, webSite) in
-            guard let url = URL(string: webSite.link), !webSite.title.isEmpty else {
-                return
-            }
-
-            let itemId = "author_website_\(index)"
-
+        do {
             items.append(ListItem(
-                id: itemId + "_sep",
+                id: "author_props_sep",
                 layoutSpec: ItemSeparatorLayoutSpec(model: Colors.separatorColor)
             ))
 
-            let item = ListItem(
-                id: itemId,
-                layoutSpec: AuthorWebSiteLayoutSpec(model: webSite)
-            )
-
-            item.didSelect = { [weak self] cell, _ in
-                CellSelection.scale(cell: cell, action: {
-                    self?.delegate?.onURLTap(url: url)
-                })
-            }
-
-            items.append(item)
+            items.append(ListItem(
+                id: "author_props",
+                layoutSpec: ObjectPropertiesLayoutSpec(model: model.info)
+            ))
         }
 
         // sections
@@ -112,8 +112,8 @@ public final class AuthorContentBuilder: ListContentBuilder {
                         layoutSpec: AwardIconsLayoutSpec(model: model.info.awards)
                     )
 
-                    item.didSelect = { [weak self] cell, _ in
-                        CellSelection.scale(cell: cell, action: {
+                    item.didSelect = { [weak self] view, _ in
+                        view.animated(action: {
                             self?.delegate?.onAwardsTap(author: model.info)
                         })
                     }
@@ -156,10 +156,10 @@ public final class AuthorContentBuilder: ListContentBuilder {
                     )
 
                     if work.id > 0 {
-                        item.didSelect = { [weak self] cell, _ in
-                            CellSelection.alpha(cell: cell, action: {
+                        item.didSelect = { [weak self] view, _ in
+                            view.animated(action: {
                                 self?.delegate?.onWorkTap(id: work.id)
-                            })
+                            }, alpha: 0.3)
                         }
                     }
 
@@ -182,7 +182,7 @@ public final class AuthorContentBuilder: ListContentBuilder {
 
             items.append(ListItem(
                 id: sectionId + "_sep",
-                layoutSpec: EmptySpaceLayoutSpec(model: (Colors.perfectGray, 8))
+                layoutSpec: EmptySpaceLayoutSpec(model: (Colors.sectionSeparatorColor, 8))
             ))
 
             let titleItem = ListItem(
@@ -191,8 +191,8 @@ public final class AuthorContentBuilder: ListContentBuilder {
             )
 
             if let tapAction = section.tapAction {
-                titleItem.didSelect = { (cell, _) in
-                    CellSelection.scale(cell: cell, action: tapAction)
+                titleItem.didSelect = { (view, _) in
+                    view.animated(action: tapAction)
                 }
             }
 

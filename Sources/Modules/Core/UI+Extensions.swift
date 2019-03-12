@@ -31,3 +31,15 @@ extension UIImage {
         }
     }
 }
+
+extension UIRefreshControl {
+    public convenience init(action: @escaping (UIRefreshControl) -> Void) {
+        self.init()
+
+        all_setEventHandler(for: .valueChanged) { [weak self] in
+            self.flatMap({
+                action($0)
+            })
+        }
+    }
+}

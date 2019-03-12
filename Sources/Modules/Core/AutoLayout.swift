@@ -106,4 +106,12 @@ extension AutoLayoutItem {
 
         return constraints
     }
+
+    @discardableResult
+    public func pinCenter(to item: AutoLayoutItem,
+                          dx: CGFloat = 0,
+                          dy: CGFloat = 0) -> [NSLayoutConstraint] {
+        return [pin(.centerX).to(item).const(dx).equal(),
+                pin(.centerY).to(item).const(dy).equal()]
+    }
 }

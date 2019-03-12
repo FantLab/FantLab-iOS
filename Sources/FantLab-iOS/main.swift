@@ -1,3 +1,3 @@
-import FantLabApp
+import FLApp
 
 runApp()

@@ -53,7 +53,7 @@ def find_dependency_cycle(modules)
 end
 
 def setup_group_content(parent_group, dir)
-	files_to_compile = []
+	compile_files = []
 
 	for entry in Dir.glob("#{dir}/*")
 		basename = File.basename(entry)
@@ -61,25 +61,26 @@ def setup_group_content(parent_group, dir)
 		if File.directory?(entry)
 			group = parent_group.new_group(basename)
 			group.set_path(basename)
-			files_to_compile = files_to_compile + setup_group_content(group, entry)
+			compile_files = compile_files + setup_group_content(group, entry)
 		end
 
 		if File.file?(entry) and File.extname(entry) == '.swift'
 			file = parent_group.new_file(entry)
 			file.set_path(basename)
-			files_to_compile.push(file)
+			compile_files.push(file)
 		end
 	end
 
-	return files_to_compile
+	return compile_files
 end
 
-def setup_build_settings(project)
+def self.setup_build_settings(project, ios_version)
 	for config in project.build_configurations
 		config.build_settings['PRODUCT_NAME'] = '$(TARGET_NAME)'
 		config.build_settings['SWIFT_VERSION'] = '4.2'
+		config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = ios_version
 
-		if config.name == 'Debug'
+		if config.name != 'Release'
 			config.build_settings['SWIFT_ACTIVE_COMPILATION_CONDITIONS'] = 'DEBUG'
 		end
 	end
@@ -88,6 +89,7 @@ def setup_build_settings(project)
 		for config in target.build_configurations
 			config.build_settings['OTHER_LDFLAGS'] = '$(inherited)'
 			config.build_settings['DEBUG_INFORMATION_FORMAT'] = 'dwarf-with-dsym'
+			config.build_settings['ENABLE_BITCODE'] = 'NO'
 
 			if config.name == 'Debug'
 				config.build_settings['SWIFT_COMPILATION_MODE'] = 'singlefile'
@@ -113,29 +115,24 @@ def make_modules_project(project_name, modules, ios_version)
 		group = root_group.new_group(config['display_name'] || target_name)
 		dir = config['sources']
 		group.set_path(dir)
-		files_to_compile = setup_group_content(group, dir)
-		target.add_file_references(files_to_compile)
-
-		for system_framework in config['system_frameworks'] || []
-			target.add_system_framework(system_framework)
-		end
-
+		compile_files = setup_group_content(group, dir)
+		target.add_file_references(compile_files)
 		targets_table[target_name] = target
 	end
 
 	modules.each do |target_name, config|
-		module_target = targets_table[target_name]
+		target = targets_table[target_name]
 
 		for dependency in config['dependencies'] || []
-			target = targets_table[dependency]
-			module_target.add_dependency(target)
-			module_target.frameworks_build_phase.add_file_reference(target.product_reference, true)
+			dependency_target = targets_table[dependency]
+			target.add_dependency(dependency_target)
+			target.frameworks_build_phase.add_file_reference(dependency_target.product_reference, true)
 		end
 	end
 
 	root_group.sort_recursively_by_type()
 
-	setup_build_settings(project)
+	setup_build_settings(project, ios_version)
 
 	project.save()
 end

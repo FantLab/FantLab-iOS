@@ -1,26 +1,38 @@
 import Foundation
 import UIKit
 import ALLKit
-import FantLabUtils
-import FantLabModels
-import FantLabStyle
-import FantLabLayoutSpecs
+import FLKit
+import FLModels
+import FLStyle
+import FLLayoutSpecs
 
-public typealias WorkReviewsListContentModel = (reviews: [WorkReviewModel], state: DataState<Void>)
+public struct WorkReviewsListViewState {
+    public var reviews: [WorkReviewModel]
+    public var state: DataState<Void>
+
+    public init(reviews: [WorkReviewModel],
+                state: DataState<Void>) {
+
+        self.reviews = reviews
+        self.state = state
+    }
+}
 
 public final class WorkReviewsListContentBuilder: ListContentBuilder {
-    public typealias ModelType = WorkReviewsListContentModel
+    public typealias ModelType = WorkReviewsListViewState
 
     // MARK: -
 
-    public init(headerMode: WorkReviewHeaderMode) {
+    private let useSectionSeparatorStyle: Bool
+
+    public init(headerMode: WorkReviewHeaderMode, useSectionSeparatorStyle: Bool = false) {
+        self.useSectionSeparatorStyle = useSectionSeparatorStyle
+
         singleReviewContentBuilder = WorkReviewContentBuilder(headerMode: headerMode)
     }
 
     public let stateContentBuilder = DataStateContentBuilder(dataContentBuilder: EmptyContentBuilder())
     public let singleReviewContentBuilder: WorkReviewContentBuilder
-
-    // MARK: -
 
     public var onLastItemDisplay: (() -> Void)?
 
@@ -31,24 +43,22 @@ public final class WorkReviewsListContentBuilder: ListContentBuilder {
 
     // MARK: -
 
-    public func makeListItemsFrom(model: WorkReviewsListContentModel) -> [ListItem] {
-        var items: [ListItem] = model.reviews.enumerated().flatMap { (index, review) -> [ListItem] in
+    public func makeListItemsFrom(model: WorkReviewsListViewState) -> [ListItem] {
+        var items: [ListItem] = model.reviews.flatMap { review -> [ListItem] in
             var reviewItems = singleReviewContentBuilder.makeListItemsFrom(model: review)
 
-            let sepItem = ListItem(
-                id: "review_\(review.id)" + "_sep",
-                layoutSpec: ItemSeparatorLayoutSpec(model: Colors.separatorColor)
-            )
+            let sepSpec: LayoutSpec = useSectionSeparatorStyle ? EmptySpaceLayoutSpec(model: (Colors.perfectGray, 8)) : ItemSeparatorLayoutSpec(model: Colors.separatorColor)
 
-            if index == model.reviews.endIndex - 1 {
-                sepItem.willDisplay = { [weak self] _, _ in
-                    self?.onLastItemDisplay?()
-                }
-            }
-
-            reviewItems.append(sepItem)
+            reviewItems.append(ListItem(
+                id: "review_\(review.id)_sep",
+                layoutSpec: sepSpec
+            ))
 
             return reviewItems
+        }
+
+        items.last?.willDisplay = { [weak self] _, _ in
+            self?.onLastItemDisplay?()
         }
 
         items.append(contentsOf: stateContentBuilder.makeListItemsFrom(model: model.state))

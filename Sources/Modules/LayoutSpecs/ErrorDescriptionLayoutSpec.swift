@@ -1,8 +1,8 @@
 import Foundation
 import UIKit
 import ALLKit
-import FantLabUtils
-import FantLabStyle
+import FLKit
+import FLStyle
 
 public final class ErrorDescriptionLayoutSpec: ModelLayoutSpec<(String, Bool)> {
     public override func makeNodeFrom(model: (String, Bool), sizeConstraints: SizeConstraints) -> LayoutNode {

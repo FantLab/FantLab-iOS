@@ -1,13 +1,29 @@
 import Foundation
 import UIKit
 import ALLKit
-import FantLabUtils
-import FantLabModels
-import FantLabStyle
-import FantLabLayoutSpecs
-import FantLabText
+import FLKit
+import FLModels
+import FLStyle
+import FLLayoutSpecs
+import FLText
 
-public typealias TextListContentModel = (text: FLText, expandedTextIndices: Set<Int>, images: Dictionary<Int, UIImage>)
+public struct TextListViewState {
+    public let text: FLText
+    public let expandedTextIndices: Set<Int>
+    public let images: Dictionary<Int, UIImage>
+    public let customHeaderItems: [ListItem]
+
+    public init(text: FLText,
+                expandedTextIndices: Set<Int>,
+                images: Dictionary<Int, UIImage>,
+                customHeaderItems: [ListItem]) {
+
+        self.text = text
+        self.expandedTextIndices = expandedTextIndices
+        self.images = images
+        self.customHeaderItems = customHeaderItems
+    }
+}
 
 public protocol TextListContentBuilderDelegate: class {
     func makeURLFrom(photoIndex: Int) -> URL?
@@ -17,7 +33,7 @@ public protocol TextListContentBuilderDelegate: class {
 }
 
 public final class TextListContentBuilder: ListContentBuilder {
-    public typealias ModelType = TextListContentModel
+    public typealias ModelType = TextListViewState
 
     // MARK: -
 
@@ -27,8 +43,8 @@ public final class TextListContentBuilder: ListContentBuilder {
 
     // MARK: -
 
-    public func makeListItemsFrom(model: TextListContentModel) -> [ListItem] {
-        var items: [ListItem] = []
+    public func makeListItemsFrom(model: TextListViewState) -> [ListItem] {
+        var items: [ListItem] = model.customHeaderItems
 
         items.append(ListItem(
             id: "text_items_header_space",
@@ -68,8 +84,8 @@ public final class TextListContentBuilder: ListContentBuilder {
                         layoutSpec: FLTextCollapsedHiddenStringLayoutSpec(model: name)
                     )
 
-                    item.didSelect = { [weak self] cell, _ in
-                        CellSelection.scale(cell: cell, action: {
+                    item.didSelect = { [weak self] view, _ in
+                        view.animated(action: {
                             self?.delegate?.showHiddenText(index: index)
                         })
                     }
@@ -87,7 +103,7 @@ public final class TextListContentBuilder: ListContentBuilder {
                 if let image = model.images[index] {
                     let item = ListItem(
                         id: itemId + "_image",
-                        layoutSpec: FLTextImageLayoutSpec(model: (image, false))
+                        layoutSpec: FLTextImageLayoutSpec(model: image)
                     )
 
                     items.append(item)
@@ -105,7 +121,7 @@ public final class TextListContentBuilder: ListContentBuilder {
                 if let image = model.images[index] {
                     let item = ListItem(
                         id: itemId + "_image",
-                        layoutSpec: FLTextImageLayoutSpec(model: (image, true))
+                        layoutSpec: FLTextImageLayoutSpec(model: image)
                     )
 
                     items.append(item)

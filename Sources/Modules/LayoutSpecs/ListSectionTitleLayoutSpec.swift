@@ -2,8 +2,8 @@ import Foundation
 import UIKit
 import ALLKit
 import yoga
-import FantLabUtils
-import FantLabStyle
+import FLKit
+import FLStyle
 
 public struct ListSectionTitleLayoutModel {
     public let title: String
@@ -23,7 +23,7 @@ public struct ListSectionTitleLayoutModel {
 public final class ListSectionTitleLayoutSpec: ModelLayoutSpec<ListSectionTitleLayoutModel> {
     public override func makeNodeFrom(model: ListSectionTitleLayoutModel, sizeConstraints: SizeConstraints) -> LayoutNode {
         let titleString = model.title.attributed()
-            .font(Fonts.system.bold(size: 16))
+            .font(Fonts.system.bold(size: 18))
             .foregroundColor(UIColor.black)
             .make()
 
