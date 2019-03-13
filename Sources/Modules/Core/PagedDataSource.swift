@@ -96,7 +96,7 @@ public final class PagedDataSource<T: IntegerIdProvider> {
 
 public final class PagedComboDataSource<T: IntegerIdProvider> {
     private let disposeBag = DisposeBag()
-    private let internalStateSubject = PublishSubject<PagedDataState<T>>()
+    private let internalStateSubject = ReplaySubject<PagedDataState<T>>.create(bufferSize: 1)
     private let internalDataSource: ObservableValue<PagedDataSource<T>>
 
     deinit {
