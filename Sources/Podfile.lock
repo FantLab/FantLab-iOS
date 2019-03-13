@@ -67,15 +67,15 @@ PODS:
     - nanopb/encode (= 0.3.901)
   - nanopb/decode (0.3.901)
   - nanopb/encode (0.3.901)
-  - RxAtomic (4.4.1)
+  - RxAtomic (4.4.2)
   - RxGRDB (0.13.0):
     - RxGRDB/default (= 0.13.0)
     - RxSwift (~> 4)
   - RxGRDB/default (0.13.0):
     - GRDB (~> 3.0)
     - RxSwift (~> 4)
-  - RxSwift (4.4.1):
-    - RxAtomic (~> 4.4)
+  - RxSwift (4.4.2):
+    - RxAtomic (>= 4.4.2, ~> 4.4)
   - Yoga (1.6.0)
   - YYCache (1.0.4)
   - YYImage (1.0.4):
@@ -92,7 +92,7 @@ DEPENDENCIES:
   - Firebase/Core
   - GRDB (from `podspecs/GRDB.podspec`)
   - RxGRDB (from `podspecs/RxGRDB.podspec`)
-  - RxSwift (= 4.4.1)
+  - RxSwift (= 4.4.2)
   - YYWebImage (= 1.0.5)
 
 SPEC REPOS:
@@ -139,14 +139,14 @@ SPEC CHECKSUMS:
   GoogleUtilities: 111a012f4c3a29c9e7c954c082fafd6ee3c999c0
   GRDB: 35bef7c20437a76f7d13a4d1c0c8fb5a30f06ff5
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
-  RxAtomic: f8d6adc1ccb87a767811269e4875887bc74dbf19
+  RxAtomic: d00e97c10db88c6f08540e0bf2752fc5a2404167
   RxGRDB: b9db82224c799046f3df1ec2fa9d9210b52bceb3
-  RxSwift: 92fcf68dfef21f3e2ab1965363d9e7b3d787597e
+  RxSwift: 74c29b693c8e42b0f64400e8b06564575742d649
   Yoga: 81670877477311136b1b3f69a6307ce62e1c89cf
   YYCache: 8105b6638f5e849296c71f331ff83891a4942952
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
   YYWebImage: 5f7f36aee2ae293f016d418c7d6ba05c4863e928
 
-PODFILE CHECKSUM: 6c050d400a1aa88ea01d5b35c8a3768987ca1b6f
+PODFILE CHECKSUM: cc63417410ccc181397113f905f3bd0250df7cd9
 
 COCOAPODS: 1.6.0

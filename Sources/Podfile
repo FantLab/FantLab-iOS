@@ -21,7 +21,7 @@ end
 def all_pods
     release_pods
 
-    pod 'RxSwift', '4.4.1'
+    pod 'RxSwift', '4.4.2'
     pod 'GRDB', :podspec => 'podspecs/GRDB.podspec'
     pod 'RxGRDB', :podspec => 'podspecs/RxGRDB.podspec'
     pod 'YYWebImage', '1.0.5'
