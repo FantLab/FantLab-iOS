@@ -50,7 +50,7 @@ public final class NewsContentBuilder: ListContentBuilder {
                 layoutSpec: NewsHeaderLayoutSpec(model: news)
             )
 
-            headerItem.didSelect = { [weak self] (view, _) in
+            headerItem.didTap = { [weak self] (view, _) in
                 view.animated(action: {
                     self?.onNewsTap?(news)
                 })
@@ -63,7 +63,7 @@ public final class NewsContentBuilder: ListContentBuilder {
                 layoutSpec: FLTextPreviewLayoutSpec(model: newsText)
             )
 
-            textItem.didSelect = { [weak self] (view, _) in
+            textItem.didTap = { [weak self] (view, _) in
                 view.animated(action: {
                     self?.onNewsTap?(news)
                 })
@@ -77,7 +77,7 @@ public final class NewsContentBuilder: ListContentBuilder {
             ))
         }
 
-        items.last?.willDisplay = { [weak self] _, _ in
+        items.last?.willShow = { [weak self] _, _ in
             self?.onLastItemDisplay?()
         }
 

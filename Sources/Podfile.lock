@@ -86,7 +86,7 @@ PODS:
     - YYImage
 
 DEPENDENCIES:
-  - ALLKit (from `https://github.com/geor-kasapidi/ALLKit`, commit `f42aad8fcadb109becb342fa9452113e0014ebcf`)
+  - ALLKit (from `https://github.com/geor-kasapidi/ALLKit`, commit `245e382aadc9759fba0f7dda3067dc9a316a5773`)
   - Crashlytics
   - Fabric
   - Firebase/Core
@@ -115,7 +115,7 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   ALLKit:
-    :commit: f42aad8fcadb109becb342fa9452113e0014ebcf
+    :commit: 245e382aadc9759fba0f7dda3067dc9a316a5773
     :git: https://github.com/geor-kasapidi/ALLKit
   GRDB:
     :podspec: podspecs/GRDB.podspec
@@ -124,7 +124,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   ALLKit:
-    :commit: f42aad8fcadb109becb342fa9452113e0014ebcf
+    :commit: 245e382aadc9759fba0f7dda3067dc9a316a5773
     :git: https://github.com/geor-kasapidi/ALLKit
 
 SPEC CHECKSUMS:
@@ -147,6 +147,6 @@ SPEC CHECKSUMS:
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
   YYWebImage: 5f7f36aee2ae293f016d418c7d6ba05c4863e928
 
-PODFILE CHECKSUM: cc63417410ccc181397113f905f3bd0250df7cd9
+PODFILE CHECKSUM: 5ac288bf4a4e32bf5278251b2cddcaf99469e093
 
-COCOAPODS: 1.6.0
+COCOAPODS: 1.6.1

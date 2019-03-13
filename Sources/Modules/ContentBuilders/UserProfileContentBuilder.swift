@@ -58,7 +58,7 @@ public final class UserProfileContentBuilder: ListContentBuilder {
                 layoutSpec: ShowAllButtonLayoutSpec(model: "Отзывы (\(model.reviewsCount))")
             )
 
-            item.didSelect = { [weak self] (view, _) in
+            item.didTap = { [weak self] (view, _) in
                 view.animated(action: {
                     self?.onReviewsTap?(model.id, model.reviewsCount)
                 })

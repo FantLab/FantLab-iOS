@@ -49,7 +49,7 @@ private final class EditionListView: UIView {
                     layoutSpec: EditionPreviewLayoutSpec(model: edition)
                 )
 
-                item.didSelect = { (view, _) in
+                item.didTap = { (view, _) in
                     view.animated(action: { [weak self] in
                         self?.openEdition?(edition.id)
                     })

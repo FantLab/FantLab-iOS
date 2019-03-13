@@ -52,7 +52,7 @@ public final class EditionListContentBuilder: ListContentBuilder {
                     return SizeConstraints(width: (width / CGFloat(columnsCount)).rounded(.down), height: (width / CGFloat(columnsCount - 1)).rounded(.down))
                 }
 
-                item.didSelect = { [weak self] (view, _) in
+                item.didTap = { [weak self] (view, _) in
                     view.animated(action: {
                         self?.onEditionTap?(edition.id)
                     })

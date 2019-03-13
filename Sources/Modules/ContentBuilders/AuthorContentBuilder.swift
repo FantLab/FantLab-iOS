@@ -72,7 +72,7 @@ public final class AuthorContentBuilder: ListContentBuilder {
                 layoutSpec: FLTextPreviewLayoutSpec(model: FLStringPreview(string: info))
             )
 
-            item.didSelect = { [weak self] view, _ in
+            item.didTap = { [weak self] view, _ in
                 view.animated(action: {
                     self?.delegate?.onDescriptionTap(author: model.info)
                 })
@@ -112,7 +112,7 @@ public final class AuthorContentBuilder: ListContentBuilder {
                         layoutSpec: AwardIconsLayoutSpec(model: model.info.awards)
                     )
 
-                    item.didSelect = { [weak self] view, _ in
+                    item.didTap = { [weak self] view, _ in
                         view.animated(action: {
                             self?.delegate?.onAwardsTap(author: model.info)
                         })
@@ -156,7 +156,7 @@ public final class AuthorContentBuilder: ListContentBuilder {
                     )
 
                     if work.id > 0 {
-                        item.didSelect = { [weak self] view, _ in
+                        item.didTap = { [weak self] view, _ in
                             view.animated(action: {
                                 self?.delegate?.onWorkTap(id: work.id)
                             }, alpha: 0.3)
@@ -191,7 +191,7 @@ public final class AuthorContentBuilder: ListContentBuilder {
             )
 
             if let tapAction = section.tapAction {
-                titleItem.didSelect = { (view, _) in
+                titleItem.didTap = { (view, _) in
                     view.animated(action: tapAction)
                 }
             }

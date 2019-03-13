@@ -84,7 +84,7 @@ public final class TextListContentBuilder: ListContentBuilder {
                         layoutSpec: FLTextCollapsedHiddenStringLayoutSpec(model: name)
                     )
 
-                    item.didSelect = { [weak self] view, _ in
+                    item.didTap = { [weak self] view, _ in
                         view.animated(action: {
                             self?.delegate?.showHiddenText(index: index)
                         })

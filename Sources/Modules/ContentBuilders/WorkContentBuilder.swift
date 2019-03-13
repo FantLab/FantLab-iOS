@@ -147,7 +147,7 @@ public final class WorkContentBuilder: ListContentBuilder {
                             layoutSpec: FLTextPreviewLayoutSpec(model: FLStringPreview(string: infoString))
                         )
 
-                        item.didSelect = { [weak self] view, _ in
+                        item.didTap = { [weak self] view, _ in
                             view.animated(action: {
                                 self?.delegate?.onDescriptionTap(work: model.work)
                             })
@@ -226,7 +226,7 @@ public final class WorkContentBuilder: ListContentBuilder {
                             layoutSpec: AwardIconsLayoutSpec(model: model.work.awards)
                         )
 
-                        item.didSelect = { [weak self] view, _ in
+                        item.didTap = { [weak self] view, _ in
                             view.animated(action: {
                                 self?.delegate?.onAwardsTap(work: model.work)
                             })
@@ -270,7 +270,7 @@ public final class WorkContentBuilder: ListContentBuilder {
                         )
 
                         if work.id > 0 {
-                            item.didSelect = { [weak self] view, _ in
+                            item.didTap = { [weak self] view, _ in
                                 view.animated(action: {
                                     self?.delegate?.onWorkTap(id: work.id)
                                 }, alpha: 0.3)
@@ -311,7 +311,7 @@ public final class WorkContentBuilder: ListContentBuilder {
                             )
 
                             if parent.id > 0 {
-                                item.didSelect = { [weak self] view, _ in
+                                item.didTap = { [weak self] view, _ in
                                     view.animated(action: {
                                         self?.delegate?.onWorkTap(id: parent.id)
                                     }, alpha: 0.3)
@@ -404,7 +404,7 @@ public final class WorkContentBuilder: ListContentBuilder {
                     )
 
                     if let tapAction = section.tapAction {
-                        titleItem.didSelect = { (view, _) in
+                        titleItem.didTap = { (view, _) in
                             view.animated(action: tapAction)
                         }
                     }
@@ -435,7 +435,7 @@ public final class WorkContentBuilder: ListContentBuilder {
                     layoutSpec: WorkPreviewLayoutSpec(model: analog)
                 )
 
-                item.didSelect = { [weak self] view, _ in
+                item.didTap = { [weak self] view, _ in
                     view.animated(action: {
                         self?.delegate?.onWorkTap(id: analog.id)
                     })

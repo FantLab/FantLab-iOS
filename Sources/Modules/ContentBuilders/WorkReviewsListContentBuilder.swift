@@ -57,7 +57,7 @@ public final class WorkReviewsListContentBuilder: ListContentBuilder {
             return reviewItems
         }
 
-        items.last?.willDisplay = { [weak self] _, _ in
+        items.last?.willShow = { [weak self] _, _ in
             self?.onLastItemDisplay?()
         }
 

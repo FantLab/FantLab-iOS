@@ -23,7 +23,7 @@ public final class ErrorContentBuilder: ListContentBuilder {
         )
 
         if canRetry {
-            item.didSelect = { [weak self] (view, _) in
+            item.didTap = { [weak self] (view, _) in
                 view.animated(action: {
                     self?.onRetry?()
                 })

@@ -45,7 +45,7 @@ public final class WorkReviewContentBuilder: ListContentBuilder {
 
             let onTap = onReviewUserTap
 
-            item.didSelect = { (view, _) in
+            item.didTap = { (view, _) in
                 view.animated(action: {
                     onTap?(model.user.id)
                 })
@@ -60,7 +60,7 @@ public final class WorkReviewContentBuilder: ListContentBuilder {
 
             let onTap = onReviewWorkTap
 
-            item.didSelect = { (view, _) in
+            item.didTap = { (view, _) in
                 view.animated(action: {
                     onTap?(model.work.id)
                 })
@@ -76,7 +76,7 @@ public final class WorkReviewContentBuilder: ListContentBuilder {
 
                 let onTap = onReviewUserTap
 
-                item.didSelect = { (view, _) in
+                item.didTap = { (view, _) in
                     view.animated(action: {
                         onTap?(model.user.id)
                     })
@@ -93,7 +93,7 @@ public final class WorkReviewContentBuilder: ListContentBuilder {
 
                 let onTap = onReviewWorkTap
 
-                item.didSelect = { (view, _) in
+                item.didTap = { (view, _) in
                     view.animated(action: {
                         onTap?(model.work.id)
                     })
@@ -109,7 +109,7 @@ public final class WorkReviewContentBuilder: ListContentBuilder {
                 layoutSpec: WorkReviewTextLayoutSpec(model: model)
             )
 
-            item.didSelect = { [weak self] (view, _) in
+            item.didTap = { [weak self] (view, _) in
                 view.animated(action: {
                     self?.onReviewTextTap?(model)
                 })

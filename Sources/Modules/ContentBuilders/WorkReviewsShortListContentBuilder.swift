@@ -50,7 +50,7 @@ public final class WorkReviewsShortListContentBuilder: ListContentBuilder {
                 layoutSpec: ShowAllButtonLayoutSpec(model: "Все отзывы")
             )
 
-            item.didSelect = { [weak self] view, _ in
+            item.didTap = { [weak self] view, _ in
                 view.animated(action: {
                     self?.onShowAllReviewsTap?(model.work)
                 })

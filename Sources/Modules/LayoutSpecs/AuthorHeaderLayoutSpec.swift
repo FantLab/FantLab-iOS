@@ -52,8 +52,8 @@ public final class AuthorHeaderLayoutSpec: ModelLayoutSpec<(AuthorModel, () -> V
             label.numberOfLines = 0
             label.isUserInteractionEnabled = true
             label.attributedText = websiteString
-            label.all_addGestureRecognizer({ (_: UITapGestureRecognizer) in
-                model.1()
+            label.all_addGestureRecognizer({ [weak label] (_: UITapGestureRecognizer) in
+                label?.animated(action: model.1, alpha: 0.3)
             })
         }
 

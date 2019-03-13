@@ -37,7 +37,7 @@ public final class AwardListContentBuilder: ListContentBuilder {
                 )
 
                 if contest.workId > 0 {
-                    item.didSelect = { [weak self] (view, _) in
+                    item.didTap = { [weak self] (view, _) in
                         view.animated(action: { [weak self] in
                             self?.onWorkTap?(contest.workId)
                         })

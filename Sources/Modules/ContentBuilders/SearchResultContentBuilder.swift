@@ -41,7 +41,7 @@ public final class SearchResultContentBuilder: ListContentBuilder {
                 layoutSpec: AuthorPreviewLayoutSpec(model: author)
             )
 
-            item.didSelect = { [weak self] view, _ in
+            item.didTap = { [weak self] view, _ in
                 view.animated(action: {
                     self?.onAuthorTap?(author.id)
                 })
@@ -70,7 +70,7 @@ public final class SearchResultContentBuilder: ListContentBuilder {
                 layoutSpec: WorkPreviewLayoutSpec(model: work)
             )
 
-            item.didSelect = { [weak self] view, _ in
+            item.didTap = { [weak self] view, _ in
                 view.animated(action: {
                     self?.onWorkTap?(work.id)
                 })
