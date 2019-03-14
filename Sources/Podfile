@@ -25,7 +25,7 @@ def all_pods
     pod 'GRDB', :podspec => 'podspecs/GRDB.podspec'
     pod 'RxGRDB', :podspec => 'podspecs/RxGRDB.podspec'
     pod 'YYWebImage', '1.0.5'
-    pod 'ALLKit', :git => 'https://github.com/geor-kasapidi/ALLKit', :commit => '245e382aadc9759fba0f7dda3067dc9a316a5773'
+    pod 'ALLKit', :git => 'https://github.com/geor-kasapidi/ALLKit', :commit => '17a07be76d90bd638742194f742b5c8aaab29164'
 end
 
 target 'FantLab-iOS' do

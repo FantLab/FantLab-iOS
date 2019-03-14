@@ -39,24 +39,7 @@ public final class UserProfileHeaderLayoutSpec: ModelLayoutSpec<UserProfileModel
             userClassNode = nil
         }
 
-        let banImageNode: LayoutNode?
-
-        if model.isBlocked {
-            banImageNode = LayoutNode(config: { node in
-                node.position = .absolute
-                node.top = 0
-                node.right = 0
-                node.bottom = 0
-                node.left = 0
-            }) { (imageView: UIImageView, _) in
-                imageView.tintColor = UIColor.red
-                imageView.image = UIImage(named: "ban")?.withRenderingMode(.alwaysTemplate)
-            }
-        } else {
-            banImageNode = nil
-        }
-
-        let imageNode = LayoutNode(children: [banImageNode], config: { node in
+        let imageNode = LayoutNode(config: { node in
             node.width = 120
             node.height = 120
             node.marginBottom = 16
