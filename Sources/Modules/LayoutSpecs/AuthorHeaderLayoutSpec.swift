@@ -15,6 +15,7 @@ public final class AuthorHeaderLayoutSpec: ModelLayoutSpec<(AuthorModel, () -> V
             nameString = nameText.attributed()
                 .font(Fonts.system.bold(size: TitleFontSizeRule.fontSizeFor(length: nameText.count)))
                 .foregroundColor(UIColor.black)
+                .hyphenationFactor(1)
                 .make()
 
             if !model.0.sites.isEmpty {

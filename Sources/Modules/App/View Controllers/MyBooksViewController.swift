@@ -97,7 +97,7 @@ final class MyBooksViewController: SegmentedListViewController<MyBookModel.Group
                         .startWith([])
                 })
 
-            let dataObservable = dataSource.stateObservable.debounce(0.1, scheduler: MainScheduler.instance)
+            let dataObservable = dataSource.stateObservable
 
             Observable.combineLatest(dataObservable, removedIdsObservable)
                 .observeOn(MainScheduler.instance)

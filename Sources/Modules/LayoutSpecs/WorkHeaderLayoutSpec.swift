@@ -19,6 +19,7 @@ public final class WorkHeaderLayoutSpec: ModelLayoutSpec<(WorkModel, () -> Void)
             nameString = nameText.attributed()
                 .font(Fonts.system.bold(size: TitleFontSizeRule.fontSizeFor(length: nameText.count)))
                 .foregroundColor(UIColor.black)
+                .hyphenationFactor(1)
                 .make()
 
             if !model.0.origName.isEmpty && model.0.origName != nameText {
