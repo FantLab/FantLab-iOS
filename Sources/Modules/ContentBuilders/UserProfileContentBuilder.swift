@@ -3,6 +3,7 @@ import UIKit
 import ALLKit
 import FLKit
 import FLModels
+import FLExtendedModels
 import FLLayoutSpecs
 import FLStyle
 

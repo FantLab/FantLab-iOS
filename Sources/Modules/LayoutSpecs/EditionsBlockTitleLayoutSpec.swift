@@ -53,7 +53,7 @@ public final class EditionsBlockTitleLayoutSpec: ModelLayoutSpec<EditionsBlockTi
         let contentNode = LayoutNode(children: [titleNode, spacingNode, countNode], config: { node in
             node.flexDirection = .row
             node.alignItems = .center
-            node.padding(top: 16, left: 12, bottom: 16, right: 12)
+            node.padding(all: 16)
         })
 
         return contentNode

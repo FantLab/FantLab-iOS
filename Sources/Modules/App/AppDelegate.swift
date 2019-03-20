@@ -1,6 +1,5 @@
 import UIKit
-import GRDB
-import FLStyle
+import FLKit
 import FLUIKit
 #if !DEBUG
 import Firebase
@@ -25,9 +24,7 @@ private final class AppDelegate: UIResponder, UIApplicationDelegate, UINavigatio
         window = AppRouter.shared.window
 
         #if DEBUG
-        Database.logError = { (code, text) in
-            print("⚠️", code, text)
-        }
+        print("🔥", FileUtils.docDir)
         #else
         FirebaseApp.configure()
         Fabric.with([Crashlytics.self])

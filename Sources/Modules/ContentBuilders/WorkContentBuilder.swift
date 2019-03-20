@@ -7,21 +7,10 @@ import FLStyle
 import FLLayoutSpecs
 import FLText
 
-public enum WorkContentTabIndex: String, CustomStringConvertible {
+public enum WorkContentTabIndex: String {
     case info
     case reviews
     case analogs
-
-    public var description: String {
-        switch self {
-        case .info:
-            return "Обзор"
-        case .reviews:
-            return "Отзывы"
-        case .analogs:
-            return "Похожие"
-        }
-    }
 }
 
 public struct WorkViewState {

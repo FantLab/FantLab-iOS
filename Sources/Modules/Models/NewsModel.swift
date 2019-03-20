@@ -1,7 +1,6 @@
 import Foundation
-import FLKit
 
-public final class NewsModel: IntegerIdProvider {
+public final class NewsModel {
     public let id: Int
     public let title: String
     public let text: String
@@ -22,11 +21,5 @@ public final class NewsModel: IntegerIdProvider {
         self.image = image
         self.date = date
         self.category = category
-    }
-
-    // MARK: -
-
-    public var intId: Int {
-        return id
     }
 }

@@ -12,6 +12,19 @@ import FLStyle
 import FLContentBuilders
 import FLWebAPI
 
+extension ReviewsSort: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .date:
+            return "Дата"
+        case .mark:
+            return "Оценка"
+        case .rating:
+            return "Рейтинг"
+        }
+    }
+}
+
 final class WorkReviewsViewController: SegmentedListViewController<ReviewsSort, WorkReviewsListContentBuilder> {
     private let sortSubject = PublishSubject<ReviewsSort>()
     private let dataSource: PagedComboDataSource<WorkReviewModel>
@@ -36,6 +49,7 @@ final class WorkReviewsViewController: SegmentedListViewController<ReviewsSort, 
                 })
 
             }
+            
             dataSource = PagedComboDataSource(dataSourceObservable: dataSourceObservable)
         }
 

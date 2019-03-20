@@ -93,26 +93,21 @@ final class MainSearchViewController: ListViewController<DataStateContentBuilder
     }
 
     private func bindUI() {
-        let loadingObservable: Observable<DataState<MainSearchResult>> = searchSubject.map({ _ in DataState<MainSearchResult>.loading })
+        let loadingObservable: Observable<DataState<SearchResultModel>> = searchSubject.map({ _ in DataState<SearchResultModel>.loading })
 
-        let dataObservable: Observable<DataState<MainSearchResult>> = searchSubject
+        let dataObservable: Observable<DataState<SearchResultModel>> = searchSubject
             .debounce(0.5, scheduler: MainScheduler.instance)
-            .flatMapLatest({ searchText -> Observable<DataState<MainSearchResult>> in
+            .flatMapLatest({ searchText -> Observable<DataState<SearchResultModel>> in
                 return NetworkClient.shared.perform(request: MainSearchNetworkRequest(searchText: searchText))
-                    .map({ DataState<MainSearchResult>.success($0) })
-                    .catchError({ error -> Observable<DataState<MainSearchResult>> in
-                        return .just(DataState<MainSearchResult>.error(error))
+                    .map({ DataState<SearchResultModel>.success($0) })
+                    .catchError({ error -> Observable<DataState<SearchResultModel>> in
+                        return .just(DataState<SearchResultModel>.error(error))
                     })
             })
 
         Observable.merge(loadingObservable, dataObservable)
             .distinctUntilChanged({ (x, y) -> Bool in
                 return x.isLoading && y.isLoading
-            })
-            .map({ state -> DataState<SearchResultsViewState> in
-                return state.map({
-                    SearchResultsViewState(authors: $0.authors, works: $0.works)
-                })
             })
             .subscribe(onNext: { [weak self] viewState in
                 self?.apply(viewState: viewState)

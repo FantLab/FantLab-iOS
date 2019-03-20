@@ -6,20 +6,8 @@ import FLModels
 import FLStyle
 import FLLayoutSpecs
 
-public struct SearchResultsViewState {
-    public let authors: [AuthorPreviewModel]
-    public let works: [WorkPreviewModel]
-
-    public init(authors: [AuthorPreviewModel],
-                works: [WorkPreviewModel]) {
-
-        self.authors = authors
-        self.works = works
-    }
-}
-
 public final class SearchResultContentBuilder: ListContentBuilder {
-    public typealias ModelType = SearchResultsViewState
+    public typealias ModelType = SearchResultModel
 
     // MARK: -
 
@@ -32,7 +20,25 @@ public final class SearchResultContentBuilder: ListContentBuilder {
 
     // MARK: -
 
-    public func makeListItemsFrom(model: SearchResultsViewState) -> [ListItem] {
+    private let notFoundId = UUID().uuidString
+
+    // MARK: -
+
+    public func makeListItemsFrom(model: SearchResultModel) -> [ListItem] {
+        if model.searchText.isEmpty {
+            return []
+        }
+
+        if model.authors.isEmpty && model.works.isEmpty {
+            let item = ListItem(
+                id: notFoundId,
+                model: model.searchText,
+                layoutSpec: NotFoundLayoutSpec(model: model.searchText)
+            )
+
+            return [item]
+        }
+
         var items: [ListItem] = []
 
         model.authors.forEach { author in

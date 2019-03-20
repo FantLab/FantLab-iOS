@@ -6,7 +6,7 @@ public enum WebAPIError: Error, ErrorHumanReadableTextConvertible {
     public var humanReadableDescription: String {
         switch self {
         case .notFound:
-            return "По вашему запросу ничего не найдено"
+            return "Не найдено"
         }
     }
 }

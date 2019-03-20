@@ -2,14 +2,8 @@ import Foundation
 import FLKit
 import FLModels
 
-public struct MainSearchResult {
-    public let searchText: String
-    public let works: [WorkPreviewModel]
-    public let authors: [AuthorPreviewModel]
-}
-
 public final class MainSearchNetworkRequest: NetworkRequest {
-    public typealias ModelType = MainSearchResult
+    public typealias ModelType = SearchResultModel
 
     private let searchText: String
 
@@ -22,16 +16,12 @@ public final class MainSearchNetworkRequest: NetworkRequest {
         return URLRequest(url: URL(string: "https://\(Hosts.api)/search-txt?q=\(text)")!)
     }
 
-    public func parse(response: URLResponse, data: Data) throws -> MainSearchResult {
+    public func parse(response: URLResponse, data: Data) throws -> SearchResultModel {
         let json = try DynamicJSON(jsonData: data)
 
         let works = JSONConverter.makeWorkPreviewsFrom(json: json.works)
         let authors = JSONConverter.makeAuthorPreviewsFrom(json: json.authors)
 
-        if works.isEmpty && authors.isEmpty {
-            throw WebAPIError.notFound
-        }
-
-        return MainSearchResult(searchText: searchText, works: works, authors: authors)
+        return SearchResultModel(authors: authors, works: works, searchText: searchText)
     }
 }

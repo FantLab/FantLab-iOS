@@ -31,14 +31,14 @@ public final class EditionHeaderLayoutSpec: ModelLayoutSpec<EditionModel> {
         }
 
         let coverNode = LayoutNode(config: { node in
-            node.width = 120
-            node.height = 180
+            node.width = 100
+            node.height = 150
             node.marginRight = 16
         }) { (view: UIImageView, _) in
             view.clipsToBounds = true
             view.contentMode = .scaleAspectFit
 
-            view.yy_setImage(with: model.image, placeholder: UIImage(named: "not_found_cover"), options: .setImageWithFadeAnimation, completion: nil)
+            view.yy_setImage(with: model.image, placeholder: UIImage(named: "no_cover"), options: .setImageWithFadeAnimation, completion: nil)
         }
 
         let nameNode = LayoutNode(sizeProvider: nameString, config: nil) { (label: UILabel, _) in

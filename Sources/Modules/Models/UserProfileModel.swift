@@ -1,7 +1,6 @@
 import Foundation
-import FLKit
 
-public final class UserProfileModel: ObjectPropertiesProvider {
+public final class UserProfileModel {
     public enum Sex {
         case male
         case female
@@ -45,42 +44,5 @@ public final class UserProfileModel: ObjectPropertiesProvider {
         self.registrationDate = registrationDate
         self.isBlocked = isBlocked
         self.reviewsCount = reviewsCount
-    }
-
-    // MARK: -
-
-    public var objectProperties: [ObjectProperty] {
-        var properties: [ObjectProperty] = []
-
-        if !name.isEmpty {
-            properties.append(("ФИО", name))
-        }
-
-        if let sex = sex {
-            switch sex {
-            case .male:
-                properties.append(("Пол", "Мужской"))
-            case .female:
-                properties.append(("Пол", "Женский"))
-            }
-        }
-
-        if let birthDate = birthDate {
-            properties.append(("День рождения", birthDate.format(.dayMonthAndYear)))
-        }
-
-        if !location.isEmpty {
-            properties.append(("Место жительства", location))
-        }
-
-        if let registrationDate = registrationDate {
-            properties.append(("Дата регистрации", registrationDate.format(.dayMonthAndYear)))
-        }
-
-        if let onlineDate = onlineDate {
-            properties.append(("Последнее посещение", onlineDate.formatToHumanReadbleText()))
-        }
-
-        return properties
     }
 }

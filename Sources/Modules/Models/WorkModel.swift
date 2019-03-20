@@ -1,7 +1,6 @@
 import Foundation
-import FLKit
 
-public final class WorkModel: ObjectPropertiesProvider {
+public final class WorkModel {
     public final class AuthorModel {
         public let id: Int
         public let name: String
@@ -125,13 +124,5 @@ public final class WorkModel: ObjectPropertiesProvider {
         self.classificatory = classificatory
         self.awards = awards
         self.editionBlocks = editionBlocks
-    }
-
-    // MARK: -
-
-    public var objectProperties: [ObjectProperty] {
-        return classificatory.map({ genreGroup -> ObjectProperty in
-            return (genreGroup.title, genreGroup.genres.map({ $0.label }).prefix(2).joined(separator: "\n"))
-        })
     }
 }

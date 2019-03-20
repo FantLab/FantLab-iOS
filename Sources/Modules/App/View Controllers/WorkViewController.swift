@@ -9,7 +9,19 @@ import FLUIKit
 import FLLayoutSpecs
 import FLContentBuilders
 import FLWebAPI
-import FLMyBooks
+
+extension WorkContentTabIndex: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .info:
+            return "Обзор"
+        case .reviews:
+            return "Отзывы"
+        case .analogs:
+            return "Похожие"
+        }
+    }
+}
 
 final class WorkViewController: ListViewController<DataStateContentBuilder<WorkContentBuilder>>, WorkContentBuilderDelegate, WebURLProvider, NavBarItemsProvider {
     private struct DataModel {
@@ -23,8 +35,8 @@ final class WorkViewController: ListViewController<DataStateContentBuilder<WorkC
     private let reviewsDataSource: DataSource<[WorkReviewModel]>
     private let expandCollapseSubject = PublishSubject<Void>()
     private let tabIndexSubject = PublishSubject<WorkContentTabIndex>()
-    private let favBtn = UIButton(type: .system)
-    private var favItem: NavBarItem?
+    private let myBookBtn = UIButton(type: .system)
+    private var myBookItem: NavBarItem?
 
     deinit {
         expandCollapseSubject.onCompleted()
@@ -84,16 +96,16 @@ final class WorkViewController: ListViewController<DataStateContentBuilder<WorkC
     // MARK: -
 
     private func setupUI() {
-        favBtn.pin(.width).const(40).equal()
-        favBtn.pin(.height).const(40).equal()
-        favBtn.contentEdgeInsets = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
-        favBtn.all_setEventHandler(for: .touchUpInside) { [weak self] in
-            self?.toggleFavState()
+        myBookBtn.pin(.width).const(40).equal()
+        myBookBtn.pin(.height).const(40).equal()
+        myBookBtn.contentEdgeInsets = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
+        myBookBtn.all_setEventHandler(for: .touchUpInside) { [weak self] in
+            self?.toggleMyBookState()
         }
 
-        let btn = favBtn
+        let btn = myBookBtn
 
-        favItem = NavBarItem(margin: 8) { btn }
+        myBookItem = NavBarItem(margin: 8) { btn }
     }
 
     private func bindUI() {
@@ -105,11 +117,30 @@ final class WorkViewController: ListViewController<DataStateContentBuilder<WorkC
             })
             .disposed(by: disposeBag)
 
-        MyBookService.shared.observeWorkIsMine(id: workId)
+        let workId = self.workId
+
+        MyBookService.shared.eventStream
+            .filter { event -> Bool in
+                switch event {
+                case let .add(workId: id, group: _):
+                    return id == workId
+                case let .remove(workId: id):
+                    return id == workId
+                }
+            }
+            .map { event -> Bool in
+                switch event {
+                case .add:
+                    return true
+                case .remove:
+                    return false
+                }
+            }
+            .startWith(MyBookService.shared.contains(workId: workId))
             .distinctUntilChanged()
             .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { [weak self] isFav in
-                self?.isFav = isFav
+            .subscribe(onNext: { [weak self] isMyBook in
+                self?.isMyBook = isMyBook
             })
             .disposed(by: disposeBag)
 
@@ -139,19 +170,19 @@ final class WorkViewController: ListViewController<DataStateContentBuilder<WorkC
 
     // MARK: -
 
-    private func toggleFavState() {
+    private func toggleMyBookState() {
         let id = workId
 
         let alert = Alert()
 
-        if isFav {
+        if isMyBook {
             alert.add(negativeAction: "Удалить") {
-                MyBookService.shared.removeWorkFromMine(id: id)
+                MyBookService.shared.remove(workId: id)
             }
         } else {
             MyBookModel.Group.allCases.forEach { group in
                 alert.add(positiveAction: group.description, perform: {
-                    MyBookService.shared.markWorkAsMine(id: id, group: group)
+                    MyBookService.shared.add(workId: id, group: group)
                 })
             }
         }
@@ -163,14 +194,18 @@ final class WorkViewController: ListViewController<DataStateContentBuilder<WorkC
         present(vc, animated: true, completion: nil)
     }
 
-    private var isFav: Bool = false {
+    private var isMyBook: Bool = false {
         didSet {
-            let btn = favBtn
-            let isOn = isFav
+            let isOn = isMyBook
 
-            UIView.transition(with: btn, duration: 0.2, options: [.beginFromCurrentState, .transitionCrossDissolve], animations: {
-                btn.setImage(UIImage(named: isOn ? "fav_on" : "fav_off"), for: [])
-            }) { _ in }
+            UIView.transition(
+                with: myBookBtn,
+                duration: 0.2,
+                options: [.beginFromCurrentState, .transitionCrossDissolve],
+                animations: ({ [weak self] in
+                    self?.myBookBtn.setImage(UIImage(named: isOn ? "heart_on" : "heart_off"), for: [])
+                })
+            )
         }
     }
 
@@ -253,6 +288,6 @@ final class WorkViewController: ListViewController<DataStateContentBuilder<WorkC
     }
 
     var rightItems: [NavBarItem] {
-        return [favItem].compactMap({ $0 })
+        return [myBookItem].compactMap({ $0 })
     }
 }

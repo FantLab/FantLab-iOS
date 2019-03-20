@@ -3,13 +3,12 @@ FLApp:
   dependencies:
     - FLStyle
     - FLKit
-    - FLModels
+    - FLExtendedModels
     - FLText
     - FLWebAPI
     - FLUIKit
     - FLLayoutSpecs
     - FLContentBuilders
-    - FLMyBooks
 FLUIKit:
   sources: Modules/UIKit
   dependencies:
@@ -24,7 +23,7 @@ FLContentBuilders:
   dependencies:
     - FLKit
     - FLStyle
-    - FLModels
+    - FLExtendedModels
     - FLText
     - FLLayoutSpecs
 FLLayoutSpecs:
@@ -32,7 +31,7 @@ FLLayoutSpecs:
   dependencies:
     - FLKit
     - FLStyle
-    - FLModels
+    - FLExtendedModels
     - FLText
 FLStyle:
   sources: Modules/Style
@@ -43,16 +42,13 @@ FLWebAPI:
   sources: Modules/WebAPI
   dependencies:
     - FLModels
-    - FLKit   
-FLModels:
-  sources: Modules/Models
-  dependencies:
-  - FLKit
-FLKit:
-  sources: Modules/Core
-  dependencies:
-FLMyBooks:
-  sources: Modules/MyBooks
+    - FLKit
+FLExtendedModels:
+  sources: Modules/ExtendedModels
   dependencies:
     - FLModels
     - FLKit
+FLModels:
+  sources: Modules/Models
+FLKit:
+  sources: Modules/Core

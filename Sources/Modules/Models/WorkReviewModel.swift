@@ -1,7 +1,6 @@
 import Foundation
-import FLKit
 
-public final class WorkReviewModel: IntegerIdProvider {
+public final class WorkReviewModel {
     public final class UserModel {
         public let id: Int
         public let name: String
@@ -40,11 +39,5 @@ public final class WorkReviewModel: IntegerIdProvider {
         self.mark = mark
         self.user = user
         self.work = work
-    }
-
-    // MARK: -
-
-    public var intId: Int {
-        return id
     }
 }

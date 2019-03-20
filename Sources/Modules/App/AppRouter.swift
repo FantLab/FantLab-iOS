@@ -63,7 +63,17 @@ final class AppRouter {
             do {
                 let vc = NewsViewController()
                 vc.title = "Новости"
-                vc.tabBarItem = UITabBarItem(title: "Новости", image: UIImage(named: "news_tab"), tag: 1)
+                vc.tabBarItem = UITabBarItem(title: "Новости", image: UIImage(named: "news"), tag: 1)
+                setupNavigationItemsForTab(viewController: vc)
+                vcs.append(vc)
+            }
+
+            // Избранное
+
+            do {
+                let vc = MyBooksViewController()
+                vc.title = "Мои книги"
+                vc.tabBarItem = UITabBarItem(title: "Мои книги", image: UIImage(named: "books"), tag: 2)
                 setupNavigationItemsForTab(viewController: vc)
                 vcs.append(vc)
             }
@@ -73,13 +83,14 @@ final class AppRouter {
             do {
                 let vc = FreshReviewsViewController()
                 vc.title = "Отзывы"
-                vc.tabBarItem = UITabBarItem(title: "Отзывы", image: UIImage(named: "reviews_tab"), tag: 2)
+                vc.tabBarItem = UITabBarItem(title: "Отзывы", image: UIImage(named: "reviews"), tag: 3)
                 setupNavigationItemsForTab(viewController: vc)
                 vcs.append(vc)
             }
             
             let tabVC = UITabBarController()
             tabVC.view.tintColor = Colors.darkOrange
+            tabVC.tabBar.isTranslucent = false
             tabVC.viewControllers = vcs
 
             rootNavigationController.pushViewController(tabVC, animated: false)

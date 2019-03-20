@@ -45,17 +45,23 @@ open class ListViewController<BuilderType: ListContentBuilder>: BaseViewControll
         view.bringSubviewToFront(topPanelView)
     }
 
-    open override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
+    open override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
 
-        guard !view.bounds.isEmpty else {
+        let bounds = adapter.collectionView.bounds
+
+        guard !bounds.isEmpty else {
             return
         }
 
-        adapter.set(sizeConstraints: SizeConstraints(width: view.bounds.width, height: .nan))
+        adapter.set(sizeConstraints: sizeConstraintsFromView(bounds: bounds))
     }
 
     // MARK: -
+
+    open func sizeConstraintsFromView(bounds: CGRect) -> SizeConstraints {
+        return SizeConstraints(width: bounds.width, height: .nan)
+    }
 
     open override var title: String? {
         didSet {

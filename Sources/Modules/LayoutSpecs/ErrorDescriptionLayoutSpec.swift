@@ -17,13 +17,23 @@ public final class ErrorDescriptionLayoutSpec: ModelLayoutSpec<(String, Bool)> {
             label.attributedText = string
         }
 
+        let imageNode = LayoutNode(config: { node in
+            node.width = 100
+            node.height = 100
+            node.marginBottom = 24
+        }) { (view: UIImageView, _) in
+            view.image = UIImage(named: "error")
+            view.contentMode = .scaleAspectFit
+        }
+
         let retryNode: LayoutNode?
 
         if model.1 {
             retryNode = LayoutNode(config: { node in
                 node.width = 20
                 node.height = 20
-                node.marginTop = 12
+                node.marginTop = 24
+                node.marginLeft = 8
             }) { (imageView: UIImageView, _) in
                 imageView.tintColor = UIColor.lightGray
                 imageView.contentMode = .scaleAspectFit
@@ -33,8 +43,8 @@ public final class ErrorDescriptionLayoutSpec: ModelLayoutSpec<(String, Bool)> {
             retryNode = nil
         }
 
-        let contentNode = LayoutNode(children: [textNode, retryNode], config: { node in
-            node.padding(top: 64, left: 16, bottom: 64, right: 16)
+        let contentNode = LayoutNode(children: [imageNode, textNode, retryNode], config: { node in
+            node.padding(top: 32, left: 16, bottom: 32, right: 16)
             node.flexDirection = .column
             node.alignItems = .center
         })

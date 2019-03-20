@@ -38,11 +38,6 @@ public final class WorkReviewsListContentBuilder: ListContentBuilder {
 
     // MARK: -
 
-    private let loadingId = UUID().uuidString
-    private let errorId = UUID().uuidString
-
-    // MARK: -
-
     public func makeListItemsFrom(model: WorkReviewsListViewState) -> [ListItem] {
         var items: [ListItem] = model.reviews.flatMap { review -> [ListItem] in
             var reviewItems = singleReviewContentBuilder.makeListItemsFrom(model: review)

@@ -14,10 +14,10 @@ public final class EditionPreviewLayoutSpec: ModelLayoutSpec<EditionPreviewModel
 
         let imageNode = LayoutNode(config: { node in
             node.flex = 1
-            node.width = 100%
+            node.width = 80%
         }) { (imageView: UIImageView, _) in
             imageView.contentMode = .scaleAspectFit
-            imageView.yy_setImage(with: model.coverURL, placeholder: UIImage(named: "not_found_cover"), options: .setImageWithFadeAnimation, completion: nil)
+            imageView.yy_setImage(with: model.coverURL, placeholder: UIImage(named: "no_cover"), options: .setImageWithFadeAnimation, completion: nil)
         }
 
         let yearNode = LayoutNode(sizeProvider: yearString, config: nil) { (label: UILabel, _) in
