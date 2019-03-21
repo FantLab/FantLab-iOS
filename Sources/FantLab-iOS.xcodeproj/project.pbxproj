@@ -12,7 +12,6 @@
 		14ECD1C82196D9C7007A8781 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 14ECD1C72196D9C7007A8781 /* Assets.xcassets */; };
 		14ECD1E12196DC9E007A8781 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 14ECD1E02196DC9E007A8781 /* LaunchScreen.storyboard */; };
 		14ECD2222197309C007A8781 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14ECD2212197309C007A8781 /* main.swift */; };
-		14ECD25721973542007A8781 /* libFantLabApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14ECD25621973542007A8781 /* libFantLabApp.a */; };
 		7F9F8642F27D797E6F14C6CB /* libPods-FantLab-iOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A4F7AF36F5B9963F3B10309 /* libPods-FantLab-iOSTests.a */; };
 		955B1546F671C73BA19BDBC5 /* libPods-FantLab-iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 52731BE3BC56A4F8A9356D47 /* libPods-FantLab-iOS.a */; };
 /* End PBXBuildFile section */
@@ -63,7 +62,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				14ECD25721973542007A8781 /* libFantLabApp.a in Frameworks */,
 				7F9F8642F27D797E6F14C6CB /* libPods-FantLab-iOSTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

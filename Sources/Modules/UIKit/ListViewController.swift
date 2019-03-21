@@ -13,6 +13,7 @@ open class ListViewController<BuilderType: ListContentBuilder>: BaseViewControll
     private let scrollSubject = PublishSubject<CGFloat>()
     private let statusBarView = UIView()
     private let navBarView = NavBarView()
+    private var isBackgroundImageSet: Bool = false
 
     private lazy var imageVC: ImageBackgroundViewController? = parentVC()
 
@@ -89,6 +90,12 @@ open class ListViewController<BuilderType: ListContentBuilder>: BaseViewControll
     }
 
     public final func setupBackgroundImageWith(urlObservable: Observable<URL?>) {
+        guard !isBackgroundImageSet else {
+            return
+        }
+
+        isBackgroundImageSet = true
+
         scrollObservable
             .subscribe(onNext: { [weak self] offset in
                 self?.imageVC?.moveTo(position: max(0, -offset) / 100)

@@ -1,7 +1,7 @@
 import XCTest
 
 @testable
-import FantLabText
+import FLText
 
 class TextParserTests: XCTestCase {
     func testEmptyString() {
