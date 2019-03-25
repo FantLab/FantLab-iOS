@@ -148,9 +148,7 @@ open class ListViewController<BuilderType: ListContentBuilder>: BaseViewControll
         viewStateSubject
             .observeOn(SerialDispatchQueueScheduler(qos: .default))
             .map({ [weak self] state -> [ListItem] in
-                return timeOf {
-                    self?.contentBuilder.makeListItemsFrom(model: state) ?? []
-                }
+                self?.contentBuilder.makeListItemsFrom(model: state) ?? []
             })
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { [weak self] items in

@@ -24,17 +24,6 @@ final class AppRouter {
 
     private init() {
         do {
-            let imageVC = ImageBackgroundViewController()
-            imageVC.addChild(rootNavigationController)
-            imageVC.contentView.addSubview(rootNavigationController.view)
-            rootNavigationController.view.pinEdges(to: imageVC.view)
-            rootNavigationController.didMove(toParent: imageVC)
-            window.rootViewController = imageVC
-
-            imageVC.onImageDisplay = { [weak self] url in
-                self?.backgroundImageDisplaySubject.onNext(url)
-            }
-
             backgroundImageDisplaySubject
                 .filter({ $0 != nil })
                 .distinctUntilChanged()
@@ -45,59 +34,69 @@ final class AppRouter {
         }
 
         do {
-            window.tintColor = Colors.fantasticBlue
-            window.makeKeyAndVisible()
-        }
+            window.rootViewController = makeBackgroundImageWith(content: rootNavigationController)
 
-        do {
+            rootNavigationController.pushViewController(makeTabVC(), animated: false)
+
             rootNavigationController.willShowVC = { [weak self] vc in
                 self?.setupNavigationItemsFor(viewController: vc)
             }
-        }
 
-        do {
-            var vcs: [UIViewController] = []
-
-            // новости
-
-            do {
-                let vc = NewsViewController()
-                vc.title = "Новости"
-                vc.tabBarItem = UITabBarItem(title: "Новости", image: UIImage(named: "news"), tag: 1)
-                setupNavigationItemsForTab(viewController: vc)
-                vcs.append(vc)
-            }
-
-            // Избранное
-
-            do {
-                let vc = MyBooksViewController()
-                vc.title = "Мои книги"
-                vc.tabBarItem = UITabBarItem(title: "Мои книги", image: UIImage(named: "books"), tag: 2)
-                setupNavigationItemsForTab(viewController: vc)
-                vcs.append(vc)
-            }
-
-            // отзывы
-
-            do {
-                let vc = FreshReviewsViewController()
-                vc.title = "Отзывы"
-                vc.tabBarItem = UITabBarItem(title: "Отзывы", image: UIImage(named: "reviews"), tag: 3)
-                setupNavigationItemsForTab(viewController: vc)
-                vcs.append(vc)
-            }
-            
-            let tabVC = UITabBarController()
-            tabVC.view.tintColor = Colors.darkOrange
-            tabVC.tabBar.isTranslucent = false
-            tabVC.viewControllers = vcs
-
-            rootNavigationController.pushViewController(tabVC, animated: false)
+            window.tintColor = Colors.fantasticBlue
+            window.makeKeyAndVisible()
         }
     }
 
     // MARK: -
+
+    private func makeBackgroundImageWith(content vc: UIViewController) -> UIViewController {
+        let imageVC = ImageBackgroundViewController()
+        imageVC.add(child: vc) {
+            imageVC.contentView.addSubview(vc.view)
+            vc.view.pinEdges(to: imageVC.contentView)
+        }
+
+        imageVC.onImageDisplay = { [weak self] url in
+            self?.backgroundImageDisplaySubject.onNext(url)
+        }
+
+        return imageVC
+    }
+
+    private func makeTabVC() -> UIViewController {
+        var vcs: [UIViewController] = []
+
+        do {
+            let vc = NewsViewController()
+            vc.title = "Новости"
+            vc.tabBarItem = UITabBarItem(title: "Новости", image: UIImage(named: "news"), tag: 1)
+            setupNavigationItemsForTab(viewController: vc)
+            vcs.append(vc)
+        }
+
+        do {
+            let vc = MyBooksViewController()
+            vc.title = "Мои книги"
+            vc.tabBarItem = UITabBarItem(title: "Мои книги", image: UIImage(named: "books"), tag: 2)
+            setupNavigationItemsForTab(viewController: vc)
+            vcs.append(vc)
+        }
+
+        do {
+            let vc = FreshReviewsViewController()
+            vc.title = "Отзывы"
+            vc.tabBarItem = UITabBarItem(title: "Отзывы", image: UIImage(named: "reviews"), tag: 3)
+            setupNavigationItemsForTab(viewController: vc)
+            vcs.append(vc)
+        }
+
+        let tabVC = UITabBarController()
+        tabVC.view.tintColor = Colors.darkOrange
+        tabVC.tabBar.isTranslucent = false
+        tabVC.viewControllers = vcs
+
+        return tabVC
+    }
 
     private func setupNavigationItemsForTab(viewController: UIViewController) {
         guard let vc = viewController as? NavBarProvider else {

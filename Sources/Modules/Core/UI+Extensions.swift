@@ -24,6 +24,14 @@ extension UIViewController {
     }
 }
 
+extension UIViewController {
+    public func add(child vc: UIViewController, setup: () -> Void) {
+        addChild(vc)
+        setup()
+        vc.didMove(toParent: self)
+    }
+}
+
 extension UIImage {
     public func with(orientation: UIImage.Orientation) -> UIImage? {
         return cgImage.flatMap {
