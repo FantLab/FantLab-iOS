@@ -426,7 +426,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = CB1618214E07FA8D3F1839FE /* Pods-FantLab-iOSTests.adhoc.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = "FantLab-iOSTests/Info.plist";
@@ -608,7 +607,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = F0284D53FFBF89B2478AE2A3 /* Pods-FantLab-iOSTests.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = "FantLab-iOSTests/Info.plist";
@@ -629,7 +627,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = FF8603985F607DC04A2264FC /* Pods-FantLab-iOSTests.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = "FantLab-iOSTests/Info.plist";
