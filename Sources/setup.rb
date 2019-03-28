@@ -166,6 +166,8 @@ def patch_modules(project_name)
 		end
 	end
 
+	project.recreate_user_schemes(false)
+
 	project.save()
 end
 
