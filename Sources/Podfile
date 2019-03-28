@@ -4,13 +4,12 @@ ENV["COCOAPODS_DISABLE_STATS"] = "1"
 
 platform :ios, '11.0'
 
-workspace 'FantLab-iOS'
+workspace 'FantLab'
 
-project 'FantLab-iOS.xcodeproj'
+project 'FantLab.xcodeproj'
 project 'Modules.xcodeproj'
 
 use_modular_headers!
-# inhibit_all_warnings!
 
 def release_pods
     pod 'Firebase/Core', :configurations => ['Adhoc', 'Release']
@@ -26,12 +25,12 @@ def all_pods
     pod 'ALLKit', :git => 'https://github.com/geor-kasapidi/ALLKit', :commit => '80aea2ed613029fcc489f17096f7f0c2fa9348c5'
 end
 
-target 'FantLab-iOS' do
-    project 'FantLab-iOS.xcodeproj'
+target 'FantLab' do
+    project 'FantLab.xcodeproj'
 
     all_pods
 
-    target 'FantLab-iOSTests' do
+    target 'FantLabTests' do
         inherit! :search_paths
     end
 end
