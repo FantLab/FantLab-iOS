@@ -4,10 +4,10 @@ platform :ios do
 	desc "Build project and upload artifacts to fabric"
 	lane :build_beta do
 		gym(
-			workspace: "FantLab-iOS.xcworkspace",
+			workspace: "FantLab.xcworkspace",
 			configuration: "Adhoc",
 			export_method: "ad-hoc",
-			scheme: "FantLab-iOS",
+			scheme: "FantLab",
 			silent: false,
 			clean: true,
 			output_directory: "./build",
@@ -26,10 +26,10 @@ platform :ios do
 	desc "Build for AppStore"
 	lane :build_tf do
 		gym(
-			workspace: "FantLab-iOS.xcworkspace",
+			workspace: "FantLab.xcworkspace",
 			configuration: "Release",
 			export_method: "app-store",
-			scheme: "FantLab-iOS",
+			scheme: "FantLab",
 			silent: false,
 			clean: true,
 			output_directory: "./build",
