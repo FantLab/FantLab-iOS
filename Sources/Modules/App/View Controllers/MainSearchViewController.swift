@@ -1,6 +1,5 @@
 import Foundation
 import UIKit
-import Vision
 import RxSwift
 import ALLKit
 import FLWebAPI
