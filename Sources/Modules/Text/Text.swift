@@ -46,7 +46,7 @@ private final class FLTextBuilder {
             mutableString.beginEditing()
 
             textData.nodeRanges.forEach { (node, range) in
-                let nsRange = range.nsRange
+                let nsRange = range.nsRange(in: textData.string)
 
                 switch node.tag.name {
                 case "b":
@@ -93,7 +93,7 @@ private final class FLTextBuilder {
                 var photoIndex: Int = 0
 
                 zip(textData.lineBreaks.dropLast(), textData.lineBreaks.dropFirst()).forEach { (x, y) in
-                    let nsRange = (x.index..<y.index).nsRange
+                    let nsRange = (x.index..<y.index).nsRange(in: textData.string)
                     let string = mutableString.attributedSubstring(from: nsRange)
 
                     if string.length > 0 {

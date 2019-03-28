@@ -23,7 +23,7 @@ def all_pods
 
     pod 'RxSwift', '4.4.2'
     pod 'YYWebImage', '1.0.5'
-    pod 'ALLKit', :git => 'https://github.com/geor-kasapidi/ALLKit', :commit => '7d53a6c4b6a1dc61db0e8d5fd4b97237d9d6fe97'
+    pod 'ALLKit', :git => 'https://github.com/geor-kasapidi/ALLKit', :commit => '80aea2ed613029fcc489f17096f7f0c2fa9348c5'
 end
 
 target 'FantLab-iOS' do

@@ -77,7 +77,7 @@ end
 def self.setup_build_settings(project, ios_version)
 	for config in project.build_configurations
 		config.build_settings['PRODUCT_NAME'] = '$(TARGET_NAME)'
-		config.build_settings['SWIFT_VERSION'] = '4.2'
+		config.build_settings['SWIFT_VERSION'] = '5.0'
 		config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = ios_version
 
 		if config.name != 'Release'

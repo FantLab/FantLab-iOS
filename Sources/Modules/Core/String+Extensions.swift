@@ -59,8 +59,11 @@ extension Array where Element == String {
 }
 
 extension Range where Bound == String.Index {
-    public var nsRange: NSRange {
-        return NSMakeRange(lowerBound.encodedOffset, upperBound.encodedOffset - lowerBound.encodedOffset)
+    public func nsRange(in s: String) -> NSRange {
+        let lb = lowerBound.utf16Offset(in: s)
+        let ub = upperBound.utf16Offset(in: s)
+
+        return NSMakeRange(lb, ub - lb)
     }
 }
 

@@ -417,7 +417,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = ru.fantlab.ios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "FantLab AdHoc Prov";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Adhoc;
@@ -437,7 +437,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "ru.fantlab.FantLab-iOSTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FantLab-iOS.app/FantLab-iOS";
 			};
@@ -577,7 +577,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = ru.fantlab.ios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "FantLab Dev Provisioning";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
@@ -599,7 +599,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = ru.fantlab.ios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "FantLab Release Prov";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
@@ -619,7 +619,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "ru.fantlab.FantLab-iOSTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FantLab-iOS.app/FantLab-iOS";
 			};
@@ -640,7 +640,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "ru.fantlab.FantLab-iOSTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FantLab-iOS.app/FantLab-iOS";
 			};
