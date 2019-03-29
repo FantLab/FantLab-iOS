@@ -7,8 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		14327E89224E136200039CBB /* libFLContentBuilders.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14327E88224E136200039CBB /* libFLContentBuilders.a */; };
+		14327E8B224E136200039CBB /* libFLExtendedModels.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14327E8A224E136200039CBB /* libFLExtendedModels.a */; };
+		14327E8D224E136200039CBB /* libFLKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14327E8C224E136200039CBB /* libFLKit.a */; };
+		14327E8F224E136200039CBB /* libFLLayoutSpecs.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14327E8E224E136200039CBB /* libFLLayoutSpecs.a */; };
+		14327E91224E136200039CBB /* libFLModels.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14327E90224E136200039CBB /* libFLModels.a */; };
+		14327E93224E136200039CBB /* libFLStyle.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14327E92224E136200039CBB /* libFLStyle.a */; };
+		14327E95224E136200039CBB /* libFLText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14327E94224E136200039CBB /* libFLText.a */; };
+		14327E97224E136200039CBB /* libFLUIKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14327E96224E136200039CBB /* libFLUIKit.a */; };
+		14327E99224E136200039CBB /* libFLWebAPI.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14327E98224E136200039CBB /* libFLWebAPI.a */; };
+		14327E9B224E13ED00039CBB /* libFLText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14327E9A224E13ED00039CBB /* libFLText.a */; };
 		1434A8CC224CE8E400031EB9 /* libFLApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1434A8CB224CE8E400031EB9 /* libFLApp.a */; };
-		1434A8CE224CE8FC00031EB9 /* libFLApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1434A8CD224CE8FC00031EB9 /* libFLApp.a */; };
 		1485F6E9224CE46900DB513E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1485F6E8224CE46900DB513E /* Assets.xcassets */; };
 		1485F6F7224CE46900DB513E /* FantLabTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1485F6F6224CE46900DB513E /* FantLabTests.swift */; };
 		1485F708224CE85D00DB513E /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1485F706224CE85D00DB513E /* main.swift */; };
@@ -30,6 +39,16 @@
 /* Begin PBXFileReference section */
 		0C2D7067B6916D93C61D997C /* libPods-FantLab.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-FantLab.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		12B865851C3F895EA319D659 /* Pods-FantLabTests.adhoc.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FantLabTests.adhoc.xcconfig"; path = "Target Support Files/Pods-FantLabTests/Pods-FantLabTests.adhoc.xcconfig"; sourceTree = "<group>"; };
+		14327E88224E136200039CBB /* libFLContentBuilders.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libFLContentBuilders.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		14327E8A224E136200039CBB /* libFLExtendedModels.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libFLExtendedModels.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		14327E8C224E136200039CBB /* libFLKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libFLKit.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		14327E8E224E136200039CBB /* libFLLayoutSpecs.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libFLLayoutSpecs.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		14327E90224E136200039CBB /* libFLModels.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libFLModels.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		14327E92224E136200039CBB /* libFLStyle.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libFLStyle.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		14327E94224E136200039CBB /* libFLText.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libFLText.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		14327E96224E136200039CBB /* libFLUIKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libFLUIKit.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		14327E98224E136200039CBB /* libFLWebAPI.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libFLWebAPI.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		14327E9A224E13ED00039CBB /* libFLText.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libFLText.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		1434A8CB224CE8E400031EB9 /* libFLApp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libFLApp.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		1434A8CD224CE8FC00031EB9 /* libFLApp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libFLApp.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		1485F6DE224CE46800DB513E /* FantLab.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FantLab.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -53,6 +72,15 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				14327E89224E136200039CBB /* libFLContentBuilders.a in Frameworks */,
+				14327E8B224E136200039CBB /* libFLExtendedModels.a in Frameworks */,
+				14327E8D224E136200039CBB /* libFLKit.a in Frameworks */,
+				14327E8F224E136200039CBB /* libFLLayoutSpecs.a in Frameworks */,
+				14327E91224E136200039CBB /* libFLModels.a in Frameworks */,
+				14327E93224E136200039CBB /* libFLStyle.a in Frameworks */,
+				14327E95224E136200039CBB /* libFLText.a in Frameworks */,
+				14327E97224E136200039CBB /* libFLUIKit.a in Frameworks */,
+				14327E99224E136200039CBB /* libFLWebAPI.a in Frameworks */,
 				1434A8CC224CE8E400031EB9 /* libFLApp.a in Frameworks */,
 				7ACE35C9992388ED543348C9 /* libPods-FantLab.a in Frameworks */,
 			);
@@ -62,7 +90,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1434A8CE224CE8FC00031EB9 /* libFLApp.a in Frameworks */,
+				14327E9B224E13ED00039CBB /* libFLText.a in Frameworks */,
 				BDC840B9DF00C0B74E6480CE /* libPods-FantLabTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -113,6 +141,16 @@
 		91855AF97F3D8940C0DE124C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				14327E9A224E13ED00039CBB /* libFLText.a */,
+				14327E88224E136200039CBB /* libFLContentBuilders.a */,
+				14327E8A224E136200039CBB /* libFLExtendedModels.a */,
+				14327E8C224E136200039CBB /* libFLKit.a */,
+				14327E8E224E136200039CBB /* libFLLayoutSpecs.a */,
+				14327E90224E136200039CBB /* libFLModels.a */,
+				14327E92224E136200039CBB /* libFLStyle.a */,
+				14327E94224E136200039CBB /* libFLText.a */,
+				14327E96224E136200039CBB /* libFLUIKit.a */,
+				14327E98224E136200039CBB /* libFLWebAPI.a */,
 				1434A8CD224CE8FC00031EB9 /* libFLApp.a */,
 				1434A8CB224CE8E400031EB9 /* libFLApp.a */,
 				0C2D7067B6916D93C61D997C /* libPods-FantLab.a */,
@@ -340,7 +378,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -402,7 +440,6 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_BITCODE = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -544,7 +581,6 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_BITCODE = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;

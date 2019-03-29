@@ -90,14 +90,7 @@ def self.setup_build_settings(project, ios_version)
 			config.build_settings['OTHER_LDFLAGS'] = '$(inherited)'
 			config.build_settings['DEBUG_INFORMATION_FORMAT'] = 'dwarf-with-dsym'
 			config.build_settings['ENABLE_BITCODE'] = 'NO'
-
-			if config.name == 'Debug'
-				config.build_settings['SWIFT_COMPILATION_MODE'] = 'singlefile'
-				config.build_settings['SWIFT_OPTIMIZATION_LEVEL'] = '-Onone'
-			else
-				config.build_settings['SWIFT_COMPILATION_MODE'] = 'wholemodule'
-				config.build_settings['SWIFT_OPTIMIZATION_LEVEL'] = '-Osize'
-			end
+			config.build_settings['DEFINES_MODULE'] = 'YES'
 		end
 	end
 end
@@ -126,7 +119,6 @@ def make_modules_project(project_name, modules, ios_version)
 		for dependency in config['dependencies'] || []
 			dependency_target = targets_table[dependency]
 			target.add_dependency(dependency_target)
-			target.frameworks_build_phase.add_file_reference(dependency_target.product_reference, true)
 		end
 	end
 
