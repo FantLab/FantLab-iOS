@@ -14,9 +14,7 @@ public final class AwardIconsLayoutSpec: ModelLayoutSpec<[AwardPreviewModel]> {
             let iconNode = LayoutNode(config: { node in
                 node.width = 24
                 node.height = 24
-                node.marginRight = 12
-                node.marginTop = 6
-                node.marginBottom = 6
+                node.margin(all: 8)
             }) { (imageView: UIImageView, _) in
                 imageView.contentMode = .scaleAspectFit
                 imageView.yy_setImage(with: award.iconURL, options: .setImageWithFadeAnimation)
@@ -27,8 +25,9 @@ public final class AwardIconsLayoutSpec: ModelLayoutSpec<[AwardPreviewModel]> {
 
         let iconsNode = LayoutNode(children: iconNodes, config: { node in
             node.flexDirection = .row
+            node.justifyContent = .center
             node.flexWrap = .wrap
-            node.padding(top: 6, left: 16, bottom: 8, right: nil)
+            node.padding(all: 8)
         })
 
         return iconsNode
