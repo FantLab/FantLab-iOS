@@ -25,9 +25,9 @@ public final class AwardIconsLayoutSpec: ModelLayoutSpec<[AwardPreviewModel]> {
 
         let iconsNode = LayoutNode(children: iconNodes, config: { node in
             node.flexDirection = .row
-            node.justifyContent = .center
+            node.justifyContent = .flexStart
             node.flexWrap = .wrap
-            node.padding(all: 8)
+            node.padding(top: 6, left: 12, bottom: 12, right: 6)
         })
 
         return iconsNode
