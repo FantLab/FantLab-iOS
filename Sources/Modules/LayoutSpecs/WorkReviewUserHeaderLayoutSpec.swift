@@ -18,34 +18,7 @@ public final class WorkReviewUserHeaderLayoutSpec: ModelLayoutSpec<WorkReviewMod
             .font(Fonts.system.regular(size: 11))
             .foregroundColor(UIColor.lightGray)
             .make()
-
-        let markString: NSAttributedString?
-
-        if model.mark > 0 {
-            let markColor = RatingColorRule.colorFor(rating: Float(model.mark))
-
-            if model.votes > 0 {
-                markString =
-                    String(model.mark).attributed()
-                        .font(Fonts.system.bold(size: 15))
-                        .foregroundColor(markColor)
-                        .make()
-                    +
-                    " +\(model.votes)".attributed()
-                        .font(Fonts.system.regular(size: 11))
-                        .foregroundColor(UIColor.lightGray)
-                        .baselineOffset(4)
-                        .make()
-            } else {
-                markString = String(model.mark).attributed()
-                    .font(Fonts.system.bold(size: 15))
-                    .foregroundColor(markColor)
-                    .make()
-            }
-        } else {
-            markString = nil
-        }
-
+        
         let userAvatarNode = LayoutNode(config: { node in
             node.width = 32
             node.height = 32
@@ -74,16 +47,16 @@ public final class WorkReviewUserHeaderLayoutSpec: ModelLayoutSpec<WorkReviewMod
             node.flexDirection = .column
             node.alignItems = .flexStart
         })
-
-        let markNode = LayoutNode(sizeProvider: markString, config: { node in
-            node.marginLeft = 12
-            node.isHidden = markString == nil
-        }) { (label: UILabel, _) in
-            label.numberOfLines = 0
-            label.attributedText = markString
+        
+        let markStackNode: LayoutNode?
+        
+        if model.mark > 0 {
+            markStackNode = WorkReviewRatingLayoutSpec(model: (model.mark, model.votes)).makeNodeWith(sizeConstraints: sizeConstraints)
+        } else {
+            markStackNode = nil
         }
 
-        let contentNode = LayoutNode(children: [userAvatarNode, userStackNode, markNode], config: { node in
+        let contentNode = LayoutNode(children: [userAvatarNode, userStackNode, markStackNode], config: { node in
             node.alignItems = .center
             node.flexDirection = .row
             node.padding(top: 16, left: 16, bottom: nil, right: 16)
