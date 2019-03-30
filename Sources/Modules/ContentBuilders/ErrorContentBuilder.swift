@@ -13,13 +13,14 @@ public final class ErrorContentBuilder: ListContentBuilder {
     private let errorId = UUID().uuidString
 
     public func makeListItemsFrom(model: Error) -> [ListItem] {
-        let errorText = ErrorHelper.makeHumanReadableTextFrom(error: model)
         let canRetry = ErrorHelper.isNetwork(error: model)
+        let image = UIImage(named: canRetry ? "retry" : "error")!
+        let errorText = ErrorHelper.makeHumanReadableTextFrom(error: model)
 
         let item = ListItem(
             id: errorId,
             model: errorText,
-            layoutSpec: ErrorDescriptionLayoutSpec(model: (errorText, canRetry))
+            layoutSpec: ErrorDescriptionLayoutSpec(model: (image, errorText))
         )
 
         if canRetry {
