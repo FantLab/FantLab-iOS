@@ -80,7 +80,7 @@ def self.setup_build_settings(project, ios_version)
 		config.build_settings['SWIFT_VERSION'] = '5.0'
 		config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = ios_version
 
-		if config.name != 'Release'
+		if config.name == 'Debug'
 			config.build_settings['SWIFT_ACTIVE_COMPILATION_CONDITIONS'] = 'DEBUG'
 		end
 	end
