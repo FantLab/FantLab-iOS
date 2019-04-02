@@ -10,6 +10,7 @@ project 'FantLab.xcodeproj'
 project 'Modules.xcodeproj'
 
 use_modular_headers!
+inhibit_all_warnings!
 
 def release_pods
     pod 'Firebase/Core', :configurations => ['Adhoc', 'Release']
