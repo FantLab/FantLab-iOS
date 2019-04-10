@@ -3,7 +3,7 @@ import RxSwift
 
 public final class PagedDataSource<T: IntegerIdProvider> {
     private let disposeBag = DisposeBag()
-    private let internalState = ObservableValue(PagedDataState<T>(items: [], isFull: false, page: 0, state: .initial))
+    private let internalState = ObservableValue(PagedDataState<T>(id: UUID().uuidString))
     private let loadObservable: (Int) -> Observable<[T]>
 
     public init(loadObservable: @escaping (Int) -> Observable<[T]>) {
@@ -28,20 +28,28 @@ public final class PagedDataSource<T: IntegerIdProvider> {
         loadObservable(1)
             .subscribe(
                 onNext: ({ [weak self] items in
-                    self?.internalState.value = PagedDataState(
-                        items: items,
-                        isFull: false,
-                        page: 1,
-                        state: .success(())
-                    )
+                    var value = PagedDataState<T>(id: UUID().uuidString)
+
+                    do {
+                        var ids = value.ids
+
+                        value.items = [items.filter({
+                            ids.insert($0.intId).inserted
+                        })]
+
+                        value.ids = ids
+                    }
+
+                    value.page = 1
+                    value.state = .success(())
+
+                    self?.internalState.value = value
                 }),
                 onError: ({ [weak self] error in
-                    self?.internalState.value = PagedDataState(
-                        items: [],
-                        isFull: false,
-                        page: 0,
-                        state: .error(error)
-                    )
+                    var value = PagedDataState<T>(id: UUID().uuidString)
+                    value.state = .error(error)
+
+                    self?.internalState.value = value
                 })
             )
             .disposed(by: disposeBag)
@@ -66,20 +74,18 @@ public final class PagedDataSource<T: IntegerIdProvider> {
                     if items.isEmpty {
                         value.isFull = true
                     } else {
-                        var idSet = Set<Int>()
-                        var newItems: [T] = []
+                        var ids = value.ids
 
-                        (value.items + items).forEach({
-                            if idSet.insert($0.intId).inserted {
-                                newItems.append($0)
-                            }
-                        })
+                        value.items.append(items.filter({
+                            ids.insert($0.intId).inserted
+                        }))
 
-                        value.items = newItems
+                        value.ids = ids
                     }
 
                     value.page = pageToLoad
                     value.state = .success(())
+
                     strongSelf.internalState.value = value
                 }),
                 onError: ({ [weak self] error in
@@ -87,6 +93,7 @@ public final class PagedDataSource<T: IntegerIdProvider> {
 
                     var value = strongSelf.internalState.value
                     value.state = .error(error)
+
                     strongSelf.internalState.value = value
                 })
             )

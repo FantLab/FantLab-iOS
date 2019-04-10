@@ -23,7 +23,7 @@ final class AuthorViewController: ListViewController<DataStateContentBuilder<Aut
         self.authorId = authorId
 
         do {
-            let loadObservable = NetworkClient.shared.perform(request: GetAuthorNetworkRequest(authorId: authorId)).map({ author -> DataModel in
+            let loadObservable = AppServices.network.perform(request: GetAuthorNetworkRequest(authorId: authorId)).map({ author -> DataModel in
                 DataModel(
                     author: author,
                     contentRoot: author.workBlocks.makeWorkTree()

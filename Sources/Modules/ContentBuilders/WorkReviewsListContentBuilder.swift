@@ -6,20 +6,8 @@ import FLModels
 import FLStyle
 import FLLayoutSpecs
 
-public struct WorkReviewsListViewState {
-    public var reviews: [WorkReviewModel]
-    public var state: DataState<Void>
-
-    public init(reviews: [WorkReviewModel],
-                state: DataState<Void>) {
-
-        self.reviews = reviews
-        self.state = state
-    }
-}
-
 public final class WorkReviewsListContentBuilder: ListContentBuilder {
-    public typealias ModelType = WorkReviewsListViewState
+    public typealias ModelType = [WorkReviewModel]
 
     // MARK: -
 
@@ -31,15 +19,12 @@ public final class WorkReviewsListContentBuilder: ListContentBuilder {
         singleReviewContentBuilder = WorkReviewContentBuilder(headerMode: headerMode)
     }
 
-    public let stateContentBuilder = DataStateContentBuilder(dataContentBuilder: EmptyContentBuilder())
     public let singleReviewContentBuilder: WorkReviewContentBuilder
-
-    public var onLastItemDisplay: (() -> Void)?
 
     // MARK: -
 
-    public func makeListItemsFrom(model: WorkReviewsListViewState) -> [ListItem] {
-        var items: [ListItem] = model.reviews.flatMap { review -> [ListItem] in
+    public func makeListItemsFrom(model: [WorkReviewModel]) -> [ListItem] {
+        return model.flatMap { review -> [ListItem] in
             var reviewItems = singleReviewContentBuilder.makeListItemsFrom(model: review)
 
             let sepSpec: LayoutSpec = useSectionSeparatorStyle ? EmptySpaceLayoutSpec(model: (Colors.perfectGray, 8)) : ItemSeparatorLayoutSpec(model: Colors.separatorColor)
@@ -51,13 +36,5 @@ public final class WorkReviewsListContentBuilder: ListContentBuilder {
 
             return reviewItems
         }
-
-        items.last?.willShow = { [weak self] _, _ in
-            self?.onLastItemDisplay?()
-        }
-
-        items.append(contentsOf: stateContentBuilder.makeListItemsFrom(model: model.state))
-
-        return items
     }
 }

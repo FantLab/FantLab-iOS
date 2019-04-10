@@ -25,7 +25,7 @@ extension ReviewsSort: CustomStringConvertible {
     }
 }
 
-final class WorkReviewsViewController: SegmentedListViewController<ReviewsSort, WorkReviewsListContentBuilder> {
+final class WorkReviewsViewController: SegmentedListViewController<ReviewsSort, PagedDataStateContentBuilder<WorkReviewModel, WorkReviewsListContentBuilder>> {
     private let sortSubject = PublishSubject<ReviewsSort>()
     private let dataSource: PagedComboDataSource<WorkReviewModel>
     private let reviewsCount: Int
@@ -41,7 +41,7 @@ final class WorkReviewsViewController: SegmentedListViewController<ReviewsSort, 
         do {
             let dataSourceObservable = sortSubject.map { sort -> PagedDataSource<WorkReviewModel> in
                 PagedDataSource(loadObservable: { page -> Observable<[WorkReviewModel]> in
-                    NetworkClient.shared.perform(request: GetWorkReviewsNetworkRequest(
+                    AppServices.network.perform(request: GetWorkReviewsNetworkRequest(
                         workId: workId,
                         page: page,
                         sort: sort
@@ -55,7 +55,7 @@ final class WorkReviewsViewController: SegmentedListViewController<ReviewsSort, 
 
         reviewHeaderMode = .user
 
-        super.init(defaultValue: .rating, contentBuilder: WorkReviewsListContentBuilder(headerMode: .user))
+        super.init(defaultValue: .rating, contentBuilder: PagedDataStateContentBuilder(itemsContentBuilder: WorkReviewsListContentBuilder(headerMode: .user)))
     }
 
     init(userId: Int, reviewsCount: Int) {
@@ -64,7 +64,7 @@ final class WorkReviewsViewController: SegmentedListViewController<ReviewsSort, 
         do {
             let dataSourceObservable = sortSubject.map { sort -> PagedDataSource<WorkReviewModel> in
                 PagedDataSource(loadObservable: { page -> Observable<[WorkReviewModel]> in
-                    NetworkClient.shared.perform(request: GetUserReviewsNetworkRequest(
+                    AppServices.network.perform(request: GetUserReviewsNetworkRequest(
                         userId: userId,
                         page: page,
                         sort: sort
@@ -78,7 +78,7 @@ final class WorkReviewsViewController: SegmentedListViewController<ReviewsSort, 
 
         reviewHeaderMode = .work
 
-        super.init(defaultValue: .rating, contentBuilder: WorkReviewsListContentBuilder(headerMode: .work, useSectionSeparatorStyle: true))
+        super.init(defaultValue: .rating, contentBuilder: PagedDataStateContentBuilder(itemsContentBuilder: WorkReviewsListContentBuilder(headerMode: .work, useSectionSeparatorStyle: true)))
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -100,17 +100,17 @@ final class WorkReviewsViewController: SegmentedListViewController<ReviewsSort, 
             self?.dataSource.loadNextPage()
         }
 
-        contentBuilder.singleReviewContentBuilder.onReviewUserTap = { userId in
+        contentBuilder.itemsContentBuilder.singleReviewContentBuilder.onReviewUserTap = { userId in
             AppRouter.shared.openUserProfile(id: userId)
         }
 
-        contentBuilder.singleReviewContentBuilder.onReviewWorkTap = { workId in
+        contentBuilder.itemsContentBuilder.singleReviewContentBuilder.onReviewWorkTap = { workId in
             AppRouter.shared.openWork(id: workId)
         }
 
         let headerMode = reviewHeaderMode
 
-        contentBuilder.singleReviewContentBuilder.onReviewTextTap = { review in
+        contentBuilder.itemsContentBuilder.singleReviewContentBuilder.onReviewTextTap = { review in
             AppRouter.shared.openReview(model: review, headerMode: headerMode)
         }
 
@@ -124,12 +124,6 @@ final class WorkReviewsViewController: SegmentedListViewController<ReviewsSort, 
             .disposed(by: disposeBag)
 
         dataSource.stateObservable
-            .map { data -> WorkReviewsListViewState in
-                WorkReviewsListViewState(
-                    reviews: data.items,
-                    state: data.state
-                )
-            }
             .subscribe(onNext: { [weak self] viewState in
                 self?.apply(viewState: viewState)
             })

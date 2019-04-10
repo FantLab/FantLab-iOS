@@ -38,9 +38,7 @@ final class MyBookService {
         eventSubject.onCompleted()
     }
 
-    static let shared: MyBookService = MyBookService(fileName: "my_books.json")
-
-    private init(fileName: String) {
+    init(fileName: String) {
         fileStorage = FileStorage(fileName: fileName, defaultValue: [:])
 
         eventSubject

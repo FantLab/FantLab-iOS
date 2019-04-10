@@ -10,15 +10,15 @@ import FLContentBuilders
 import FLStyle
 import FLLayoutSpecs
 
-final class NewsViewController: ListViewController<NewsContentBuilder> {
+final class NewsViewController: ListViewController<PagedDataStateContentBuilder<NewsModel, NewsContentBuilder>> {
     private let dataSource: PagedDataSource<NewsModel>
 
     init() {
         dataSource = PagedDataSource(loadObservable: { page -> Observable<[NewsModel]> in
-            NetworkClient.shared.perform(request: NewsFeedNetworkRequest(page: page))
+            AppServices.network.perform(request: NewsFeedNetworkRequest(page: page))
         })
 
-        super.init(contentBuilder: NewsContentBuilder())
+        super.init(contentBuilder: PagedDataStateContentBuilder(itemsContentBuilder: NewsContentBuilder()))
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -36,7 +36,7 @@ final class NewsViewController: ListViewController<NewsContentBuilder> {
             self?.dataSource.loadNextPage()
         }
 
-        contentBuilder.onNewsTap = { news in
+        contentBuilder.itemsContentBuilder.onNewsTap = { news in
             AppRouter.shared.openNews(model: news)
         }
 
@@ -51,12 +51,6 @@ final class NewsViewController: ListViewController<NewsContentBuilder> {
         }
 
         dataSource.stateObservable
-            .map({ data -> NewsListViewState in
-                NewsListViewState(
-                    news: data.items,
-                    state: data.state
-                )
-            })
             .subscribe(onNext: { [weak self] viewState in
                 self?.apply(viewState: viewState)
             })

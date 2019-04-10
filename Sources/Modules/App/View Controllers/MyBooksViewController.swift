@@ -23,7 +23,7 @@ final class MyBooksViewController: SegmentedListViewController<MyBookModel.Group
             let dataSourceObservable = selectedGroupSubject
                 .observeOn(SerialDispatchQueueScheduler(qos: .default))
                 .map { group -> PagedDataSource<WorkPreviewModel> in
-                    let items = MyBookService.shared.itemsIn(group: group).sorted(by: {
+                    let items = AppServices.myBooks.itemsIn(group: group).sorted(by: {
                         $0.date > $1.date
                     })
 
@@ -36,7 +36,7 @@ final class MyBooksViewController: SegmentedListViewController<MyBookModel.Group
                             return .just([])
                         }
 
-                        return NetworkClient.shared.perform(request: GetWorksByIdsNetworkRequest(workIds: workIds))
+                        return AppServices.network.perform(request: GetWorksByIdsNetworkRequest(workIds: workIds))
                     })
             }
 
@@ -85,7 +85,7 @@ final class MyBooksViewController: SegmentedListViewController<MyBookModel.Group
                 .disposed(by: disposeBag)
 
             removeIdSubject
-                .subscribe(onNext: MyBookService.shared.remove)
+                .subscribe(onNext: AppServices.myBooks.remove)
                 .disposed(by: disposeBag)
 
             let removedIdsObservable = selectedGroupSubject
@@ -103,7 +103,7 @@ final class MyBooksViewController: SegmentedListViewController<MyBookModel.Group
                 .observeOn(MainScheduler.instance)
                 .map { (data, removedIds) -> MyBooksViewState in
                     MyBooksViewState(
-                        works: data.items.filter({
+                        works: data.items.flatMap({ $0 }).filter({
                             !removedIds.contains($0.id)
                         }),
                         state: data.state

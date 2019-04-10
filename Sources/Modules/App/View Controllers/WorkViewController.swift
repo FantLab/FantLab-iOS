@@ -47,8 +47,8 @@ final class WorkViewController: ListViewController<DataStateContentBuilder<WorkC
         self.workId = workId
 
         do {
-            let workRequest = NetworkClient.shared.perform(request: GetWorkNetworkRequest(workId: workId))
-            let analogsRequest = NetworkClient.shared.perform(request: GetWorkAnalogsNetworkRequest(workId: workId))
+            let workRequest = AppServices.network.perform(request: GetWorkNetworkRequest(workId: workId))
+            let analogsRequest = AppServices.network.perform(request: GetWorkAnalogsNetworkRequest(workId: workId))
 
             let loadObservable = Observable.zip(workRequest, analogsRequest).map { (work, analogs) -> DataModel in
                 DataModel(
@@ -62,7 +62,7 @@ final class WorkViewController: ListViewController<DataStateContentBuilder<WorkC
         }
 
         do {
-            let loadObservable = NetworkClient.shared.perform(request: GetWorkReviewsNetworkRequest(workId: workId, page: 0, sort: .rating)).map { reviews -> [WorkReviewModel] in
+            let loadObservable = AppServices.network.perform(request: GetWorkReviewsNetworkRequest(workId: workId, page: 0, sort: .rating)).map { reviews -> [WorkReviewModel] in
                 Array(reviews.prefix(5))
             }
 
@@ -119,7 +119,7 @@ final class WorkViewController: ListViewController<DataStateContentBuilder<WorkC
 
         let workId = self.workId
 
-        MyBookService.shared.eventStream
+        AppServices.myBooks.eventStream
             .filter { event -> Bool in
                 switch event {
                 case let .add(workId: id, group: _):
@@ -136,7 +136,7 @@ final class WorkViewController: ListViewController<DataStateContentBuilder<WorkC
                     return false
                 }
             }
-            .startWith(MyBookService.shared.contains(workId: workId))
+            .startWith(AppServices.myBooks.contains(workId: workId))
             .distinctUntilChanged()
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { [weak self] isMyBook in
@@ -177,12 +177,12 @@ final class WorkViewController: ListViewController<DataStateContentBuilder<WorkC
 
         if isMyBook {
             alert.add(negativeAction: "Удалить") {
-                MyBookService.shared.remove(workId: id)
+                AppServices.myBooks.remove(workId: id)
             }
         } else {
             MyBookModel.Group.allCases.forEach { group in
                 alert.add(positiveAction: group.description, perform: {
-                    MyBookService.shared.add(workId: id, group: group)
+                    AppServices.myBooks.add(workId: id, group: group)
                 })
             }
         }

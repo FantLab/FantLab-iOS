@@ -97,7 +97,7 @@ final class MainSearchViewController: ListViewController<DataStateContentBuilder
         let dataObservable: Observable<DataState<SearchResultModel>> = searchSubject
             .debounce(0.5, scheduler: MainScheduler.instance)
             .flatMapLatest({ searchText -> Observable<DataState<SearchResultModel>> in
-                return NetworkClient.shared.perform(request: MainSearchNetworkRequest(searchText: searchText))
+                return AppServices.network.perform(request: MainSearchNetworkRequest(searchText: searchText))
                     .map({ DataState<SearchResultModel>.success($0) })
                     .catchError({ error -> Observable<DataState<SearchResultModel>> in
                         return .just(DataState<SearchResultModel>.error(error))

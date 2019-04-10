@@ -17,7 +17,7 @@ final class UserProfileViewController: ListViewController<DataStateContentBuilde
         self.userId = userId
 
         do {
-            let loadObservable = NetworkClient.shared.perform(request: GetUserProfileNetworkRequest(userId: userId))
+            let loadObservable = AppServices.network.perform(request: GetUserProfileNetworkRequest(userId: userId))
 
             dataSource = DataSource(loadObservable: loadObservable)
         }

@@ -20,9 +20,11 @@ public protocol NetworkRequest {
 }
 
 public final class NetworkClient {
-    public static let shared = NetworkClient()
+    private let session: URLSession
 
-    private let session = URLSession.shared
+    public init(session: URLSession) {
+        self.session = session
+    }
 
     public func perform<RequestType: NetworkRequest>(request: RequestType) -> Observable<RequestType.ModelType> {
         return Observable<(Data, URLResponse)>.create({ [session] observer -> Disposable in

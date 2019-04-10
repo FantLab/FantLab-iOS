@@ -9,15 +9,15 @@ import FLStyle
 import FLModels
 import FLWebAPI
 
-final class FreshReviewsViewController: ListViewController<WorkReviewsListContentBuilder> {
+final class FreshReviewsViewController: ListViewController<PagedDataStateContentBuilder<WorkReviewModel, WorkReviewsListContentBuilder>> {
     private let dataSource: PagedDataSource<WorkReviewModel>
 
     init() {
         dataSource = PagedDataSource(loadObservable: { page -> Observable<[WorkReviewModel]> in
-            NetworkClient.shared.perform(request: FreshReviewsNetworkRequest(page: page))
+            AppServices.network.perform(request: FreshReviewsNetworkRequest(page: page))
         })
 
-        super.init(contentBuilder: WorkReviewsListContentBuilder(headerMode: .userAndWork, useSectionSeparatorStyle: true))
+        super.init(contentBuilder: PagedDataStateContentBuilder(itemsContentBuilder: WorkReviewsListContentBuilder(headerMode: .userAndWork, useSectionSeparatorStyle: true)))
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -35,15 +35,15 @@ final class FreshReviewsViewController: ListViewController<WorkReviewsListConten
             self?.dataSource.loadNextPage()
         }
 
-        contentBuilder.singleReviewContentBuilder.onReviewUserTap = { userId in
+        contentBuilder.itemsContentBuilder.singleReviewContentBuilder.onReviewUserTap = { userId in
             AppRouter.shared.openUserProfile(id: userId)
         }
 
-        contentBuilder.singleReviewContentBuilder.onReviewWorkTap = { workId in
+        contentBuilder.itemsContentBuilder.singleReviewContentBuilder.onReviewWorkTap = { workId in
             AppRouter.shared.openWork(id: workId)
         }
 
-        contentBuilder.singleReviewContentBuilder.onReviewTextTap = { review in
+        contentBuilder.itemsContentBuilder.singleReviewContentBuilder.onReviewTextTap = { review in
             AppRouter.shared.openReview(model: review, headerMode: .userAndWork)
         }
 
@@ -58,12 +58,6 @@ final class FreshReviewsViewController: ListViewController<WorkReviewsListConten
         }
 
         dataSource.stateObservable
-            .map({ data -> WorkReviewsListViewState in
-                WorkReviewsListViewState(
-                    reviews: data.items,
-                    state: data.state
-                )
-            })
             .subscribe(onNext: { [weak self] viewState in
                 self?.apply(viewState: viewState)
             })

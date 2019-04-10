@@ -7,36 +7,21 @@ import FLLayoutSpecs
 import FLStyle
 import FLText
 
-public struct NewsListViewState {
-    public var news: [NewsModel]
-    public var state: DataState<Void>
-
-    public init(news: [NewsModel],
-                state: DataState<Void>) {
-
-        self.news = news
-        self.state = state
-    }
-}
-
 public final class NewsContentBuilder: ListContentBuilder {
-    public typealias ModelType = NewsListViewState
+    public typealias ModelType = [NewsModel]
 
     // MARK: -
 
     public init() {}
 
-    public let stateContentBuilder = DataStateContentBuilder(dataContentBuilder: EmptyContentBuilder())
-
     public var onNewsTap: ((NewsModel) -> Void)?
-    public var onLastItemDisplay: (() -> Void)?
 
     // MARK: -
 
-    public func makeListItemsFrom(model: NewsListViewState) -> [ListItem] {
+    public func makeListItemsFrom(model: [NewsModel]) -> [ListItem] {
         var items: [ListItem] = []
 
-        model.news.forEach { news in
+        model.forEach { news in
             let itemId = "news_" + String(news.id)
 
             let newsText = FLStringPreview(string: news.text)
@@ -76,12 +61,6 @@ public final class NewsContentBuilder: ListContentBuilder {
                 layoutSpec: EmptySpaceLayoutSpec(model: (Colors.perfectGray, 8))
             ))
         }
-
-        items.last?.willShow = { [weak self] _, _ in
-            self?.onLastItemDisplay?()
-        }
-
-        items.append(contentsOf: stateContentBuilder.makeListItemsFrom(model: model.state))
 
         return items
     }

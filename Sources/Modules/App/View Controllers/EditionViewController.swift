@@ -15,7 +15,7 @@ final class EditionViewController: ListViewController<DataStateContentBuilder<Ed
 
     init(editionId: Int) {
         do {
-            let loadObservable = NetworkClient.shared.perform(request: GetEditionNetworkRequest(editionId: editionId))
+            let loadObservable = AppServices.network.perform(request: GetEditionNetworkRequest(editionId: editionId))
 
             dataSource = DataSource(loadObservable: loadObservable)
         }
@@ -25,8 +25,8 @@ final class EditionViewController: ListViewController<DataStateContentBuilder<Ed
 
     init(isbn: String) {
         do {
-            let loadObservable = NetworkClient.shared.perform(request: ISBNEditionNetworkRequest(isbn: isbn)).flatMap({ editionId -> Observable<EditionModel> in
-                NetworkClient.shared.perform(request: GetEditionNetworkRequest(editionId: editionId))
+            let loadObservable = AppServices.network.perform(request: ISBNEditionNetworkRequest(isbn: isbn)).flatMap({ editionId -> Observable<EditionModel> in
+                AppServices.network.perform(request: GetEditionNetworkRequest(editionId: editionId))
             })
 
             dataSource = DataSource(loadObservable: loadObservable)
