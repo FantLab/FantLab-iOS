@@ -1,6 +1,7 @@
 import Foundation
 import UIKit
 import ALLKit
+import PinIt
 
 public final class SegmentControl: UIView {
     public struct Style {

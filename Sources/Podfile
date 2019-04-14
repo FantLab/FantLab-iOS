@@ -21,6 +21,7 @@ end
 def all_pods
     release_pods
 
+    pod 'PinIt'
     pod 'RxSwift', '4.5'
     pod 'YYWebImage', '1.0.5'
     pod 'ALLKit', :git => 'https://github.com/geor-kasapidi/ALLKit', :commit => '04127b99e6e3b9ab0508beaa5f2fab4a45f21559'

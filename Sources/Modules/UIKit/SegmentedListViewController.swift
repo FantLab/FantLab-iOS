@@ -3,6 +3,7 @@ import UIKit
 import RxSwift
 import FLStyle
 import FLKit
+import PinIt
 
 open class SegmentedListViewController<EnumType: Equatable & CaseIterable & CustomStringConvertible, BuilderType: ListContentBuilder>: ListViewController<BuilderType> {
     private let allCases: [EnumType]

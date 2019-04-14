@@ -1,5 +1,6 @@
 import Foundation
 import UIKit
+import PinIt
 import YYWebImage
 import FLKit
 import FLStyle

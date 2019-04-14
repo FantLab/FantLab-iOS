@@ -1,5 +1,6 @@
 import Foundation
 import UIKit
+import PinIt
 
 public protocol NavBarProvider {
     var navBar: NavBar { get }

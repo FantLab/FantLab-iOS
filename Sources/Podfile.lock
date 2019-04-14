@@ -66,6 +66,7 @@ PODS:
     - nanopb/encode (= 0.3.901)
   - nanopb/decode (0.3.901)
   - nanopb/encode (0.3.901)
+  - PinIt (1.0)
   - RxSwift (4.5.0)
   - Yoga (1.6.0)
   - YYCache (1.0.4)
@@ -81,6 +82,7 @@ DEPENDENCIES:
   - Crashlytics
   - Fabric
   - Firebase/Core
+  - PinIt
   - RxSwift (= 4.5)
   - YYWebImage (= 1.0.5)
 
@@ -95,6 +97,7 @@ SPEC REPOS:
     - GoogleAppMeasurement
     - GoogleUtilities
     - nanopb
+    - PinIt
     - RxSwift
     - Yoga
     - YYCache
@@ -122,12 +125,13 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: 6cf307834da065863f9faf4c0de0a936d81dd832
   GoogleUtilities: 6481e6318c5fcabaaa8513ef8120f329055d7c10
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
+  PinIt: 4590ce0526181463ff7b93eb2ff2fe66fc230999
   RxSwift: f172070dfd1a93d70a9ab97a5a01166206e1c575
   Yoga: 81670877477311136b1b3f69a6307ce62e1c89cf
   YYCache: 8105b6638f5e849296c71f331ff83891a4942952
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
   YYWebImage: 5f7f36aee2ae293f016d418c7d6ba05c4863e928
 
-PODFILE CHECKSUM: 99d1c95e81d546b443f2a0a60a7f942a58a8149b
+PODFILE CHECKSUM: 829ef5419b6d34a9e41c38500f129cf6c006fa18
 
 COCOAPODS: 1.7.0.beta.3
