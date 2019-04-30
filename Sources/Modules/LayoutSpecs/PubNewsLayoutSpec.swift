@@ -25,7 +25,7 @@ public final class PubNewsLayoutSpec: ModelLayoutSpec<PubNewsModel> {
                 .make()
 
             authorString = FLStringPreview(string: model.authors).value.nilIfEmpty?.attributed()
-                .font(Fonts.system.medium(size: 14))
+                .font(Fonts.system.medium(size: 13))
                 .foregroundColor(Colors.fantasticBlue)
                 .make()
         }
@@ -38,7 +38,7 @@ public final class PubNewsLayoutSpec: ModelLayoutSpec<PubNewsModel> {
         }
 
         let authorNode = LayoutNode(sizeProvider: authorString, config: { node in
-            node.marginTop = 4
+            node.marginTop = 6
             node.isHidden = authorString == nil
         }) { (label: UILabel, _) in
             label.numberOfLines = 0
