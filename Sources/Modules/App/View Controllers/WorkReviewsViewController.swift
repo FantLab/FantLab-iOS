@@ -1,6 +1,7 @@
 import Foundation
 import UIKit
 import RxSwift
+import RxRelay
 import ALLKit
 import FLKit
 import FLStyle
@@ -26,20 +27,16 @@ extension ReviewsSort: CustomStringConvertible {
 }
 
 final class WorkReviewsViewController: SegmentedListViewController<ReviewsSort, PagedDataStateContentBuilder<WorkReviewModel, WorkReviewsListContentBuilder>> {
-    private let sortSubject = PublishSubject<ReviewsSort>()
+    private let sortRelay = PublishRelay<ReviewsSort>()
     private let dataSource: PagedComboDataSource<WorkReviewModel>
     private let reviewsCount: Int
     private let reviewHeaderMode: WorkReviewHeaderMode
-
-    deinit {
-        sortSubject.onCompleted()
-    }
 
     init(workId: Int, reviewsCount: Int) {
         self.reviewsCount = reviewsCount
 
         do {
-            let dataSourceObservable = sortSubject.map { sort -> PagedDataSource<WorkReviewModel> in
+            let dataSourceObservable = sortRelay.asObservable().map { sort -> PagedDataSource<WorkReviewModel> in
                 PagedDataSource(loadObservable: { page -> Observable<[WorkReviewModel]> in
                     AppServices.network.perform(request: GetWorkReviewsNetworkRequest(
                         workId: workId,
@@ -62,7 +59,7 @@ final class WorkReviewsViewController: SegmentedListViewController<ReviewsSort, 
         self.reviewsCount = reviewsCount
 
         do {
-            let dataSourceObservable = sortSubject.map { sort -> PagedDataSource<WorkReviewModel> in
+            let dataSourceObservable = sortRelay.asObservable().map { sort -> PagedDataSource<WorkReviewModel> in
                 PagedDataSource(loadObservable: { page -> Observable<[WorkReviewModel]> in
                     AppServices.network.perform(request: GetUserReviewsNetworkRequest(
                         userId: userId,
@@ -119,7 +116,7 @@ final class WorkReviewsViewController: SegmentedListViewController<ReviewsSort, 
             .subscribe(onNext: { [weak self] sort in
                 AppAnalytics.logReviewsSortChange(name: sort.description)
 
-                self?.sortSubject.onNext(sort)
+                self?.sortRelay.accept(sort)
             })
             .disposed(by: disposeBag)
 

@@ -53,6 +53,12 @@ public protocol NavBar: class {
 
 extension NavBar {
     public func set(title: NSAttributedString?) {
+        guard let title = title else {
+            titleView = nil
+
+            return
+        }
+
         let label = (titleView as? UILabel) ?? UILabel(frame: .zero)
         label.numberOfLines = 1
         label.adjustsFontSizeToFitWidth = true
@@ -114,6 +120,10 @@ public final class NavBarView: UIView, NavBar {
 
     public var titleView: UIView? {
         didSet {
+            defer {
+                layoutIfNeeded()
+            }
+
             oldValue?.removeFromSuperview()
 
             titleWidthConstraint = nil
@@ -130,8 +140,6 @@ public final class NavBarView: UIView, NavBar {
                 .pin(.width)
                 .const(.greatestFiniteMagnitude)
                 .lessThanOrEqual()
-
-            layoutIfNeeded()
         }
     }
 

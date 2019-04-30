@@ -1,10 +1,11 @@
 import Foundation
 import RxSwift
+import RxRelay
 
 public final class FileStorage<ModelType: Codable> {
     private let disposeBag = DisposeBag()
     private let fileURL: URL
-    private let inMemory: ObservableValue<ModelType>
+    private let buffer: BehaviorRelay<ModelType>
 
     public init(fileName: String, defaultValue: ModelType) {
         fileURL = URL(fileURLWithPath: FileUtils.docDir, isDirectory: true).appendingPathComponent(fileName, isDirectory: false)
@@ -13,13 +14,13 @@ public final class FileStorage<ModelType: Codable> {
             let data = try Data(contentsOf: fileURL)
             let initialValue = try JSONDecoder().decode(ModelType.self, from: data)
 
-            inMemory = ObservableValue(initialValue)
+            buffer = BehaviorRelay(value: initialValue)
         } catch {
-            inMemory = ObservableValue(defaultValue)
+            buffer = BehaviorRelay(value: defaultValue)
         }
 
-        inMemory.observable()
-            .debounce(1, scheduler: SerialDispatchQueueScheduler(qos: .default))
+        buffer.asObservable()
+            .debounce(.seconds(1), scheduler: SerialDispatchQueueScheduler(qos: .default))
             .subscribe(onNext: { [weak self] value in
                 try? self?.save(value: value)
             })
@@ -35,14 +36,14 @@ public final class FileStorage<ModelType: Codable> {
 
     public var value: ModelType {
         get {
-            return inMemory.value
+            return buffer.value
         }
         set {
-            inMemory.value = newValue
+            buffer.accept(newValue)
         }
     }
 
     public func observable() -> Observable<ModelType> {
-        return inMemory.observable()
+        return buffer.asObservable()
     }
 }

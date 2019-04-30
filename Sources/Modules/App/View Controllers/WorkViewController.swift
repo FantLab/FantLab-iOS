@@ -2,6 +2,7 @@ import Foundation
 import UIKit
 import ALLKit
 import RxSwift
+import RxRelay
 import FLKit
 import FLStyle
 import FLModels
@@ -33,15 +34,10 @@ final class WorkViewController: ListViewController<DataStateContentBuilder<WorkC
     private let workId: Int
     private let workDataSource: DataSource<DataModel>
     private let reviewsDataSource: DataSource<[WorkReviewModel]>
-    private let expandCollapseSubject = PublishSubject<Void>()
-    private let tabIndexSubject = PublishSubject<WorkContentTabIndex>()
+    private let expandCollapseRelay = PublishRelay<Void>()
+    private let tabIndexRelay = PublishRelay<WorkContentTabIndex>()
     private let myBookBtn = UIButton(type: .system)
     private var myBookItem: NavBarItem?
-
-    deinit {
-        expandCollapseSubject.onCompleted()
-        tabIndexSubject.onCompleted()
-    }
 
     init(workId: Int) {
         self.workId = workId
@@ -109,7 +105,7 @@ final class WorkViewController: ListViewController<DataStateContentBuilder<WorkC
     }
 
     private func bindUI() {
-        tabIndexSubject
+        tabIndexRelay.asObservable()
             .skip(1)
             .distinctUntilChanged()
             .subscribe(onNext: { tab in
@@ -146,8 +142,8 @@ final class WorkViewController: ListViewController<DataStateContentBuilder<WorkC
 
         Observable.combineLatest(workDataSource.stateObservable,
                                  reviewsDataSource.stateObservable,
-                                 tabIndexSubject.distinctUntilChanged(),
-                                 expandCollapseSubject)
+                                 tabIndexRelay.asObservable().distinctUntilChanged(),
+                                 expandCollapseRelay.asObservable())
             .map({ arg -> DataState<WorkViewState> in
                 return arg.0.map({ data -> WorkViewState in
                     return WorkViewState(
@@ -164,8 +160,8 @@ final class WorkViewController: ListViewController<DataStateContentBuilder<WorkC
             })
             .disposed(by: disposeBag)
 
-        expandCollapseSubject.onNext(())
-        tabIndexSubject.onNext(.info)
+        expandCollapseRelay.accept(())
+        tabIndexRelay.accept(.info)
     }
 
     // MARK: -
@@ -222,7 +218,7 @@ final class WorkViewController: ListViewController<DataStateContentBuilder<WorkC
             reviewsDataSource.load()
         }
 
-        tabIndexSubject.onNext(tab)
+        tabIndexRelay.accept(tab)
     }
 
     func onDescriptionTap(work: WorkModel) {
@@ -234,7 +230,7 @@ final class WorkViewController: ListViewController<DataStateContentBuilder<WorkC
     }
 
     func onExpandOrCollapse() {
-        expandCollapseSubject.onNext(())
+        expandCollapseRelay.accept(())
     }
 
     func onWorkTap(id: Int) {

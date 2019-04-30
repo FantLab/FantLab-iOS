@@ -2,6 +2,7 @@ import Foundation
 import UIKit
 import ALLKit
 import RxSwift
+import RxRelay
 import FLKit
 import FLStyle
 import FLModels
@@ -17,7 +18,7 @@ final class AuthorViewController: ListViewController<DataStateContentBuilder<Aut
 
     private let authorId: Int
     private let dataSource: DataSource<DataModel>
-    private let expandCollapseSubject = PublishSubject<Void>()
+    private let expandCollapseRelay = PublishRelay<Void>()
 
     init(authorId: Int) {
         self.authorId = authorId
@@ -40,10 +41,6 @@ final class AuthorViewController: ListViewController<DataStateContentBuilder<Aut
         fatalError()
     }
 
-    deinit {
-        expandCollapseSubject.onCompleted()
-    }
-
     // MARK: -
 
     override func viewDidLoad() {
@@ -59,7 +56,7 @@ final class AuthorViewController: ListViewController<DataStateContentBuilder<Aut
 
         setupBackgroundImageWith(urlObservable: dataSource.stateObservable.map({ $0.data?.author.imageURL }))
 
-        Observable.combineLatest(dataSource.stateObservable, expandCollapseSubject)
+        Observable.combineLatest(dataSource.stateObservable, expandCollapseRelay.asObservable())
             .map({ args -> DataState<AuthorViewState> in
                 args.0.map({ data -> AuthorViewState in
                     return AuthorViewState(info: data.author, workTree: data.contentRoot)
@@ -70,7 +67,7 @@ final class AuthorViewController: ListViewController<DataStateContentBuilder<Aut
             })
             .disposed(by: disposeBag)
 
-        expandCollapseSubject.onNext(())
+        expandCollapseRelay.accept(())
 
         dataSource.load()
     }
@@ -96,7 +93,7 @@ final class AuthorViewController: ListViewController<DataStateContentBuilder<Aut
     }
 
     func onExpandOrCollapse() {
-        expandCollapseSubject.onNext(())
+        expandCollapseRelay.accept(())
     }
 
     func onWorkTap(id: Int) {

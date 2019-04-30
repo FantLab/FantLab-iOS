@@ -1,9 +1,10 @@
 import Foundation
 import RxSwift
+import RxRelay
 
 public final class PagedDataSource<T: IntegerIdProvider> {
     private let disposeBag = DisposeBag()
-    private let internalState = ObservableValue(PagedDataState<T>(id: UUID().uuidString))
+    private let internalState = BehaviorRelay(value: PagedDataState<T>(id: UUID().uuidString))
     private let loadObservable: (Int) -> Observable<[T]>
 
     public init(loadObservable: @escaping (Int) -> Observable<[T]>) {
@@ -15,7 +16,7 @@ public final class PagedDataSource<T: IntegerIdProvider> {
     }
 
     public var stateObservable: Observable<PagedDataState<T>> {
-        return internalState.observable()
+        return internalState.asObservable()
     }
 
     public func loadFirstPage() {
@@ -23,7 +24,9 @@ public final class PagedDataSource<T: IntegerIdProvider> {
             return
         }
 
-        internalState.value.state = .loading
+        internalState.modify {
+            $0.state = .loading
+        }
 
         loadObservable(1)
             .subscribe(
@@ -43,13 +46,13 @@ public final class PagedDataSource<T: IntegerIdProvider> {
                     value.page = 1
                     value.state = .success(())
 
-                    self?.internalState.value = value
+                    self?.internalState.accept(value)
                 }),
                 onError: ({ [weak self] error in
                     var value = PagedDataState<T>(id: UUID().uuidString)
                     value.state = .error(error)
 
-                    self?.internalState.value = value
+                    self?.internalState.accept(value)
                 })
             )
             .disposed(by: disposeBag)
@@ -60,7 +63,11 @@ public final class PagedDataSource<T: IntegerIdProvider> {
             return
         }
 
-        internalState.value.state = .loading
+        do {
+            var value = internalState.value
+            value.state = .loading
+            internalState.accept(value)
+        }
 
         let pageToLoad = internalState.value.page + 1
 
@@ -86,7 +93,7 @@ public final class PagedDataSource<T: IntegerIdProvider> {
                     value.page = pageToLoad
                     value.state = .success(())
 
-                    strongSelf.internalState.value = value
+                    strongSelf.internalState.accept(value)
                 }),
                 onError: ({ [weak self] error in
                     guard let strongSelf = self else { return }
@@ -94,7 +101,7 @@ public final class PagedDataSource<T: IntegerIdProvider> {
                     var value = strongSelf.internalState.value
                     value.state = .error(error)
 
-                    strongSelf.internalState.value = value
+                    strongSelf.internalState.accept(value)
                 })
             )
             .disposed(by: disposeBag)
@@ -104,18 +111,14 @@ public final class PagedDataSource<T: IntegerIdProvider> {
 public final class PagedComboDataSource<T: IntegerIdProvider> {
     private let disposeBag = DisposeBag()
     private let internalStateSubject = ReplaySubject<PagedDataState<T>>.create(bufferSize: 1)
-    private let internalDataSource: ObservableValue<PagedDataSource<T>>
-
-    deinit {
-        internalStateSubject.onCompleted()
-    }
+    private let internalDataSource: BehaviorRelay<PagedDataSource<T>>
 
     public init(dataSourceObservable: Observable<PagedDataSource<T>>) {
-        internalDataSource = ObservableValue(PagedDataSource(loadObservable: { page -> Observable<[T]> in
+        internalDataSource = BehaviorRelay(value: PagedDataSource(loadObservable: { page -> Observable<[T]> in
             .just([])
         }))
 
-        internalDataSource.observable()
+        internalDataSource.asObservable()
             .flatMapLatest {
                 $0.stateObservable
             }
@@ -126,7 +129,7 @@ public final class PagedComboDataSource<T: IntegerIdProvider> {
 
         dataSourceObservable
             .subscribe(onNext: { [weak self] dataSource in
-                self?.internalDataSource.value = dataSource
+                self?.internalDataSource.accept(dataSource)
 
                 dataSource.loadFirstPage()
             })

@@ -15,10 +15,6 @@ open class SegmentedListViewController<EnumType: Equatable & CaseIterable & Cust
         return selectedSegmentSubject
     }
 
-    deinit {
-        selectedSegmentSubject.onCompleted()
-    }
-
     public init(defaultValue: EnumType, contentBuilder: BuilderType) {
         allCases = Array(EnumType.allCases)
         segmentControl = SegmentControl(

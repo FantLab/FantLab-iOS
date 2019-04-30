@@ -1,8 +1,9 @@
 import RxSwift
+import RxRelay
 
 public final class DataSource<T> {
     private let disposeBag = DisposeBag()
-    private let internalState = ObservableValue<DataState<T>>(.initial)
+    private let internalState = BehaviorRelay<DataState<T>>(value: .initial)
     private let loadObservable: () -> Observable<T>
 
     public init(loadObservable: @escaping @autoclosure () -> Observable<T>) {
@@ -14,7 +15,7 @@ public final class DataSource<T> {
     }
 
     public var stateObservable: Observable<DataState<T>> {
-        return internalState.observable()
+        return internalState.asObservable()
     }
 
     public func load() {
@@ -22,15 +23,15 @@ public final class DataSource<T> {
             return
         }
 
-        internalState.value = .loading
+        internalState.accept(.loading)
 
         loadObservable()
             .subscribe(
                 onNext: { [weak self] value in
-                    self?.internalState.value = .success(value)
+                    self?.internalState.accept(.success(value))
                 },
                 onError: { [weak self] error in
-                    self?.internalState.value = .error(error)
+                    self?.internalState.accept(.error(error))
                 }
             )
             .disposed(by: disposeBag)

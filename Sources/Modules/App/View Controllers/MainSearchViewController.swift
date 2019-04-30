@@ -1,6 +1,7 @@
 import Foundation
 import UIKit
 import RxSwift
+import RxRelay
 import ALLKit
 import FLWebAPI
 import FLModels
@@ -19,14 +20,10 @@ final class MainSearchViewController: ListViewController<DataStateContentBuilder
         fatalError()
     }
 
-    deinit {
-        searchSubject.onCompleted()
-    }
-
     public var scanAction: (() -> Void)?
     public var closeAction: (() -> Void)?
 
-    private let searchSubject = PublishSubject<String>()
+    private let searchRelay = PublishRelay<String>()
     private lazy var searchBarView = SearchBarView()
 
     override func viewDidLoad() {
@@ -88,14 +85,14 @@ final class MainSearchViewController: ListViewController<DataStateContentBuilder
     // MARK: -
 
     private func triggerSearch() {
-        searchSubject.onNext(searchBarView.textField.text ?? "")
+        searchRelay.accept(searchBarView.textField.text ?? "")
     }
 
     private func bindUI() {
-        let loadingObservable: Observable<DataState<SearchResultModel>> = searchSubject.map({ _ in DataState<SearchResultModel>.loading })
+        let loadingObservable: Observable<DataState<SearchResultModel>> = searchRelay.asObservable().map({ _ in DataState<SearchResultModel>.loading })
 
-        let dataObservable: Observable<DataState<SearchResultModel>> = searchSubject
-            .debounce(0.5, scheduler: MainScheduler.instance)
+        let dataObservable: Observable<DataState<SearchResultModel>> = searchRelay.asObservable()
+            .debounce(.milliseconds(500), scheduler: MainScheduler.instance)
             .flatMapLatest({ searchText -> Observable<DataState<SearchResultModel>> in
                 return AppServices.network.perform(request: MainSearchNetworkRequest(searchText: searchText))
                     .map({ DataState<SearchResultModel>.success($0) })

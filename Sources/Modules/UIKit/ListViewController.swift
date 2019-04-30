@@ -2,6 +2,7 @@ import Foundation
 import UIKit
 import PinIt
 import RxSwift
+import RxRelay
 import ALLKit
 import FLStyle
 import FLKit
@@ -11,7 +12,7 @@ open class ListViewController<BuilderType: ListContentBuilder>: BaseViewControll
     public let contentBuilder: BuilderType
     private let adapter = CollectionViewAdapter()
     private let viewStateSubject = ReplaySubject<BuilderType.ModelType>.create(bufferSize: 1)
-    private let scrollSubject = PublishSubject<CGFloat>()
+    private let scrollRelay = PublishRelay<CGFloat>()
     private let statusBarView = UIView()
     private let navBarView = NavBarView()
     private var isBackgroundImageSet: Bool = false
@@ -26,11 +27,6 @@ open class ListViewController<BuilderType: ListContentBuilder>: BaseViewControll
 
     public required init?(coder aDecoder: NSCoder) {
         fatalError()
-    }
-
-    deinit {
-        viewStateSubject.onCompleted()
-        scrollSubject.onCompleted()
     }
 
     open override func viewDidLoad() {
@@ -83,7 +79,7 @@ open class ListViewController<BuilderType: ListContentBuilder>: BaseViewControll
     }
 
     public var scrollObservable: Observable<CGFloat> {
-        return scrollSubject
+        return scrollRelay.asObservable()
     }
 
     public func apply(viewState: BuilderType.ModelType) {
@@ -143,7 +139,7 @@ open class ListViewController<BuilderType: ListContentBuilder>: BaseViewControll
 
     private func bindUI() {
         adapter.scrollEvents.didScroll = { [weak self] scrollView in
-            self?.scrollSubject.onNext(scrollView.contentOffset.y)
+            self?.scrollRelay.accept(scrollView.contentOffset.y)
         }
 
         viewStateSubject

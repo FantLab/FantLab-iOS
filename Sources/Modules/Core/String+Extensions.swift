@@ -12,11 +12,7 @@ extension String {
     public var maybeHasContent: Bool {
         if count < 10 {
             return contains(where: {
-                if let unicodeScalar = $0.unicodeScalars.first {
-                    return CharacterSet.newlines.inverted.contains(unicodeScalar)
-                }
-
-                return false
+                $0.unicodeScalars.first.flatMap(CharacterSet.newlinesInverted.contains) ?? false
             })
         }
 
@@ -68,7 +64,7 @@ extension Range where Bound == String.Index {
 }
 
 extension CharacterSet {
-    public static let whitespacesAndNewlinesInverted = CharacterSet.whitespacesAndNewlines.inverted
+    public static let newlinesInverted = CharacterSet.newlines.inverted
 
     public func contains(_ character: Character) -> Bool {
         return character.unicodeScalars.contains(where: self.contains)

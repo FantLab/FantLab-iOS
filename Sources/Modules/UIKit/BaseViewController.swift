@@ -20,12 +20,6 @@ open class BaseViewController: UIViewController {
 
     // MARK: -
 
-    deinit {
-        viewActiveSubject.onCompleted()
-    }
-
-    // MARK: -
-
     open override func viewDidLoad() {
         super.viewDidLoad()
 

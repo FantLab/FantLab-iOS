@@ -1,5 +1,6 @@
 import Foundation
 import RxSwift
+import RxRelay
 import FLKit
 import FLModels
 import FLExtendedModels
@@ -32,16 +33,12 @@ final class MyBookService {
 
     private let disposeBag = DisposeBag()
     private let fileStorage: FileStorage<[Int: MyBookModel]>
-    private let eventSubject = PublishSubject<Event>()
-
-    deinit {
-        eventSubject.onCompleted()
-    }
+    private let eventRelay = PublishRelay<Event>()
 
     init(fileName: String) {
         fileStorage = FileStorage(fileName: fileName, defaultValue: [:])
 
-        eventSubject
+        eventRelay.asObservable()
             .observeOn(SerialDispatchQueueScheduler(qos: .default))
             .scan(into: fileStorage.value) { (table, event) in
                 switch event {
@@ -64,7 +61,7 @@ final class MyBookService {
     // MARK: -
 
     var eventStream: Observable<Event> {
-        return eventSubject
+        return eventRelay.asObservable()
     }
 
     func contains(workId: Int) -> Bool {
@@ -72,11 +69,11 @@ final class MyBookService {
     }
 
     func add(workId: Int, group: MyBookModel.Group) {
-        eventSubject.onNext(.add(workId: workId, group: group))
+        eventRelay.accept(.add(workId: workId, group: group))
     }
 
     func remove(workId: Int) {
-        eventSubject.onNext(.remove(workId: workId))
+        eventRelay.accept(.remove(workId: workId))
     }
 
     func itemsIn(group: MyBookModel.Group) -> [MyBookModel] {

@@ -3,6 +3,7 @@ import UIKit
 import SafariServices
 import AVFoundation
 import RxSwift
+import RxRelay
 import ALLKit
 import FLModels
 import FLContentBuilders
@@ -20,11 +21,11 @@ final class AppRouter {
     private let rootNavigationController = CustomNavigationController()
     private let navBarItemsFactory = NavBarItemsFactory()
     private let disposeBag = DisposeBag()
-    private let backgroundImageDisplaySubject = PublishSubject<URL?>()
+    private let backgroundImageDisplayRelay = PublishRelay<URL?>()
 
     private init() {
         do {
-            backgroundImageDisplaySubject
+            backgroundImageDisplayRelay.asObservable()
                 .filter({ $0 != nil })
                 .distinctUntilChanged()
                 .subscribe(onNext: { _ in
@@ -57,45 +58,31 @@ final class AppRouter {
         }
 
         imageVC.onImageDisplay = { [weak self] url in
-            self?.backgroundImageDisplaySubject.onNext(url)
+            self?.backgroundImageDisplayRelay.accept(url)
         }
 
         return imageVC
     }
 
     private func makeTabVC() -> UIViewController {
-        var vcs: [UIViewController] = []
-
-        do {
-            let vc = NewsViewController()
-            vc.title = "Новости"
-            vc.tabBarItem = UITabBarItem(title: "Новости", image: UIImage(named: "news"), tag: 1)
-            setupNavigationItemsForTab(viewController: vc)
-            vcs.append(vc)
-        }
-
-        do {
-            let vc = MyBooksViewController()
-            vc.title = "Мои книги"
-            vc.tabBarItem = UITabBarItem(title: "Мои книги", image: UIImage(named: "books"), tag: 2)
-            setupNavigationItemsForTab(viewController: vc)
-            vcs.append(vc)
-        }
-
-        do {
-            let vc = FreshReviewsViewController()
-            vc.title = "Отзывы"
-            vc.tabBarItem = UITabBarItem(title: "Отзывы", image: UIImage(named: "reviews"), tag: 3)
-            setupNavigationItemsForTab(viewController: vc)
-            vcs.append(vc)
-        }
-
         let tabVC = UITabBarController()
         tabVC.view.tintColor = Colors.darkOrange
         tabVC.tabBar.isTranslucent = false
-        tabVC.viewControllers = vcs
+        tabVC.viewControllers = [
+            configureTab(vc: NewsViewController(), title: "Новости", tag: 1, image: UIImage(named: "news")),
+            configureTab(vc: PubNewsViewController(), title: "Новинки", tag: 2, image: UIImage(named: "new_badge")),
+            configureTab(vc: FreshReviewsViewController(), title: "Отзывы", tag: 3, image: UIImage(named: "reviews")),
+            configureTab(vc: MyBooksViewController(), title: "Мои книги", tag: 4, image: UIImage(named: "books"))
+        ]
 
         return tabVC
+    }
+
+    private func configureTab(vc: UIViewController, title: String, tag: Int, image: UIImage?) -> UIViewController {
+        vc.title = title
+        vc.tabBarItem = UITabBarItem(title: title, image: image, tag: tag)
+        setupNavigationItemsForTab(viewController: vc)
+        return vc
     }
 
     private func setupNavigationItemsForTab(viewController: UIViewController) {
@@ -111,8 +98,8 @@ final class AppRouter {
             self?.showSearch()
         }
 
-        vc.navBar.leftItems = [cameraItem]
-        vc.navBar.rightItems = [searchItem]
+        vc.navBar.leftItems = [cameraItem] + ((vc as? NavBarItemsProvider)?.leftItems ?? [])
+        vc.navBar.rightItems = [searchItem] + ((vc as? NavBarItemsProvider)?.rightItems ?? [])
     }
 
     private func setupNavigationItemsFor(viewController: UIViewController) {

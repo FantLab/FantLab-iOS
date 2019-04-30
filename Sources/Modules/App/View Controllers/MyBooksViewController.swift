@@ -1,6 +1,7 @@
 import Foundation
 import UIKit
 import RxSwift
+import RxRelay
 import ALLKit
 import FLUIKit
 import FLModels
@@ -10,17 +11,12 @@ import FLWebAPI
 
 final class MyBooksViewController: SegmentedListViewController<MyBookModel.Group, MyBooksContentBuilder> {
     private let dataSource: PagedComboDataSource<WorkPreviewModel>
-    private let selectedGroupSubject = PublishSubject<MyBookModel.Group>()
-    private let removeIdSubject = PublishSubject<Int>()
-
-    deinit {
-        selectedGroupSubject.onCompleted()
-        removeIdSubject.onCompleted()
-    }
+    private let selectedGroupRelay = PublishRelay<MyBookModel.Group>()
+    private let removeIdRelay = PublishRelay<Int>()
 
     init() {
         do {
-            let dataSourceObservable = selectedGroupSubject
+            let dataSourceObservable = selectedGroupRelay.asObservable()
                 .observeOn(SerialDispatchQueueScheduler(qos: .default))
                 .map { group -> PagedDataSource<WorkPreviewModel> in
                     let items = AppServices.myBooks.itemsIn(group: group).sorted(by: {
@@ -59,7 +55,7 @@ final class MyBooksViewController: SegmentedListViewController<MyBookModel.Group
             }
 
             contentBuilder.onWorkDeleteTap = { [weak self] workId in
-                self?.removeIdSubject.onNext(workId)
+                self?.removeIdRelay.accept(workId)
             }
 
             contentBuilder.onFirstSwipeDisplay = { [weak self] swipeView in
@@ -79,18 +75,18 @@ final class MyBooksViewController: SegmentedListViewController<MyBookModel.Group
             Observable.combineLatest(viewActive, selectedSegmentObservable.distinctUntilChanged())
                 .subscribe(onNext: { [weak self] viewActive, group in
                     if viewActive {
-                        self?.selectedGroupSubject.onNext(group)
+                        self?.selectedGroupRelay.accept(group)
                     }
                 })
                 .disposed(by: disposeBag)
 
-            removeIdSubject
+            removeIdRelay.asObservable()
                 .subscribe(onNext: AppServices.myBooks.remove)
                 .disposed(by: disposeBag)
 
-            let removedIdsObservable = selectedGroupSubject
-                .flatMapLatest({ [removeIdSubject] _ -> Observable<Set<Int>> in
-                    return removeIdSubject
+            let removedIdsObservable = selectedGroupRelay.asObservable()
+                .flatMapLatest({ [removeIdRelay] _ -> Observable<Set<Int>> in
+                    return removeIdRelay.asObservable()
                         .scan(into: Set<Int>(), accumulator: { (idSet, newId) in
                             idSet.insert(newId)
                         })

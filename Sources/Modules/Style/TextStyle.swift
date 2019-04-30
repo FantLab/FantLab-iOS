@@ -3,27 +3,30 @@ import UIKit
 import FLText
 
 public final class TextStyle {
-    public static let defaultTextDecorator: TextDecorator = {
+    public static func makeDecoratorWithFontSize(_ fontSize: CGFloat,
+                                                  lineSpacing: CGFloat,
+                                                  paragraphSpacing: CGFloat,
+                                                  defaultTextColor: UIColor = .black) -> TextDecorator {
         let defaultParagraphStyle = NSMutableParagraphStyle()
         defaultParagraphStyle.alignment = .left
-        defaultParagraphStyle.lineSpacing = 4
-        defaultParagraphStyle.paragraphSpacing = 4
-        defaultParagraphStyle.paragraphSpacingBefore = 4
+        defaultParagraphStyle.lineSpacing = lineSpacing
+        defaultParagraphStyle.paragraphSpacing = paragraphSpacing
+        defaultParagraphStyle.paragraphSpacingBefore = paragraphSpacing
 
         let quoteParagraphStyle = NSMutableParagraphStyle()
         quoteParagraphStyle.alignment = .left
-        quoteParagraphStyle.lineSpacing = 4
-        quoteParagraphStyle.paragraphSpacing = 4
-        quoteParagraphStyle.paragraphSpacingBefore = 4
+        quoteParagraphStyle.lineSpacing = lineSpacing
+        quoteParagraphStyle.paragraphSpacing = paragraphSpacing
+        quoteParagraphStyle.paragraphSpacingBefore = paragraphSpacing
 
         return TextDecorator(
             defaultAttributes: [
-                .font: Fonts.system.regular(size: 16),
-                .foregroundColor: UIColor.black,
+                .font: Fonts.system.regular(size: fontSize),
+                .foregroundColor: defaultTextColor,
                 .paragraphStyle: defaultParagraphStyle
             ],
             quoteAttributes: [
-                .font: Fonts.system.italic(size: 15),
+                .font: Fonts.system.italic(size: fontSize),
                 .foregroundColor: UIColor.gray,
                 .paragraphStyle: quoteParagraphStyle
             ],
@@ -31,8 +34,10 @@ public final class TextStyle {
                 .foregroundColor: Colors.darkOrange,
                 .underlineStyle: NSNumber(value: NSUnderlineStyle.single.rawValue)
             ],
-            boldFont: Fonts.system.bold(size: 16),
-            italicFont: Fonts.system.italic(size: 16)
+            boldFont: Fonts.system.bold(size: fontSize),
+            italicFont: Fonts.system.italic(size: fontSize)
         )
-    }()
+    }
+
+    public static let defaultTextDecorator = makeDecoratorWithFontSize(16, lineSpacing: 4, paragraphSpacing: 4)
 }

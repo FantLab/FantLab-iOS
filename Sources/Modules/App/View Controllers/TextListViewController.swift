@@ -2,6 +2,7 @@ import Foundation
 import UIKit
 import ALLKit
 import RxSwift
+import RxRelay
 import YYWebImage
 import FLKit
 import FLStyle
@@ -11,9 +12,9 @@ import FLLayoutSpecs
 import FLContentBuilders
 
 final class TextListViewController: ListViewController<DataStateContentBuilder<TextListContentBuilder>>, TextListContentBuilderDelegate {
-    private let textSubject = PublishSubject<FLText>()
-    private let hiddenTextSubject = PublishSubject<Int>()
-    private let imageSubject = PublishSubject<(Int, UIImage?)>()
+    private let textRelay = PublishRelay<FLText>()
+    private let hiddenTextRelay = PublishRelay<Int>()
+    private let imageRelay = PublishRelay<(Int, UIImage?)>()
     private let originalString: String
     private let headerListItems: [ListItem]
     private let makeURLFromPhotoIndex: ((Int) -> URL)?
@@ -28,12 +29,6 @@ final class TextListViewController: ListViewController<DataStateContentBuilder<T
 
     required init?(coder aDecoder: NSCoder) {
         fatalError()
-    }
-
-    deinit {
-        textSubject.onCompleted()
-        hiddenTextSubject.onCompleted()
-        imageSubject.onCompleted()
     }
 
     // MARK: -
@@ -55,15 +50,15 @@ final class TextListViewController: ListViewController<DataStateContentBuilder<T
     // MARK: -
 
     private func setupStateMapping() {
-        let hiddenTextObservable = hiddenTextSubject.scan(into: Set<Int>()) {
+        let hiddenTextObservable = hiddenTextRelay.asObservable().scan(into: Set<Int>()) {
             $0.insert($1)
         }
 
-        let imagesObservable = imageSubject.scan(into: Dictionary<Int, UIImage>()) {
+        let imagesObservable = imageRelay.asObservable().scan(into: Dictionary<Int, UIImage>()) {
             $0[$1.0] = $1.1
         }
 
-        Observable.combineLatest(textSubject, hiddenTextObservable, imagesObservable, Observable.just(headerListItems))
+        Observable.combineLatest(textRelay.asObservable(), hiddenTextObservable, imagesObservable, Observable.just(headerListItems))
             .map({ (text, spoilers, images, headerItems) -> TextListViewState in
                 TextListViewState(
                     text: text,
@@ -85,9 +80,9 @@ final class TextListViewController: ListViewController<DataStateContentBuilder<T
             setupLinkAttribute: true
         )
 
-        textSubject.onNext(text)
-        hiddenTextSubject.onNext(-1)
-        imageSubject.onNext((-1, nil))
+        textRelay.accept(text)
+        hiddenTextRelay.accept(-1)
+        imageRelay.accept((-1, nil))
     }
 
     // MARK: - TextListContentBuilderDelegate
@@ -101,10 +96,10 @@ final class TextListViewController: ListViewController<DataStateContentBuilder<T
     }
 
     func showHiddenText(index: Int) {
-        hiddenTextSubject.onNext(index)
+        hiddenTextRelay.accept(index)
     }
 
     func save(image: UIImage, at index: Int) {
-        imageSubject.onNext((index, image))
+        imageRelay.accept((index, image))
     }
 }

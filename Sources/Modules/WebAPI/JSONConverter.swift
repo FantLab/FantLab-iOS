@@ -362,4 +362,18 @@ final class JSONConverter {
             )
         })
     }
+
+    static func makePubNewsFrom(json: DynamicJSON) -> [PubNewsModel] {
+        return json["objects"].array.map {
+            PubNewsModel(
+                editionId: $0.edition_id.intValue,
+                dateString: $0.date.stringValue,
+                imageURL: URL.web("/images/editions/small/\($0.edition_id.intValue)", host: Hosts.data),
+                typeName: $0.type_name.stringValue,
+                authors: $0.autors.stringValue,
+                name: $0.name.stringValue,
+                info: $0["description"].stringValue
+            )
+        }
+    }
 }

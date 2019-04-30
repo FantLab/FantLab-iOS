@@ -8,6 +8,36 @@ extension EditionModel {
     }
 }
 
+extension PubNewsType: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .pubnews:
+            return "Новинки"
+        case .pubplans:
+            return "В планах"
+        }
+    }
+}
+
+extension PubNewsSort: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .popularity:
+            return "Популярности"
+        case .date:
+            return "Дате выхода"
+        case .type:
+            return "Типу издания"
+        case .pub:
+            return "Издательству и серии"
+        case .author:
+            return "Автору"
+        case .title:
+            return "Названию"
+        }
+    }
+}
+
 extension AuthorModel: ObjectPropertiesProvider {
     public var objectProperties: [ObjectProperty] {
         var properties: [ObjectProperty] = []
@@ -136,5 +166,11 @@ extension WorkPreviewModel: IntegerIdProvider {
 extension WorkReviewModel: IntegerIdProvider {
     public var intId: Int {
         return id
+    }
+}
+
+extension PubNewsModel: IntegerIdProvider {
+    public var intId: Int {
+        return editionId
     }
 }
