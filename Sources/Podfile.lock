@@ -4,7 +4,7 @@ PODS:
     - ALLKit/StringBuilder (= 1.0)
   - ALLKit/Diff (1.0)
   - ALLKit/FlexBox (1.0):
-    - Yoga (= 1.6)
+    - Yoga (= 1.14)
   - ALLKit/Layout (1.0):
     - ALLKit/FlexBox
   - ALLKit/ListKit (1.0):
@@ -70,7 +70,7 @@ PODS:
   - RxRelay (5.0.0):
     - RxSwift (~> 5)
   - RxSwift (5.0.0)
-  - Yoga (1.6.0)
+  - Yoga (1.14.0)
   - YYCache (1.0.4)
   - YYImage (1.0.4):
     - YYImage/Core (= 1.0.4)
@@ -80,7 +80,7 @@ PODS:
     - YYImage
 
 DEPENDENCIES:
-  - ALLKit (from `https://github.com/geor-kasapidi/ALLKit`, commit `04127b99e6e3b9ab0508beaa5f2fab4a45f21559`)
+  - ALLKit (from `https://github.com/geor-kasapidi/ALLKit`, commit `6cb1376c32f11aadb6d28efd33d606f82c7dce7b`)
   - Crashlytics
   - Fabric
   - Firebase/Core
@@ -110,16 +110,16 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   ALLKit:
-    :commit: 04127b99e6e3b9ab0508beaa5f2fab4a45f21559
+    :commit: 6cb1376c32f11aadb6d28efd33d606f82c7dce7b
     :git: https://github.com/geor-kasapidi/ALLKit
 
 CHECKOUT OPTIONS:
   ALLKit:
-    :commit: 04127b99e6e3b9ab0508beaa5f2fab4a45f21559
+    :commit: 6cb1376c32f11aadb6d28efd33d606f82c7dce7b
     :git: https://github.com/geor-kasapidi/ALLKit
 
 SPEC CHECKSUMS:
-  ALLKit: 16819e6657ea2f1d3f0f00543ed562f0280977ac
+  ALLKit: 57571690915e67e14ab0ae234548a597abffe59c
   Crashlytics: 07fb167b1694128c1c9a5a5cc319b0e9c3ca0933
   Fabric: f988e33c97f08930a413e08123064d2e5f68d655
   Firebase: 02f3281965c075426141a0ce1277e9de6649cab9
@@ -132,11 +132,11 @@ SPEC CHECKSUMS:
   PinIt: 4590ce0526181463ff7b93eb2ff2fe66fc230999
   RxRelay: 4f7409406a51a55cd88483f21ed898c234d60f18
   RxSwift: 8b0671caa829a763bbce7271095859121cbd895f
-  Yoga: 81670877477311136b1b3f69a6307ce62e1c89cf
+  Yoga: cff67a400f6b74dc38eb0bad4f156673d9aa980c
   YYCache: 8105b6638f5e849296c71f331ff83891a4942952
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
   YYWebImage: 5f7f36aee2ae293f016d418c7d6ba05c4863e928
 
-PODFILE CHECKSUM: 0f01dc5d745ae45f1fd3e708646c49bbe896c06e
+PODFILE CHECKSUM: 80d3954c2fd610ee9b0dc18aa4ad8d1e1bf0f270
 
 COCOAPODS: 1.7.0.beta.3
