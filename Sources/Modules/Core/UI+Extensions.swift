@@ -51,3 +51,9 @@ extension UIRefreshControl {
         }
     }
 }
+
+extension UIView {
+    public var absoluteFrame: CGRect {
+        return convert(bounds, to: nil) // помни про скроллвью!
+    }
+}

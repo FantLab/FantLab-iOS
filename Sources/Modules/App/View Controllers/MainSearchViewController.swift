@@ -59,8 +59,13 @@ final class MainSearchViewController: ListViewController<DataStateContentBuilder
             self?.triggerSearch()
         }
 
-        scrollView.showsVerticalScrollIndicator = false
-        scrollView.contentInset.bottom = UIScreen.main.bounds.size.height
+        do {
+            Keyboard.shared.rx.observe(\.frame)
+                .subscribe(onNext: { [weak self] frame in
+                    self?.handle(keyboardFrame: frame)
+                })
+                .disposed(by: disposeBag)
+        }
 
         searchBarView.textField.attributedPlaceholder = "Поиск авторов и произведений".attributed()
             .font(Fonts.system.regular(size: 16))
@@ -109,6 +114,10 @@ final class MainSearchViewController: ListViewController<DataStateContentBuilder
                 self?.apply(viewState: viewState)
             })
             .disposed(by: disposeBag)
+    }
+
+    private func handle(keyboardFrame: CGRect) {
+        additionalSafeAreaInsets.bottom = max(0, keyboardFrame.intersection(view.absoluteFrame).height)
     }
 
     // MARK: -
