@@ -1,38 +1,37 @@
 import Foundation
 import UIKit
+import RxSwift
+import RxRelay
 
-public final class Keyboard: NSObject {
-    public static let shared = Keyboard()
-
-    private override init() {
-        super.init()
-
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(handle(notification:)),
-            name: UIResponder.keyboardWillChangeFrameNotification,
-            object: nil
-        )
-
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(handle(notification:)),
-            name: UIResponder.keyboardDidChangeFrameNotification,
-            object: nil
-        )
-    }
-
-    @objc
-    public private(set) dynamic var frame: CGRect = .zero
+public final class Keyboard {
+    private let disposeBag = DisposeBag()
+    private let frameRelay = BehaviorRelay<CGRect>(value: .zero)
 
     // MARK: -
 
-    @objc
-    private func handle(notification: Notification) {
-        guard let rect = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else {
-            return
-        }
+    private static let keyboard = Keyboard()
 
-        frame = rect
+    private init() {
+        let willChangeFrame = NotificationCenter.default.rx.notification(UIResponder.keyboardWillChangeFrameNotification)
+
+        let didChangeFrame = NotificationCenter.default.rx.notification(UIResponder.keyboardDidChangeFrameNotification)
+
+        Observable
+            .merge(willChangeFrame, didChangeFrame)
+            .map { notification -> CGRect in
+                return (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue ?? .zero
+            }
+            .bind(to: frameRelay)
+            .disposed(by: disposeBag)
+    }
+
+    // MARK: -
+
+    public static var frame: CGRect {
+        return keyboard.frameRelay.value
+    }
+
+    public static var frameObservable: Observable<CGRect> {
+        return keyboard.frameRelay.asObservable()
     }
 }

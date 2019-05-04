@@ -59,13 +59,11 @@ final class MainSearchViewController: ListViewController<DataStateContentBuilder
             self?.triggerSearch()
         }
 
-        do {
-            Keyboard.shared.rx.observe(\.frame)
-                .subscribe(onNext: { [weak self] frame in
-                    self?.handle(keyboardFrame: frame)
-                })
-                .disposed(by: disposeBag)
-        }
+        Keyboard.frameObservable
+            .subscribe(onNext: { [weak self] frame in
+                self?.handle(keyboardFrame: frame)
+            })
+            .disposed(by: disposeBag)
 
         searchBarView.textField.attributedPlaceholder = "Поиск авторов и произведений".attributed()
             .font(Fonts.system.regular(size: 16))
