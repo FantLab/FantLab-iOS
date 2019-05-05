@@ -9,15 +9,14 @@ public final class Keyboard {
 
     // MARK: -
 
-    private static let keyboard = Keyboard()
+    private static let keyboard = Keyboard(.default)
 
-    private init() {
-        let willChangeFrame = NotificationCenter.default.rx.notification(UIResponder.keyboardWillChangeFrameNotification)
-
-        let didChangeFrame = NotificationCenter.default.rx.notification(UIResponder.keyboardDidChangeFrameNotification)
-
+    private init(_ nc: NotificationCenter) {
         Observable
-            .merge(willChangeFrame, didChangeFrame)
+            .merge(
+                nc.rx.notification(UIResponder.keyboardWillChangeFrameNotification),
+                nc.rx.notification(UIResponder.keyboardDidChangeFrameNotification)
+            )
             .map { notification -> CGRect in
                 return (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue ?? .zero
             }
