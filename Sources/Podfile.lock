@@ -90,7 +90,7 @@ DEPENDENCIES:
   - YYWebImage (= 1.0.5)
 
 SPEC REPOS:
-  https://github.com/cocoapods/specs.git:
+  https://github.com/CocoaPods/Specs.git:
     - ALLKit
     - Crashlytics
     - Fabric
@@ -130,4 +130,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 9943d5b5d0cc6350801ab28e5a44072ec7b258de
 
-COCOAPODS: 1.6.1
+COCOAPODS: 1.8.0
