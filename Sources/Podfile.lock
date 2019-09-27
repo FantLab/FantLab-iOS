@@ -66,28 +66,22 @@ PODS:
     - nanopb/encode (= 0.3.901)
   - nanopb/decode (0.3.901)
   - nanopb/encode (0.3.901)
+  - Nuke (8.2.0)
   - PinIt (1.0)
   - RxRelay (5.0.0):
     - RxSwift (~> 5)
   - RxSwift (5.0.0)
   - Yoga (1.14.0)
-  - YYCache (1.0.4)
-  - YYImage (1.0.4):
-    - YYImage/Core (= 1.0.4)
-  - YYImage/Core (1.0.4)
-  - YYWebImage (1.0.5):
-    - YYCache
-    - YYImage
 
 DEPENDENCIES:
   - ALLKit (= 1.0)
   - Crashlytics
   - Fabric
   - Firebase/Core
-  - PinIt
+  - Nuke (= 8.2.0)
+  - PinIt (= 1.0)
   - RxRelay (= 5.0.0)
   - RxSwift (= 5.0.0)
-  - YYWebImage (= 1.0.5)
 
 SPEC REPOS:
   https://github.com/CocoaPods/Specs.git:
@@ -105,9 +99,8 @@ SPEC REPOS:
     - RxRelay
     - RxSwift
     - Yoga
-    - YYCache
-    - YYImage
-    - YYWebImage
+  trunk:
+    - Nuke
 
 SPEC CHECKSUMS:
   ALLKit: b5156377695ba5e67d28b23f60476aeb858aab8c
@@ -120,14 +113,12 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: 6cf307834da065863f9faf4c0de0a936d81dd832
   GoogleUtilities: 6481e6318c5fcabaaa8513ef8120f329055d7c10
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
+  Nuke: 0134d56b7c9dd3e69e9bce8bdcb37c2e0d55469f
   PinIt: 4590ce0526181463ff7b93eb2ff2fe66fc230999
   RxRelay: 4f7409406a51a55cd88483f21ed898c234d60f18
   RxSwift: 8b0671caa829a763bbce7271095859121cbd895f
   Yoga: cff67a400f6b74dc38eb0bad4f156673d9aa980c
-  YYCache: 8105b6638f5e849296c71f331ff83891a4942952
-  YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
-  YYWebImage: 5f7f36aee2ae293f016d418c7d6ba05c4863e928
 
-PODFILE CHECKSUM: 9943d5b5d0cc6350801ab28e5a44072ec7b258de
+PODFILE CHECKSUM: 2db37c6860a96a120fa4ec1248bd8f6ea8911157
 
 COCOAPODS: 1.8.0

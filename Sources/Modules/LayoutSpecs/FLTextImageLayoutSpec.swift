@@ -1,7 +1,6 @@
 import Foundation
 import UIKit
 import ALLKit
-import YYWebImage
 import yoga
 
 public final class FLTextImageLayoutSpec: ModelLayoutSpec<UIImage> {

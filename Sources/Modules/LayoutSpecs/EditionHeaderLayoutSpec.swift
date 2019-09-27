@@ -1,7 +1,6 @@
 import Foundation
 import UIKit
 import ALLKit
-import YYWebImage
 import FLKit
 import FLStyle
 import FLModels
@@ -38,7 +37,7 @@ public final class EditionHeaderLayoutSpec: ModelLayoutSpec<EditionModel> {
             view.clipsToBounds = true
             view.contentMode = .scaleAspectFit
 
-            view.yy_setImage(with: model.image, placeholder: UIImage(named: "no_cover"), options: .setImageWithFadeAnimation, completion: nil)
+            WebImage.load(url: model.image, into: view, placeholder: UIImage(named: "no_cover"))
         }
 
         let nameNode = LayoutNode(sizeProvider: nameString, config: nil) { (label: UILabel, _) in

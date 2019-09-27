@@ -5,7 +5,6 @@ import FLStyle
 import FLText
 import FLKit
 import FLModels
-import YYWebImage
 
 public final class WorkReviewUserHeaderLayoutSpec: ModelLayoutSpec<WorkReviewModel> {
     public override func makeNodeFrom(model: WorkReviewModel, sizeConstraints: SizeConstraints) -> LayoutNode {
@@ -28,7 +27,8 @@ public final class WorkReviewUserHeaderLayoutSpec: ModelLayoutSpec<WorkReviewMod
             view.layer.masksToBounds = true
             view.contentMode = .scaleAspectFill
             view.backgroundColor = Colors.perfectGray
-            view.yy_setImage(with: model.user.avatar, options: .setImageWithFadeAnimation)
+
+            WebImage.load(url: model.user.avatar, into: view)
         }
 
         let userNameNode = LayoutNode(sizeProvider: userNameString, config: { node in

@@ -1,7 +1,6 @@
 import Foundation
 import UIKit
 import PinIt
-import YYWebImage
 import FLKit
 import FLStyle
 
@@ -31,7 +30,7 @@ public final class ImageBackgroundViewController: UIViewController {
 
     public var imageURL: URL? {
         didSet {
-            imageView.yy_setImage(with: imageURL, placeholder: nil)
+            WebImage.load(url: imageURL, into: imageView)
         }
     }
 

@@ -5,7 +5,6 @@ import FLStyle
 import FLText
 import FLKit
 import FLModels
-import YYWebImage
 
 final class WorkReviewRatingLayoutSpec: ModelLayoutSpec<(Int, Int)> {
     override func makeNodeFrom(model: (Int, Int), sizeConstraints: SizeConstraints) -> LayoutNode {

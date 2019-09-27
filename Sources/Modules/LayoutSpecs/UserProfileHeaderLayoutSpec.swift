@@ -1,7 +1,6 @@
 import Foundation
 import UIKit
 import ALLKit
-import YYWebImage
 import FLModels
 import FLStyle
 import FLKit
@@ -48,7 +47,8 @@ public final class UserProfileHeaderLayoutSpec: ModelLayoutSpec<UserProfileModel
             imageView.contentMode = .scaleAspectFill
             imageView.layer.cornerRadius = 60
             imageView.clipsToBounds = true
-            imageView.yy_setImage(with: model.avatar, options: .setImageWithFadeAnimation)
+
+            WebImage.load(url: model.avatar, into: imageView)
         }
 
         let contentNode = LayoutNode(children: [imageNode, loginNode, userClassNode], config: { node in

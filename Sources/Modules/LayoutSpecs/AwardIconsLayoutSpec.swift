@@ -1,7 +1,6 @@
 import Foundation
 import UIKit
 import ALLKit
-import YYWebImage
 import FLModels
 import FLKit
 import FLStyle
@@ -17,7 +16,8 @@ public final class AwardIconsLayoutSpec: ModelLayoutSpec<[AwardPreviewModel]> {
                 node.margin(all: 8)
             }) { (imageView: UIImageView, _) in
                 imageView.contentMode = .scaleAspectFit
-                imageView.yy_setImage(with: award.iconURL, options: .setImageWithFadeAnimation)
+
+                WebImage.load(url: award.iconURL, into: imageView)
             }
 
             iconNodes.append(iconNode)

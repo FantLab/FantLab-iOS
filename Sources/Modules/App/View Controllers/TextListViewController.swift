@@ -3,7 +3,6 @@ import UIKit
 import ALLKit
 import RxSwift
 import RxRelay
-import YYWebImage
 import FLKit
 import FLStyle
 import FLText

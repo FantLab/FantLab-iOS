@@ -21,10 +21,10 @@ end
 def all_pods
     release_pods
 
-    pod 'PinIt'
     pod 'RxSwift', '5.0.0'
     pod 'RxRelay', '5.0.0'
-    pod 'YYWebImage', '1.0.5'
+    pod 'Nuke', '8.2.0'
+    pod 'PinIt', '1.0'
     pod 'ALLKit', '1.0'
 end
 

@@ -1,7 +1,6 @@
 import Foundation
 import UIKit
 import ALLKit
-import YYWebImage
 import FLKit
 import FLStyle
 import FLModels

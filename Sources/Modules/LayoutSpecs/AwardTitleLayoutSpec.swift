@@ -1,7 +1,6 @@
 import Foundation
 import UIKit
 import ALLKit
-import YYWebImage
 import FLModels
 import FLKit
 import FLStyle
@@ -22,7 +21,8 @@ public final class AwardTitleLayoutSpec: ModelLayoutSpec<AwardPreviewModel> {
             node.height = 24
         }) { (imageView: UIImageView, _) in
             imageView.contentMode = .scaleAspectFit
-            imageView.yy_setImage(with: model.iconURL, options: .setImageWithFadeAnimation)
+
+            WebImage.load(url: model.iconURL, into: imageView)
         }
 
         let nameNode = LayoutNode(sizeProvider: nameString, config: { node in

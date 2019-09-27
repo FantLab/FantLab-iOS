@@ -3,6 +3,7 @@ import UIKit
 import ALLKit
 import FLModels
 import FLStyle
+import FLKit
 
 public final class AuthorHeaderLayoutSpec: ModelLayoutSpec<(AuthorModel, () -> Void)> {
     public override func makeNodeFrom(model: (AuthorModel, () -> Void), sizeConstraints: SizeConstraints) -> LayoutNode {
@@ -38,7 +39,7 @@ public final class AuthorHeaderLayoutSpec: ModelLayoutSpec<(AuthorModel, () -> V
             view.layer.cornerRadius = 40
             view.backgroundColor = Colors.perfectGray
 
-            view.yy_setImage(with: model.0.imageURL, options: .setImageWithFadeAnimation)
+            WebImage.load(url: model.0.imageURL, into: view)
         }
 
         let nameNode = LayoutNode(sizeProvider: nameString, config: nil) { (label: UILabel, _) in

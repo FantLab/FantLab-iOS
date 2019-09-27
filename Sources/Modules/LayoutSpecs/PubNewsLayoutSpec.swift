@@ -1,11 +1,11 @@
 import Foundation
 import UIKit
 import ALLKit
-import YYWebImage
 import FLStyle
 import FLModels
 import FLExtendedModels
 import FLText
+import FLKit
 
 public final class PubNewsLayoutSpec: ModelLayoutSpec<PubNewsModel> {
     public override func makeNodeFrom(model: PubNewsModel, sizeConstraints: SizeConstraints) -> LayoutNode {
@@ -66,7 +66,8 @@ public final class PubNewsLayoutSpec: ModelLayoutSpec<PubNewsModel> {
             node.alignSelf = .flexStart
         }) { (view: UIImageView, _) in
             view.contentMode = .scaleAspectFit
-            view.yy_setImage(with: model.imageURL, options: .setImageWithFadeAnimation)
+
+            WebImage.load(url: model.imageURL, into: view)
         }
 
         let arrowNode = LayoutNode(config: { node in

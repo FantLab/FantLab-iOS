@@ -5,7 +5,6 @@ import FLStyle
 import FLText
 import FLKit
 import FLModels
-import YYWebImage
 
 public final class WorkReviewWorkShortHeaderLayoutSpec: ModelLayoutSpec<WorkReviewModel> {
     public override func makeNodeFrom(model: WorkReviewModel, sizeConstraints: SizeConstraints) -> LayoutNode {

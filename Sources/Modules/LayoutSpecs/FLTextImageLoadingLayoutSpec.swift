@@ -1,11 +1,27 @@
 import Foundation
 import UIKit
+import RxSwift
 import ALLKit
-import YYWebImage
 import yoga
+import FLKit
 
-public final class FLTextImageLoadingLayoutSpec: ModelLayoutSpec<(URL, ((UIImage) -> Void)?)> {
-    public override func makeNodeFrom(model: (URL, ((UIImage) -> Void)?), sizeConstraints: SizeConstraints) -> LayoutNode {
+public struct FLTextImageLoadingLayoutModel {
+    public let url: URL
+    public let disposeBag: DisposeBag
+    public let completion: (UIImage) -> Void
+
+    public init(url: URL,
+                disposeBag: DisposeBag,
+                completion: @escaping (UIImage) -> Void) {
+
+        self.url = url
+        self.disposeBag = disposeBag
+        self.completion = completion
+    }
+}
+
+public final class FLTextImageLoadingLayoutSpec: ModelLayoutSpec<FLTextImageLoadingLayoutModel> {
+    public override func makeNodeFrom(model: FLTextImageLoadingLayoutModel, sizeConstraints: SizeConstraints) -> LayoutNode {
         let spinnerNode = LayoutNode(config: { node in
             node.width = 32
             node.height = 32
@@ -19,11 +35,9 @@ public final class FLTextImageLoadingLayoutSpec: ModelLayoutSpec<(URL, ((UIImage
             node.justifyContent = .center
             node.height = 48
         }) { (imageView: UIImageView, _) in
-            imageView.yy_setImage(with: model.0, placeholder: nil, options: .avoidSetImage, completion: { (image, _, _, _, _) in
-                image.flatMap {
-                    model.1?($0)
-                }
-            })
+            WebImage.load(url: model.url).subscribe(onNext: { image in
+                model.completion(image)
+            }).disposed(by: model.disposeBag)
         }
 
         return containerNode

@@ -1,9 +1,9 @@
 import Foundation
 import UIKit
 import ALLKit
-import YYWebImage
 import FLModels
 import FLStyle
+import FLKit
 
 public final class EditionPreviewLayoutSpec: ModelLayoutSpec<EditionPreviewModel> {
     public override func makeNodeFrom(model: EditionPreviewModel, sizeConstraints: SizeConstraints) -> LayoutNode {
@@ -17,7 +17,8 @@ public final class EditionPreviewLayoutSpec: ModelLayoutSpec<EditionPreviewModel
             node.width = 80%
         }) { (imageView: UIImageView, _) in
             imageView.contentMode = .scaleAspectFit
-            imageView.yy_setImage(with: model.coverURL, placeholder: UIImage(named: "no_cover"), options: .setImageWithFadeAnimation, completion: nil)
+
+            WebImage.load(url: model.coverURL, into: imageView, placeholder: UIImage(named: "no_cover"))
         }
 
         let yearNode = LayoutNode(sizeProvider: yearString, config: nil) { (label: UILabel, _) in

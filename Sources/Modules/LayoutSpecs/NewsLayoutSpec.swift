@@ -1,7 +1,6 @@
 import Foundation
 import UIKit
 import ALLKit
-import YYWebImage
 import FLModels
 import FLKit
 import FLStyle
@@ -86,7 +85,8 @@ public final class NewsHeaderLayoutSpec: ModelLayoutSpec<NewsModel> {
         }) { (imageView: UIImageView, _) in
             imageView.clipsToBounds = true
             imageView.contentMode = .scaleAspectFit
-            imageView.yy_setImage(with: model.image, options: .setImageWithFadeAnimation)
+
+            WebImage.load(url: model.image, into: imageView)
         }
 
         let contentNode = LayoutNode(children: [leftStackNode, imageNode], config: { node in

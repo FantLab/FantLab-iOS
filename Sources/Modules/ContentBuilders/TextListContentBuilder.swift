@@ -1,6 +1,7 @@
 import Foundation
 import UIKit
 import ALLKit
+import RxSwift
 import FLKit
 import FLModels
 import FLStyle
@@ -36,6 +37,8 @@ public final class TextListContentBuilder: ListContentBuilder {
     public typealias ModelType = TextListViewState
 
     // MARK: -
+
+    private let disposeBag = DisposeBag()
 
     public init() {}
 
@@ -110,9 +113,13 @@ public final class TextListContentBuilder: ListContentBuilder {
                 } else {
                     let item = ListItem(
                         id: itemId + "_loading",
-                        layoutSpec: FLTextImageLoadingLayoutSpec(model: (url, { [weak self] image in
-                            self?.delegate?.save(image: image, at: index)
-                        }))
+                        layoutSpec: FLTextImageLoadingLayoutSpec(model: FLTextImageLoadingLayoutModel(
+                            url: url,
+                            disposeBag: disposeBag,
+                            completion: ({ [weak self] image in
+                                self?.delegate?.save(image: image, at: index)
+                            })
+                        ))
                     )
 
                     items.append(item)
@@ -128,9 +135,13 @@ public final class TextListContentBuilder: ListContentBuilder {
                 } else if let url = delegate?.makeURLFrom(photoIndex: index) {
                     let item = ListItem(
                         id: itemId + "_loading",
-                        layoutSpec: FLTextImageLoadingLayoutSpec(model: (url, { [weak self] image in
-                            self?.delegate?.save(image: image, at: index)
-                        }))
+                        layoutSpec: FLTextImageLoadingLayoutSpec(model: FLTextImageLoadingLayoutModel(
+                            url: url,
+                            disposeBag: disposeBag,
+                            completion: ({ [weak self] image in
+                                self?.delegate?.save(image: image, at: index)
+                            })
+                        ))
                     )
 
                     items.append(item)

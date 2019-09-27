@@ -22,7 +22,7 @@ public final class AuthorPreviewLayoutSpec: ModelLayoutSpec<AuthorPreviewModel> 
             view.layer.cornerRadius = 30
             view.backgroundColor = Colors.perfectGray
 
-            view.yy_setImage(with: model.photoURL, options: .setImageWithFadeAnimation)
+            WebImage.load(url: model.photoURL, into: view)
         }
 
         let nameNode = LayoutNode(sizeProvider: nameString, config: nil) { (label: UILabel, _) in
