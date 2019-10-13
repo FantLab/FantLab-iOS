@@ -17,11 +17,7 @@ public final class SearchResultContentBuilder: ListContentBuilder {
     
     public var onAuthorTap: ((Int) -> Void)?
     public var onWorkTap: ((Int) -> Void)?
-    
-    // MARK: -
-    
-    private let notFoundId = UUID().uuidString
-    
+
     // MARK: -
     
     public func makeListItemsFrom(model: SearchResultModel) -> [ListItem] {
@@ -33,8 +29,7 @@ public final class SearchResultContentBuilder: ListContentBuilder {
             let text = "По запросу «\(model.searchText)» ничего не найдено"
             
             let item = ListItem(
-                id: notFoundId,
-                model: model.searchText,
+                id: "not_found_\(model.searchText)",
                 layoutSpec: ErrorDescriptionLayoutSpec(model: (UIImage(named: "not_found")!, text))
             )
             

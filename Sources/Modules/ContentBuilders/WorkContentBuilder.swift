@@ -241,8 +241,7 @@ public final class WorkContentBuilder: ListContentBuilder {
                         let nodeId = "work_tree_node_" + String(node.id)
 
                         let item = ListItem(
-                            id: nodeId,
-                            model: WorkTreeNodeListModel(
+                            id: WorkTreeNodeListModel(
                                 id: nodeId,
                                 isExpanded: node.isExpanded
                             ),
@@ -368,8 +367,7 @@ public final class WorkContentBuilder: ListContentBuilder {
             }
 
             let item = ListItem(
-                id: "work_tabs",
-                model: model.tabIndex,
+                id: model.tabIndex,
                 layoutSpec: TabsLayoutSpec(model: tabs)
             )
 

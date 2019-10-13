@@ -138,8 +138,7 @@ public final class AuthorContentBuilder: ListContentBuilder {
                     let nodeId = "work_tree_node_\(node.id)"
 
                     let item = ListItem(
-                        id: nodeId,
-                        model: WorkTreeNodeListModel(
+                        id: WorkTreeNodeListModel(
                             id: nodeId,
                             isExpanded: node.isExpanded
                         ),

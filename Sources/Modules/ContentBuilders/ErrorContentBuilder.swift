@@ -18,8 +18,7 @@ public final class ErrorContentBuilder: ListContentBuilder {
         let errorText = ErrorHelper.makeHumanReadableTextFrom(error: model)
 
         let item = ListItem(
-            id: errorId,
-            model: errorText,
+            id: errorText,
             layoutSpec: ErrorDescriptionLayoutSpec(model: (image, errorText))
         )
 

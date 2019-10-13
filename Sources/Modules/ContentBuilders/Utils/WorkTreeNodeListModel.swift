@@ -1,4 +1,4 @@
-struct WorkTreeNodeListModel: Equatable {
+struct WorkTreeNodeListModel: Hashable {
     let id: String
     let isExpanded: Bool
 }

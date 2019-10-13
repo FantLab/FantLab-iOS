@@ -2,6 +2,8 @@ require 'yaml'
 
 ENV["COCOAPODS_DISABLE_STATS"] = "1"
 
+source 'https://cdn.cocoapods.org/'
+
 platform :ios, '11.0'
 
 workspace 'FantLab'
@@ -25,7 +27,7 @@ def all_pods
     pod 'RxRelay', '5.0.0'
     pod 'Nuke', '8.2.0'
     pod 'PinIt', '1.0'
-    pod 'ALLKit', '1.0'
+    pod 'ALLKit', '1.1.1'
 end
 
 target 'FantLab' do
