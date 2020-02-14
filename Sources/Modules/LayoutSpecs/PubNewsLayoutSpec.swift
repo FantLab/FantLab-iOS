@@ -30,14 +30,14 @@ public final class PubNewsLayoutSpec: ModelLayoutSpec<PubNewsModel> {
                 .make()
         }
 
-        let nameNode = LayoutNode(sizeProvider: nameString, config: { node in
+        let nameNode = LayoutNode(sizeProvider: nameString, {
 //            node.paddingTop = 4
         }) { (label: UILabel, _) in
             label.numberOfLines = 0
             label.attributedText = nameString
         }
 
-        let authorNode = LayoutNode(sizeProvider: authorString, config: { node in
+        let authorNode = LayoutNode(sizeProvider: authorString, {
             node.marginTop = 6
             node.isHidden = authorString == nil
         }) { (label: UILabel, _) in
@@ -45,7 +45,7 @@ public final class PubNewsLayoutSpec: ModelLayoutSpec<PubNewsModel> {
             label.attributedText = authorString
         }
 
-        let infoNode = LayoutNode(sizeProvider: infoString, config: { node in
+        let infoNode = LayoutNode(sizeProvider: infoString, {
             node.marginTop = 12
             node.isHidden = infoString == nil
         }) { (label: UILabel, _) in
@@ -53,14 +53,14 @@ public final class PubNewsLayoutSpec: ModelLayoutSpec<PubNewsModel> {
             label.attributedText = infoString
         }
 
-        let textStackNode = LayoutNode(children: [nameNode, authorNode, infoNode], config: { node in
+        let textStackNode = LayoutNode(children: [nameNode, authorNode, infoNode], {
             node.marginLeft = 16
             node.marginRight = 12
             node.flexDirection = .column
             node.flex = 1
         })
 
-        let coverNode = LayoutNode(config: { node in
+        let coverNode = LayoutNode({
             node.height = 80
             node.width = 60
             node.alignSelf = .flexStart
@@ -70,7 +70,7 @@ public final class PubNewsLayoutSpec: ModelLayoutSpec<PubNewsModel> {
             WebImage.load(url: model.imageURL, into: view)
         }
 
-        let arrowNode = LayoutNode(config: { node in
+        let arrowNode = LayoutNode({
             node.width = 10
             node.height = 10
         }) { (view: UIImageView, _) in
@@ -79,7 +79,7 @@ public final class PubNewsLayoutSpec: ModelLayoutSpec<PubNewsModel> {
             view.image = UIImage(named: "arrow_right")?.withRenderingMode(.alwaysTemplate)
         }
 
-        let contentNode = LayoutNode(children: [coverNode, textStackNode, arrowNode], config: { node in
+        let contentNode = LayoutNode(children: [coverNode, textStackNode, arrowNode], {
             node.flexDirection = .row
             node.alignItems = .center
             node.padding(top: 16, left: 12, bottom: 16, right: 12)

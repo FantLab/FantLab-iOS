@@ -57,7 +57,7 @@ public final class SegmentControl: UIView {
         }
 
         do {
-            normalLabels = (0..<numberOfSegments).map { index -> UILabel in
+            normalLabels = (0..<numberOfSegments).map {dex -> UILabel in
                 let label = UILabel()
                 label.font = style.font
                 label.backgroundColor = style.backgroundColor

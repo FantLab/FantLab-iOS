@@ -6,7 +6,7 @@ import FLStyle
 import FLKit
 
 public final class AuthorHeaderLayoutSpec: ModelLayoutSpec<(AuthorModel, () -> Void)> {
-    public override func makeNodeFrom(model: (AuthorModel, () -> Void), sizeConstraints: SizeConstraints) -> LayoutNode {
+    public override func makeNodeWith(boundingDimensions: LayoutDimensions<CGFloat>) -> LayoutNodeConvertible {
         let nameString: NSAttributedString
         let websiteString: NSAttributedString?
 
@@ -29,46 +29,39 @@ public final class AuthorHeaderLayoutSpec: ModelLayoutSpec<(AuthorModel, () -> V
             }
         }
 
-        let imageNode = LayoutNode(config: { node in
-            node.width = 80
-            node.height = 80
-            node.marginLeft = 16
+        let imageNode = LayoutNode({
+            $0.width(80).height(80).margin(.left(16))
         }) { (view: UIImageView, _) in
             view.clipsToBounds = true
             view.contentMode = .scaleAspectFill
             view.layer.cornerRadius = 40
             view.backgroundColor = Colors.perfectGray
 
-            WebImage.load(url: model.0.imageURL, into: view)
+            WebImage.load(url: self.model.0.imageURL, into: view)
         }
 
-        let nameNode = LayoutNode(sizeProvider: nameString, config: nil) { (label: UILabel, _) in
+        let nameNode = LayoutNode(sizeProvider: nameString) { (label: UILabel, _) in
             label.numberOfLines = 0
             label.attributedText = nameString
         }
 
-        let websiteNode = LayoutNode(sizeProvider: websiteString, config: { node in
-            node.isHidden = websiteString == nil
-            node.marginTop = 12
+        let websiteNode = LayoutNode(sizeProvider: websiteString, {
+            $0.isHidden(websiteString == nil).margin(.top(12))
         }) { (label: UILabel, _) in
             label.numberOfLines = 0
             label.isUserInteractionEnabled = true
             label.attributedText = websiteString
             label.all_addGestureRecognizer({ [weak label] (_: UITapGestureRecognizer) in
-                label?.animated(action: model.1, alpha: 0.3)
+                label?.animated(action: self.model.1, alpha: 0.3)
             })
         }
 
-        let textStackNode = LayoutNode(children: [nameNode, websiteNode], config: { node in
-            node.flexDirection = .column
-            node.alignItems = .flexStart
-            node.flex = 1
+        let textStackNode = LayoutNode(children: [nameNode, websiteNode], {
+            $0.flexDirection(.column).alignItems(.flexStart).flex(1)
         })
 
-        let contentNode = LayoutNode(children: [textStackNode, imageNode], config: { node in
-            node.flexDirection = .row
-            node.alignItems = .center
-            node.padding(top: 32, left: 16, bottom: 32, right: 16)
+        let contentNode = LayoutNode(children: [textStackNode, imageNode], {
+            $0.flexDirection(.row).alignItems(.center).padding(.vertical(32), .horizontal(16))
         })
 
         return contentNode

@@ -19,14 +19,14 @@ public final class FLTextPreviewLayoutSpec: ModelLayoutSpec<FLStringPreview> {
                 .usesLineFragmentOrigin
                 ])
 
-        let textNode = LayoutNode(sizeProvider: text, config: { node in
+        let textNode = LayoutNode(sizeProvider: text, {
             node.maxHeight = 120
             node.flex = 1
         }) { (label: AsyncLabel, _) in
             label.stringDrawing = text
         }
 
-        let arrowNode = LayoutNode(config: { node in
+        let arrowNode = LayoutNode({
             node.width = 10
             node.height = 10
             node.marginLeft = 12
@@ -36,7 +36,7 @@ public final class FLTextPreviewLayoutSpec: ModelLayoutSpec<FLStringPreview> {
             view.image = UIImage(named: "arrow_right")?.withRenderingMode(.alwaysTemplate)
         }
 
-        let contentNode = LayoutNode(children: [textNode, arrowNode], config: { node in
+        let contentNode = LayoutNode(children: [textNode, arrowNode], {
             node.flexDirection = .row
             node.alignItems = .center
             node.padding(top: 16, left: 16, bottom: 16, right: 12)

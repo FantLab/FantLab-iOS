@@ -29,7 +29,7 @@ public final class EditionHeaderLayoutSpec: ModelLayoutSpec<EditionModel> {
             }
         }
 
-        let coverNode = LayoutNode(config: { node in
+        let coverNode = LayoutNode({
             node.width = 100
             node.height = 150
             node.marginRight = 16
@@ -45,7 +45,7 @@ public final class EditionHeaderLayoutSpec: ModelLayoutSpec<EditionModel> {
             label.attributedText = nameString
         }
 
-        let typeNode = LayoutNode(sizeProvider: typeString, config: { node in
+        let typeNode = LayoutNode(sizeProvider: typeString, {
             node.marginTop = 12
             node.isHidden = typeString == nil
         }) { (label: UILabel, _) in
@@ -53,13 +53,13 @@ public final class EditionHeaderLayoutSpec: ModelLayoutSpec<EditionModel> {
             label.attributedText = typeString
         }
 
-        let rightStackNode = LayoutNode(children: [nameNode, typeNode], config: { node in
+        let rightStackNode = LayoutNode(children: [nameNode, typeNode], {
             node.flexDirection = .column
             node.alignItems = .center
             node.flex = 1
         })
 
-        let contentNode = LayoutNode(children: [coverNode, rightStackNode], config: { node in
+        let contentNode = LayoutNode(children: [coverNode, rightStackNode], {
             node.flexDirection = .row
             node.alignItems = .center
             node.padding(all: 16)

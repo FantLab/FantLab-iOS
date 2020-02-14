@@ -10,7 +10,7 @@ public final class AwardIconsLayoutSpec: ModelLayoutSpec<[AwardPreviewModel]> {
         var iconNodes: [LayoutNode] = []
 
         model.forEach { award in
-            let iconNode = LayoutNode(config: { node in
+            let iconNode = LayoutNode({
                 node.width = 24
                 node.height = 24
                 node.margin(all: 8)
@@ -23,7 +23,7 @@ public final class AwardIconsLayoutSpec: ModelLayoutSpec<[AwardPreviewModel]> {
             iconNodes.append(iconNode)
         }
 
-        let iconsNode = LayoutNode(children: iconNodes, config: { node in
+        let iconsNode = LayoutNode(children: iconNodes, {
             node.flexDirection = .row
             node.justifyContent = .flexStart
             node.flexWrap = .wrap

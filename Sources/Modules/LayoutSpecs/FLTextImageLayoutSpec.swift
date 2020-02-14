@@ -5,7 +5,7 @@ import yoga
 
 public final class FLTextImageLayoutSpec: ModelLayoutSpec<UIImage> {
     public override func makeNodeFrom(model: UIImage, sizeConstraints: SizeConstraints) -> LayoutNode {
-        let imageNode = LayoutNode(children: [], config: { node in
+        let imageNode = LayoutNode(children: [], {
             node.width = 50%
             node.aspectRatio = Float(model.size.width / model.size.height)
         }) { (imageView: UIImageView, _) in
@@ -13,7 +13,7 @@ public final class FLTextImageLayoutSpec: ModelLayoutSpec<UIImage> {
             imageView.image = model
         }
 
-        return LayoutNode(children: [imageNode], config: { node in
+        return LayoutNode(children: [imageNode], {
             node.flexDirection = .column
             node.alignItems = .center
         })

@@ -12,7 +12,7 @@ public final class FLTextExpandedHiddenStringLayoutSpec: ModelLayoutSpec<(NSAttr
 
         let drawing = model.0.drawing()
 
-        let nameTextNode = LayoutNode(sizeProvider: nameString, config: { node in
+        let nameTextNode = LayoutNode(sizeProvider: nameString, {
             node.marginBottom = 4
             node.marginLeft = 8
         }) { (label: UILabel, _) in
@@ -24,7 +24,7 @@ public final class FLTextExpandedHiddenStringLayoutSpec: ModelLayoutSpec<(NSAttr
             label.stringDrawing = drawing
         }
 
-        let borderNode = LayoutNode(children: [textNode], config: { node in
+        let borderNode = LayoutNode(children: [textNode], {
             node.padding(all: 16)
             node.flexDirection = .column
             node.alignSelf = .stretch
@@ -34,7 +34,7 @@ public final class FLTextExpandedHiddenStringLayoutSpec: ModelLayoutSpec<(NSAttr
             view.backgroundColor = Colors.perfectGray
         }
 
-        let contentNode = LayoutNode(children: [nameTextNode, borderNode], config: { node in
+        let contentNode = LayoutNode(children: [nameTextNode, borderNode], {
             node.paddingLeft = 16
             node.paddingRight = 16
             node.flexDirection = .column

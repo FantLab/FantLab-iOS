@@ -30,20 +30,20 @@ public final class AwardContestLayoutSpec: ModelLayoutSpec<AwardPreviewModel.Con
                 .make()
         }
 
-        let nameNode = LayoutNode(sizeProvider: nameString, config: { node in
+        let nameNode = LayoutNode(sizeProvider: nameString, {
             node.flex = 1
         }) { (label: UILabel, _) in
             label.numberOfLines = 0
             label.attributedText = nameString
         }
 
-        let winNode = LayoutNode(sizeProvider: winString, config: { node in
+        let winNode = LayoutNode(sizeProvider: winString, {
             node.marginLeft = 24
         }) { (label: UILabel, _) in
             label.attributedText = winString
         }
 
-        let contentNode = LayoutNode(children: [nameNode, winNode], config: { node in
+        let contentNode = LayoutNode(children: [nameNode, winNode], {
             node.flexDirection = .row
             node.alignItems = .center
             node.padding(top: nil, left: 56, bottom: 16, right: 16)

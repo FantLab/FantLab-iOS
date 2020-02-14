@@ -32,7 +32,7 @@ public final class WorkRatingLayoutSpec: ModelLayoutSpec<WorkModel> {
             label.attributedText = ratingString
         }
 
-        let starNode = LayoutNode(sizeProvider: starString, config: { node in
+        let starNode = LayoutNode(sizeProvider: starString, {
             node.marginLeft = 8
             node.marginTop = 3
             node.flex = 1
@@ -45,13 +45,13 @@ public final class WorkRatingLayoutSpec: ModelLayoutSpec<WorkModel> {
             label.attributedText = marksString
         }
 
-        let marksContainerNode = LayoutNode(children: [marksNode], config: { node in
+        let marksContainerNode = LayoutNode(children: [marksNode], {
             node.width = 100
             node.alignItems = .center
             node.justifyContent = .center
         })
 
-        let contentNode = LayoutNode(children: [ratingNode, starNode, marksContainerNode], config: { node in
+        let contentNode = LayoutNode(children: [ratingNode, starNode, marksContainerNode], {
             node.paddingLeft = 24
             node.paddingRight = 24
             node.padding(top: nil, left: 16, bottom: 16, right: 16)

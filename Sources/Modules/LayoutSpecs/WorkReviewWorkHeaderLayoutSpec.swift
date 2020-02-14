@@ -37,7 +37,7 @@ public final class WorkReviewWorkHeaderLayoutSpec: ModelLayoutSpec<WorkReviewMod
             label.attributedText = nameString
         }
 
-        let infoNode = LayoutNode(sizeProvider: infoString, config: { node in
+        let infoNode = LayoutNode(sizeProvider: infoString, {
             node.marginTop = 6
             node.isHidden = infoString == nil
         }) { (label: UILabel, _) in
@@ -45,7 +45,7 @@ public final class WorkReviewWorkHeaderLayoutSpec: ModelLayoutSpec<WorkReviewMod
             label.attributedText = infoString
         }
 
-        let authorNode = LayoutNode(sizeProvider: authorString, config: { node in
+        let authorNode = LayoutNode(sizeProvider: authorString, {
             node.marginTop = 12
             node.isHidden = authorString == nil
         }) { (label: UILabel, _) in
@@ -53,7 +53,7 @@ public final class WorkReviewWorkHeaderLayoutSpec: ModelLayoutSpec<WorkReviewMod
             label.attributedText = authorString
         }
 
-        let textStackNode = LayoutNode(children: [nameNode, infoNode, authorNode], config: { node in
+        let textStackNode = LayoutNode(children: [nameNode, infoNode, authorNode], {
             node.marginLeft = 16
             node.marginRight = 12
             node.flexDirection = .column
@@ -61,7 +61,7 @@ public final class WorkReviewWorkHeaderLayoutSpec: ModelLayoutSpec<WorkReviewMod
             node.marginBottom = 8
         })
 
-        let coverNode = LayoutNode(config: { node in
+        let coverNode = LayoutNode({
             node.height = 80
             node.width = 60
             node.alignSelf = .flexStart
@@ -79,7 +79,7 @@ public final class WorkReviewWorkHeaderLayoutSpec: ModelLayoutSpec<WorkReviewMod
             markStackNode = nil
         }
 
-        let contentNode = LayoutNode(children: [coverNode, textStackNode, markStackNode], config: { node in
+        let contentNode = LayoutNode(children: [coverNode, textStackNode, markStackNode], {
             node.alignItems = .center
             node.flexDirection = .row
             node.padding(top: 16, left: 16, bottom: nil, right: 16)

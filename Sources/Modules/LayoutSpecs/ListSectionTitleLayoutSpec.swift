@@ -43,7 +43,7 @@ public final class ListSectionTitleLayoutSpec: ModelLayoutSpec<ListSectionTitleL
             label.attributedText = titleString
         }
 
-        let countNode = LayoutNode(sizeProvider: countString, config: { node in
+        let countNode = LayoutNode(sizeProvider: countString, {
             node.marginLeft = 6
             node.marginBottom = 4
             node.isHidden = countString == nil
@@ -56,11 +56,11 @@ public final class ListSectionTitleLayoutSpec: ModelLayoutSpec<ListSectionTitleL
         let arrowNode: LayoutNode?
 
         if model.hasArrow {
-            spacingNode = LayoutNode(config: { node in
+            spacingNode = LayoutNode({
                 node.flex = 1
             })
 
-            arrowNode = LayoutNode(config: { node in
+            arrowNode = LayoutNode({
                 node.marginLeft = 8
                 node.width = 10
                 node.height = 10
@@ -74,7 +74,7 @@ public final class ListSectionTitleLayoutSpec: ModelLayoutSpec<ListSectionTitleL
             arrowNode = nil
         }
 
-        let contentNode = LayoutNode(children: [titleNode, countNode, spacingNode, arrowNode], config: { node in
+        let contentNode = LayoutNode(children: [titleNode, countNode, spacingNode, arrowNode], {
             node.flexDirection = .row
             node.alignItems = .center
             node.padding(top: 12, left: 16, bottom: 16, right: 12)

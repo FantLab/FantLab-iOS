@@ -23,25 +23,25 @@ public final class ObjectPropertiesLayoutSpec: ModelLayoutSpec<ObjectPropertiesP
                 .foregroundColor(UIColor.black)
                 .make()
 
-            let titleNode = LayoutNode(sizeProvider: titleString, config: { node in
+            let titleNode = LayoutNode(sizeProvider: titleString, {
                 node.width = 48%
             }) { (label: UILabel, _) in
                 label.numberOfLines = 0
                 label.attributedText = titleString
             }
 
-            let spacingNode = LayoutNode(config: { node in
+            let spacingNode = LayoutNode({
                 node.width = 2%
             })
 
-            let contentNode = LayoutNode(sizeProvider: contentString, config: { node in
+            let contentNode = LayoutNode(sizeProvider: contentString, {
                 node.width = 50%
             }) { (label: UILabel, _) in
                 label.numberOfLines = 0
                 label.attributedText = contentString
             }
 
-            let textStackNode = LayoutNode(children: [titleNode, spacingNode, contentNode], config: { node in
+            let textStackNode = LayoutNode(children: [titleNode, spacingNode, contentNode], {
                 node.flexDirection = .row
                 node.alignItems = .flexStart
                 node.marginTop = 16
@@ -50,7 +50,7 @@ public final class ObjectPropertiesLayoutSpec: ModelLayoutSpec<ObjectPropertiesP
             textStackNodes.append(textStackNode)
         }
 
-        let contentNode = LayoutNode(children: textStackNodes, config: { node in
+        let contentNode = LayoutNode(children: textStackNodes, {
             node.flexDirection = .column
             node.alignItems = .flexStart
             node.padding(top: nil, left: 16, bottom: 16, right: 16)

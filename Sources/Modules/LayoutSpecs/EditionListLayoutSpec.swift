@@ -66,7 +66,7 @@ private final class EditionListView: UIView {
 
 public final class EditionListLayoutSpec: ModelLayoutSpec<([EditionPreviewModel], ((Int) -> Void)?)> {
     public override func makeNodeFrom(model: ([EditionPreviewModel], ((Int) -> Void)?), sizeConstraints: SizeConstraints) -> LayoutNode {
-        let listNode = LayoutNode(config: { node in
+        let listNode = LayoutNode({
             node.height = 160
             node.marginBottom = 8
         }) { (view: EditionListView, _) in

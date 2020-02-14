@@ -12,7 +12,7 @@ public final class AuthorPreviewLayoutSpec: ModelLayoutSpec<AuthorPreviewModel> 
             .foregroundColor(UIColor.black)
             .make()
 
-        let imageNode = LayoutNode(config: { node in
+        let imageNode = LayoutNode({
             node.width = 60
             node.height = 60
             node.marginRight = 16
@@ -30,11 +30,11 @@ public final class AuthorPreviewLayoutSpec: ModelLayoutSpec<AuthorPreviewModel> 
             label.attributedText = nameString
         }
 
-        let spacingNode = LayoutNode(config: { node in
+        let spacingNode = LayoutNode({
             node.flex = 1
         })
 
-        let arrowNode = LayoutNode(config: { node in
+        let arrowNode = LayoutNode({
             node.marginLeft = 8
             node.width = 10
             node.height = 10
@@ -44,7 +44,7 @@ public final class AuthorPreviewLayoutSpec: ModelLayoutSpec<AuthorPreviewModel> 
             view.image = UIImage(named: "arrow_right")?.withRenderingMode(.alwaysTemplate)
         }
 
-        let contentNode = LayoutNode(children: [imageNode, nameNode, spacingNode, arrowNode], config: { node in
+        let contentNode = LayoutNode(children: [imageNode, nameNode, spacingNode, arrowNode], {
             node.padding(top: 16, left: 16, bottom: 16, right: 12)
             node.flexDirection = .row
             node.alignItems = .center

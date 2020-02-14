@@ -37,21 +37,21 @@ public final class WorkParentModelLayoutSpec: ModelLayoutSpec<WorkParentModelLay
                 .make()
         }
 
-        let nameNode = LayoutNode(sizeProvider: nameString, config: { node in
+        let nameNode = LayoutNode(sizeProvider: nameString, {
             node.flex = 1
         }) { (label: UILabel, _) in
             label.numberOfLines = 0
             label.attributedText = nameString
         }
 
-        let typeNode = LayoutNode(sizeProvider: typeString, config: { node in
+        let typeNode = LayoutNode(sizeProvider: typeString, {
             node.marginLeft = 40
         }) { (label: UILabel, _) in
             label.numberOfLines = 0
             label.attributedText = typeString
         }
 
-        let arrowNode = LayoutNode(config: { node in
+        let arrowNode = LayoutNode({
             node.marginLeft = 8
             node.width = 10
             node.height = 10
@@ -62,7 +62,7 @@ public final class WorkParentModelLayoutSpec: ModelLayoutSpec<WorkParentModelLay
             view.isHidden = !model.showArrow
         }
 
-        let contentNode = LayoutNode(children: [nameNode, typeNode, arrowNode], config: { node in
+        let contentNode = LayoutNode(children: [nameNode, typeNode, arrowNode], {
             node.flexDirection = .row
             node.alignItems = .center
             node.padding(

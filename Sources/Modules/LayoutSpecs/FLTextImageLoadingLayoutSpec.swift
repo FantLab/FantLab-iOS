@@ -22,7 +22,7 @@ public struct FLTextImageLoadingLayoutModel {
 
 public final class FLTextImageLoadingLayoutSpec: ModelLayoutSpec<FLTextImageLoadingLayoutModel> {
     public override func makeNodeFrom(model: FLTextImageLoadingLayoutModel, sizeConstraints: SizeConstraints) -> LayoutNode {
-        let spinnerNode = LayoutNode(config: { node in
+        let spinnerNode = LayoutNode({
             node.width = 32
             node.height = 32
         }) { (view: UIActivityIndicatorView, _) in
@@ -30,7 +30,7 @@ public final class FLTextImageLoadingLayoutSpec: ModelLayoutSpec<FLTextImageLoad
             view.startAnimating()
         }
 
-        let containerNode = LayoutNode(children: [spinnerNode], config: { node in
+        let containerNode = LayoutNode(children: [spinnerNode], {
             node.alignItems = .center
             node.justifyContent = .center
             node.height = 48

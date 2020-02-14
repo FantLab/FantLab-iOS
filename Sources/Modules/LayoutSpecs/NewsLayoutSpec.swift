@@ -40,28 +40,28 @@ public final class NewsHeaderLayoutSpec: ModelLayoutSpec<NewsModel> {
             tagColor = UIColor(rgb: 0x3178A8)
         }
 
-        let titleNode = LayoutNode(sizeProvider: titleString, config: { node in
+        let titleNode = LayoutNode(sizeProvider: titleString, {
 
         }) { (label: UILabel, _) in
             label.numberOfLines = 0
             label.attributedText = titleString
         }
 
-        let dateNode = LayoutNode(sizeProvider: dateString, config: { node in
+        let dateNode = LayoutNode(sizeProvider: dateString, {
             node.marginTop = 4
         }) { (label: UILabel, _) in
             label.numberOfLines = 0
             label.attributedText = dateString
         }
 
-        let tagNode = LayoutNode(sizeProvider: tagString, config: { node in
+        let tagNode = LayoutNode(sizeProvider: tagString, {
 
         }) { (label: UILabel, _) in
             label.numberOfLines = 0
             label.attributedText = tagString
         }
 
-        let tagContainerNode = LayoutNode(children: [tagNode], config: { node in
+        let tagContainerNode = LayoutNode(children: [tagNode], {
             node.alignItems = .center
             node.justifyContent = .center
             node.padding(top: 2, left: 4, bottom: 2, right: 4)
@@ -71,7 +71,7 @@ public final class NewsHeaderLayoutSpec: ModelLayoutSpec<NewsModel> {
             view.backgroundColor = tagColor
         }
 
-        let leftStackNode = LayoutNode(children: [titleNode, dateNode, tagContainerNode], config: { node in
+        let leftStackNode = LayoutNode(children: [titleNode, dateNode, tagContainerNode], {
             node.flexDirection = .column
             node.justifyContent = .flexStart
             node.alignItems = .flexStart
@@ -79,7 +79,7 @@ public final class NewsHeaderLayoutSpec: ModelLayoutSpec<NewsModel> {
             node.marginRight = 16
         })
 
-        let imageNode = LayoutNode(config: { node in
+        let imageNode = LayoutNode({
             node.width = 80
             node.height = 80
         }) { (imageView: UIImageView, _) in
@@ -89,7 +89,7 @@ public final class NewsHeaderLayoutSpec: ModelLayoutSpec<NewsModel> {
             WebImage.load(url: model.image, into: imageView)
         }
 
-        let contentNode = LayoutNode(children: [leftStackNode, imageNode], config: { node in
+        let contentNode = LayoutNode(children: [leftStackNode, imageNode], {
             node.flexDirection = .row
             node.padding(top: 16, left: 16, bottom: nil, right: 16)
         })

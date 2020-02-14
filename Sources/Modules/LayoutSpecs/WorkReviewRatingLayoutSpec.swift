@@ -7,7 +7,7 @@ import FLKit
 import FLModels
 
 final class WorkReviewRatingLayoutSpec: ModelLayoutSpec<(Int, Int)> {
-    override func makeNodeFrom(model: (Int, Int), sizeConstraints: SizeConstraints) -> LayoutNode {
+    override func makeNodeWith(boundingDimensions: LayoutDimensions<CGFloat>) -> LayoutNodeConvertible {
         let titleString = "Оценка".attributed()
             .font(Fonts.system.regular(size: 9))
             .kern(-0.5)
@@ -42,17 +42,15 @@ final class WorkReviewRatingLayoutSpec: ModelLayoutSpec<(Int, Int)> {
             label.attributedText = valueString
         }
         
-        let titleNode = LayoutNode(sizeProvider: titleString, config: { node in
-            node.marginTop = 2
+        let titleNode = LayoutNode(sizeProvider: titleString, {
+            $0.margin(.top(2))
         }) { (label: UILabel, _) in
             label.numberOfLines = 0
             label.attributedText = titleString
         }
         
-        return LayoutNode(children: [valueNode, titleNode], config: { node in
-            node.marginLeft = 12
-            node.flexDirection = .column
-            node.alignItems = .center
+        return LayoutNode(children: [valueNode, titleNode], {
+            $0.margin(.left(12)).flexDirection(.column).alignItems(.center)
         })
     }
 }

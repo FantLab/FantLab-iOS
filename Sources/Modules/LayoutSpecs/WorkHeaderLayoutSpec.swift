@@ -50,7 +50,7 @@ public final class WorkHeaderLayoutSpec: ModelLayoutSpec<(WorkModel, () -> Void)
             }
         }
 
-        let coverNode = LayoutNode(config: { node in
+        let coverNode = LayoutNode({
             node.width = 100
             node.height = 120
             node.marginLeft = 16
@@ -60,14 +60,14 @@ public final class WorkHeaderLayoutSpec: ModelLayoutSpec<(WorkModel, () -> Void)
             view.image = WorkCoverImageRule.coverFor(workType: model.0.workTypeKey)
         }
 
-        let nameNode = LayoutNode(sizeProvider: nameString, config: { node in
+        let nameNode = LayoutNode(sizeProvider: nameString, {
 
         }) { (label: UILabel, _) in
             label.numberOfLines = 0
             label.attributedText = nameString
         }
 
-        let origNameNode = LayoutNode(sizeProvider: origNameString, config: { node in
+        let origNameNode = LayoutNode(sizeProvider: origNameString, {
             node.marginTop = 4
             node.isHidden = origNameString == nil
         }) { (label: UILabel, _) in
@@ -75,14 +75,14 @@ public final class WorkHeaderLayoutSpec: ModelLayoutSpec<(WorkModel, () -> Void)
             label.attributedText = origNameString
         }
 
-        let infoNode = LayoutNode(sizeProvider: infoString, config: { node in
+        let infoNode = LayoutNode(sizeProvider: infoString, {
             node.marginTop = 8
         }) { (label: UILabel, _) in
             label.numberOfLines = 0
             label.attributedText = infoString
         }
 
-        let authorNode = LayoutNode(sizeProvider: authorString, config: { node in
+        let authorNode = LayoutNode(sizeProvider: authorString, {
             node.marginTop = 16
             node.isHidden = authorString == nil
         }) { (label: UILabel, _) in
@@ -94,14 +94,14 @@ public final class WorkHeaderLayoutSpec: ModelLayoutSpec<(WorkModel, () -> Void)
             })
         }
 
-        let textStackNode = LayoutNode(children: [nameNode, origNameNode, infoNode, authorNode], config: { node in
+        let textStackNode = LayoutNode(children: [nameNode, origNameNode, infoNode, authorNode], {
             node.flexDirection = .column
             node.alignItems = .flexStart
             node.alignSelf = .center
             node.flex = 1
         })
 
-        let contentNode = LayoutNode(children: [textStackNode, coverNode], config: { node in
+        let contentNode = LayoutNode(children: [textStackNode, coverNode], {
             node.flexDirection = .row
             node.alignItems = .flexStart
             node.padding(all: 16)

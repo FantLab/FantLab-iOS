@@ -15,7 +15,7 @@ public final class ShowAllButtonLayoutSpec: ModelLayoutSpec<String> {
             label.attributedText = titleString
         }
 
-        return LayoutNode(children: [textNode], config: { node in
+        return LayoutNode(children: [textNode], {
             node.alignItems = .center
             node.justifyContent = .center
             node.padding(all: 24)

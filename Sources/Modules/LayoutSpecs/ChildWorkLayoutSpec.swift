@@ -80,7 +80,7 @@ public final class ChildWorkLayoutSpec: ModelLayoutSpec<ChildWorkLayoutModel> {
             label.attributedText = titleString
         }
 
-        let subtitleNode = LayoutNode(sizeProvider: subtitleString, config: { node in
+        let subtitleNode = LayoutNode(sizeProvider: subtitleString, {
             node.marginTop = 2
             node.isHidden = subtitleString == nil
         }) { (label: UILabel, _) in
@@ -93,7 +93,7 @@ public final class ChildWorkLayoutSpec: ModelLayoutSpec<ChildWorkLayoutModel> {
             label.attributedText = detailString
         }
 
-        let detailContainerNode = LayoutNode(children: [detailTextNode], config: { node in
+        let detailContainerNode = LayoutNode(children: [detailTextNode], {
             node.alignItems = .center
             node.flexDirection = .column
             node.width = 48
@@ -101,21 +101,21 @@ public final class ChildWorkLayoutSpec: ModelLayoutSpec<ChildWorkLayoutModel> {
             node.isHidden = detailString == nil
         })
 
-        let leftStackNode = LayoutNode(children: [titleNode, subtitleNode], config: { node in
+        let leftStackNode = LayoutNode(children: [titleNode, subtitleNode], {
             node.flex = 1
             node.flexDirection = .column
             node.alignItems = .flexStart
             node.minHeight = 20
         })
 
-        let textContentStackNode = LayoutNode(children: [leftStackNode, detailContainerNode], config: { node in
+        let textContentStackNode = LayoutNode(children: [leftStackNode, detailContainerNode], {
             node.flexDirection = .row
             node.alignItems = .center
             node.justifyContent = .spaceBetween
             node.flex = 1
         })
 
-        let rightArrowIconNode = LayoutNode(config: { node in
+        let rightArrowIconNode = LayoutNode({
             node.width = 10
             node.height = 10
         }) { (view: UIImageView, _) in
@@ -128,7 +128,7 @@ public final class ChildWorkLayoutSpec: ModelLayoutSpec<ChildWorkLayoutModel> {
         let leftIconNode: LayoutNode
 
         if model.count > 0 {
-            leftIconNode = LayoutNode(config: { node in
+            leftIconNode = LayoutNode({
                 node.marginRight = 10
                 node.width = 8
                 node.height = 8
@@ -138,7 +138,7 @@ public final class ChildWorkLayoutSpec: ModelLayoutSpec<ChildWorkLayoutModel> {
                 view.image = (model.isExpanded ? UIImage(named: "arrow_up") : UIImage(named: "arrow_down"))?.withRenderingMode(.alwaysTemplate)
             }
         } else {
-            leftIconNode = LayoutNode(config: { node in
+            leftIconNode = LayoutNode({
                 node.marginLeft = 1
                 node.marginRight = 11
                 node.width = 6
@@ -150,7 +150,7 @@ public final class ChildWorkLayoutSpec: ModelLayoutSpec<ChildWorkLayoutModel> {
             }
         }
 
-        let contentNode = LayoutNode(children: [leftIconNode, textContentStackNode, rightArrowIconNode], config: { node in
+        let contentNode = LayoutNode(children: [leftIconNode, textContentStackNode, rightArrowIconNode], {
             node.flexDirection = .row
             node.alignItems = .center
             node.padding(top: 12, left: nil, bottom: 12, right: 12)
@@ -160,7 +160,7 @@ public final class ChildWorkLayoutSpec: ModelLayoutSpec<ChildWorkLayoutModel> {
         let expandCollapseActionNode: LayoutNode?
 
         if let expandCollapseAction = model.expandCollapseAction {
-            expandCollapseActionNode = LayoutNode(children: [], config: { node in
+            expandCollapseActionNode = LayoutNode(children: [], {
                 node.position = .absolute
                 node.top = 0
                 node.left = 0

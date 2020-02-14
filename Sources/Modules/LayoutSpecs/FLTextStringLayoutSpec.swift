@@ -99,7 +99,7 @@ public final class FLTextStringLayoutSpec: ModelLayoutSpec<FLTextStringLayoutMod
             view.textStack = textStack
         }
 
-        let contentNode = LayoutNode(children: [textNode], config: { node in
+        let contentNode = LayoutNode(children: [textNode], {
             node.paddingLeft = 16
             node.paddingRight = 16
         })

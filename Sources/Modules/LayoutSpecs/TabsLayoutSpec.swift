@@ -50,7 +50,7 @@ public final class TabsLayoutSpec: ModelLayoutSpec<[TabLayoutModel]> {
                     .foregroundColor(UIColor.lightGray)
                     .make()
 
-                countNode = LayoutNode(sizeProvider: countString, config: { node in
+                countNode = LayoutNode(sizeProvider: countString, {
                     node.marginLeft = 3
                     node.marginBottom = 4
                 }) { (label: UILabel, _) in
@@ -60,7 +60,7 @@ public final class TabsLayoutSpec: ModelLayoutSpec<[TabLayoutModel]> {
                 countNode = nil
             }
 
-            let tabContentNode = LayoutNode(children: [nameNode, countNode], config: { node in
+            let tabContentNode = LayoutNode(children: [nameNode, countNode], {
                 node.flexDirection = .row
                 node.alignItems = .center
                 node.flex = 1
@@ -71,7 +71,7 @@ public final class TabsLayoutSpec: ModelLayoutSpec<[TabLayoutModel]> {
             let selectionLineNode: LayoutNode?
 
             if tab.isSelected {
-                selectionLineNode = LayoutNode(config: { node in
+                selectionLineNode = LayoutNode({
                     node.position = .absolute
                     node.height = 2
                     node.left = 0
@@ -84,7 +84,7 @@ public final class TabsLayoutSpec: ModelLayoutSpec<[TabLayoutModel]> {
                 selectionLineNode = nil
             }
 
-            let tabNode = LayoutNode(children: [tabContentNode, selectionLineNode], config: { node in
+            let tabNode = LayoutNode(children: [tabContentNode, selectionLineNode], {
                 node.width = YGValue(value: tabWidth, unit: .percent)
                 node.alignItems = .center
                 node.justifyContent = .center
@@ -99,7 +99,7 @@ public final class TabsLayoutSpec: ModelLayoutSpec<[TabLayoutModel]> {
             tabNodes.append(tabNode)
         }
 
-        let tabsNode = LayoutNode(children: tabNodes, config: { node in
+        let tabsNode = LayoutNode(children: tabNodes, {
             node.flexDirection = .row
             node.marginTop = 8
             node.marginBottom = 8

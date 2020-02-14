@@ -10,7 +10,7 @@ public final class FLTextQuoteLayoutSpec: ModelLayoutSpec<NSAttributedString> {
             label.stringDrawing = drawing
         }
 
-        let contentNode = LayoutNode(children: [textNode], config: { node in
+        let contentNode = LayoutNode(children: [textNode], {
             node.paddingLeft = 32
             node.paddingRight = 32
         })

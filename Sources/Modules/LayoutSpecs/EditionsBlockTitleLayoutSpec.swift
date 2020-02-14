@@ -39,17 +39,17 @@ public final class EditionsBlockTitleLayoutSpec: ModelLayoutSpec<EditionsBlockTi
             label.attributedText = titleString
         }
 
-        let spacingNode = LayoutNode(config: { node in
+        let spacingNode = LayoutNode({
             node.flex = 1
         })
 
-        let countNode = LayoutNode(sizeProvider: countString, config: { node in
+        let countNode = LayoutNode(sizeProvider: countString, {
             node.marginLeft = 8
         }) { (label: UILabel, _) in
             label.attributedText = countString
         }
 
-        let contentNode = LayoutNode(children: [titleNode, spacingNode, countNode], config: { node in
+        let contentNode = LayoutNode(children: [titleNode, spacingNode, countNode], {
             node.flexDirection = .row
             node.alignItems = .center
             node.padding(all: 16)

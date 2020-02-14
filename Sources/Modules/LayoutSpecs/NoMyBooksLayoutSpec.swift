@@ -6,7 +6,7 @@ import FLStyle
 
 public final class NoMyBooksLayoutSpec: LayoutSpec {
     public override func makeNodeWith(sizeConstraints: SizeConstraints) -> LayoutNode {
-        let imageNode = LayoutNode(config: { node in
+        let imageNode = LayoutNode({
             node.width = 200
             node.height = 136
             node.marginBottom = 48
@@ -15,7 +15,7 @@ public final class NoMyBooksLayoutSpec: LayoutSpec {
             view.contentMode = .scaleAspectFit
         }
 
-        let contentNode = LayoutNode(children: [imageNode], config: { node in
+        let contentNode = LayoutNode(children: [imageNode], {
             node.flexDirection = .column
             node.alignItems = .center
             node.justifyContent = .center

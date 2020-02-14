@@ -13,7 +13,7 @@ public final class UserProfileHeaderLayoutSpec: ModelLayoutSpec<UserProfileModel
             .alignment(.center)
             .make()
 
-        let loginNode = LayoutNode(sizeProvider: loginString, config: { node in
+        let loginNode = LayoutNode(sizeProvider: loginString, {
 
         }) { (label: UILabel, _) in
             label.numberOfLines = 0
@@ -28,7 +28,7 @@ public final class UserProfileHeaderLayoutSpec: ModelLayoutSpec<UserProfileModel
                 .foregroundColor(UIColor.gray)
                 .make()
 
-            userClassNode = LayoutNode(sizeProvider: string, config: { node in
+            userClassNode = LayoutNode(sizeProvider: string, {
                 node.marginTop = 12
             }) { (label: UILabel, _) in
                 label.numberOfLines = 0
@@ -38,7 +38,7 @@ public final class UserProfileHeaderLayoutSpec: ModelLayoutSpec<UserProfileModel
             userClassNode = nil
         }
 
-        let imageNode = LayoutNode(config: { node in
+        let imageNode = LayoutNode({
             node.width = 120
             node.height = 120
             node.marginBottom = 16
@@ -51,7 +51,7 @@ public final class UserProfileHeaderLayoutSpec: ModelLayoutSpec<UserProfileModel
             WebImage.load(url: model.avatar, into: imageView)
         }
 
-        let contentNode = LayoutNode(children: [imageNode, loginNode, userClassNode], config: { node in
+        let contentNode = LayoutNode(children: [imageNode, loginNode, userClassNode], {
             node.padding(all: 32)
             node.flexDirection = .column
             node.alignItems = .center

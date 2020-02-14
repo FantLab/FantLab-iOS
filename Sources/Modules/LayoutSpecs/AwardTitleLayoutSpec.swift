@@ -16,7 +16,7 @@ public final class AwardTitleLayoutSpec: ModelLayoutSpec<AwardPreviewModel> {
                 .make()
         }
 
-        let iconNode = LayoutNode(config: { node in
+        let iconNode = LayoutNode({
             node.width = 24
             node.height = 24
         }) { (imageView: UIImageView, _) in
@@ -25,7 +25,7 @@ public final class AwardTitleLayoutSpec: ModelLayoutSpec<AwardPreviewModel> {
             WebImage.load(url: model.iconURL, into: imageView)
         }
 
-        let nameNode = LayoutNode(sizeProvider: nameString, config: { node in
+        let nameNode = LayoutNode(sizeProvider: nameString, {
             node.marginLeft = 16
             node.flex = 1
         }) { (label: UILabel, _) in
@@ -33,12 +33,12 @@ public final class AwardTitleLayoutSpec: ModelLayoutSpec<AwardPreviewModel> {
             label.attributedText = nameString
         }
 
-        let topNode = LayoutNode(children: [iconNode, nameNode], config: { node in
+        let topNode = LayoutNode(children: [iconNode, nameNode], {
             node.flexDirection = .row
             node.alignItems = .center
         })
 
-        let contentNode = LayoutNode(children: [topNode], config: { node in
+        let contentNode = LayoutNode(children: [topNode], {
             node.flexDirection = .column
             node.padding(all: 16)
         })

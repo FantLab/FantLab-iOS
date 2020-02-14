@@ -39,7 +39,7 @@ public final class FLComboTextLayoutSpec: ModelLayoutSpec<FLComboTextLayoutModel
             textNodes.append(spacingNode)
         }
 
-        let contentNode = LayoutNode(children: textNodes, config: { node in
+        let contentNode = LayoutNode(children: textNodes, {
             node.paddingBottom = 4
         })
 

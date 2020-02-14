@@ -4,7 +4,7 @@ import ALLKit
 import FLStyle
 
 public final class FLTextCollapsedHiddenStringLayoutSpec: ModelLayoutSpec<String> {
-    public override func makeNodeFrom(model: String, sizeConstraints: SizeConstraints) -> LayoutNode {
+    public override func makeNodeWith(boundingDimensions: LayoutDimensions<CGFloat>) -> LayoutNodeConvertible {
         let nameString = model.attributed()
             .font(Fonts.system.bold(size: 14))
             .foregroundColor(UIColor.black)
@@ -15,35 +15,28 @@ public final class FLTextCollapsedHiddenStringLayoutSpec: ModelLayoutSpec<String
             .foregroundColor(Colors.darkOrange)
             .make()
 
-        let nameTextNode = LayoutNode(sizeProvider: nameString, config: { node in
-            node.marginBottom = 4
-            node.marginLeft = 8
+        let nameTextNode = LayoutNode(sizeProvider: nameString, {
+            $0.margin(.bottom(4), .left(8))
         }) { (label: UILabel, _) in
             label.numberOfLines = 0
             label.attributedText = nameString
         }
 
-        let showContentNode = LayoutNode(sizeProvider: showContentString, config: nil) { (label: UILabel, _) in
+        let showContentNode = LayoutNode(sizeProvider: showContentString) { (label: UILabel, _) in
             label.numberOfLines = 0
             label.attributedText = showContentString
         }
 
-        let borderNode = LayoutNode(children: [showContentNode], config: { node in
-            node.padding(all: 16)
-            node.flexDirection = .column
-            node.alignItems = .center
-            node.alignSelf = .stretch
+        let borderNode = LayoutNode(children: [showContentNode], {
+            $0.padding(.all(16)).flexDirection(.column).alignItems(.center).alignSelf(.stretch)
         }) { (view: UIView, _) in
             view.layer.borderWidth = 1
             view.layer.borderColor = UIColor.lightGray.cgColor
             view.backgroundColor = Colors.perfectGray
         }
 
-        let contentNode = LayoutNode(children: [nameTextNode, borderNode], config: { node in
-            node.paddingLeft = 16
-            node.paddingRight = 16
-            node.flexDirection = .column
-            node.alignItems = .flexStart
+        let contentNode = LayoutNode(children: [nameTextNode, borderNode], {
+            $0.padding(.horizontal(16)).flexDirection(.column).alignItems(.flexStart)
         })
 
         return contentNode

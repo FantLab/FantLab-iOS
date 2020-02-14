@@ -23,7 +23,7 @@ public final class WorkReviewWorkShortHeaderLayoutSpec: ModelLayoutSpec<WorkRevi
                 .make()
         }
 
-        let nameNode = LayoutNode(sizeProvider: workNameString, config: { node in
+        let nameNode = LayoutNode(sizeProvider: workNameString, {
 
         }) { (label: UILabel, _) in
             label.numberOfLines = 0
@@ -33,7 +33,7 @@ public final class WorkReviewWorkShortHeaderLayoutSpec: ModelLayoutSpec<WorkRevi
         let authorNode: LayoutNode?
 
         if let string = workAuthorString {
-            authorNode = LayoutNode(sizeProvider: string, config: { node in
+            authorNode = LayoutNode(sizeProvider: string, {
                 node.marginTop = 4
             }) { (label: UILabel, _) in
                 label.numberOfLines = 0
@@ -43,7 +43,7 @@ public final class WorkReviewWorkShortHeaderLayoutSpec: ModelLayoutSpec<WorkRevi
             authorNode = nil
         }
 
-        let contentNode = LayoutNode(children: [nameNode, authorNode], config: { node in
+        let contentNode = LayoutNode(children: [nameNode, authorNode], {
             node.flexDirection = .column
             node.alignItems = .flexStart
             node.padding(top: 16, left: 16, bottom: nil, right: 16)

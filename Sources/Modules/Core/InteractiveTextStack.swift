@@ -69,10 +69,10 @@ public struct InteractiveTextStack: SizeProvider {
 
     // MARK: - SizeProvider
 
-    public func calculateSize(with constraints: SizeConstraints) -> CGSize {
+    public func calculateSize(boundedBy dimensions: LayoutDimensions<CGFloat>) -> CGSize {
         textContainer.size = CGSize(
-            width: constraints.width ?? .greatestFiniteMagnitude,
-            height: constraints.height ?? .greatestFiniteMagnitude
+            width: dimensions.width.value ?? .greatestFiniteMagnitude,
+            height: dimensions.height.value ?? .greatestFiniteMagnitude
         )
 
         let size = layoutManager.usedRect(for: textContainer).size

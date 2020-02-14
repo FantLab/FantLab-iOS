@@ -20,13 +20,13 @@ public final class WorkReviewTextLayoutSpec: ModelLayoutSpec<WorkReviewModel> {
                 .usesLineFragmentOrigin
                 ])
 
-        let textNode = LayoutNode(sizeProvider: text, config: { node in
+        let textNode = LayoutNode(sizeProvider: text, {
             node.maxHeight = 120
         }) { (label: AsyncLabel, _) in
             label.stringDrawing = text
         }
 
-        let contentNode = LayoutNode(children: [textNode], config: { node in
+        let contentNode = LayoutNode(children: [textNode], {
             node.padding(all: 16)
         })
 

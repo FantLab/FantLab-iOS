@@ -8,7 +8,7 @@ public final class RemoveActionLayoutSpec: LayoutSpec {
         let icon = UIImage(named: "trash")
         let size = icon?.size ?? .zero
         
-        let iconNode = LayoutNode(config: { node in
+        let iconNode = LayoutNode({
             node.width = YGValue(size.width)
             node.height = YGValue(size.height)
         }) { (view: UIImageView, _) in
@@ -17,7 +17,7 @@ public final class RemoveActionLayoutSpec: LayoutSpec {
             view.tintColor = UIColor.white
         }
         
-        let contentNode = LayoutNode(children: [iconNode], config: { node in
+        let contentNode = LayoutNode(children: [iconNode], {
             node.alignItems = .center
             node.justifyContent = .center
         })

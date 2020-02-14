@@ -12,7 +12,7 @@ public final class EditionPreviewLayoutSpec: ModelLayoutSpec<EditionPreviewModel
             .foregroundColor(UIColor.gray)
             .make()
 
-        let imageNode = LayoutNode(config: { node in
+        let imageNode = LayoutNode({
             node.flex = 1
             node.width = 80%
         }) { (imageView: UIImageView, _) in
@@ -25,7 +25,7 @@ public final class EditionPreviewLayoutSpec: ModelLayoutSpec<EditionPreviewModel
             label.attributedText = yearString
         }
 
-        let dotNode = LayoutNode(config: { node in
+        let dotNode = LayoutNode({
             node.width = 8
             node.height = 8
             node.marginRight = 4
@@ -42,13 +42,13 @@ public final class EditionPreviewLayoutSpec: ModelLayoutSpec<EditionPreviewModel
             }
         }
 
-        let bottomNode = LayoutNode(children: [dotNode, yearNode], config: { node in
+        let bottomNode = LayoutNode(children: [dotNode, yearNode], {
             node.marginTop = 8
             node.flexDirection = .row
             node.alignItems = .center
         })
 
-        let contentNode = LayoutNode(children: [imageNode, bottomNode], config: { node in
+        let contentNode = LayoutNode(children: [imageNode, bottomNode], {
             node.padding(all: 8)
             node.flexDirection = .column
             node.alignItems = .center

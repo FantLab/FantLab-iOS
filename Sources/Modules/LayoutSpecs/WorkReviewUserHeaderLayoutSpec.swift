@@ -7,7 +7,7 @@ import FLKit
 import FLModels
 
 public final class WorkReviewUserHeaderLayoutSpec: ModelLayoutSpec<WorkReviewModel> {
-    public override func makeNodeFrom(model: WorkReviewModel, sizeConstraints: SizeConstraints) -> LayoutNode {
+    public override func makeNodeWith(boundingDimensions: LayoutDimensions<CGFloat>) -> LayoutNodeConvertible {
         let userNameString = model.user.name.attributed()
             .font(Fonts.system.medium(size: 14))
             .foregroundColor(Colors.fantasticBlue)
@@ -18,48 +18,42 @@ public final class WorkReviewUserHeaderLayoutSpec: ModelLayoutSpec<WorkReviewMod
             .foregroundColor(UIColor.lightGray)
             .make()
         
-        let userAvatarNode = LayoutNode(config: { node in
-            node.width = 32
-            node.height = 32
-            node.marginRight = 12
+        let userAvatarNode = LayoutNode({
+            $0.width(32).height(32).margin(.right(12))
         }) { (view: UIImageView, _) in
             view.layer.cornerRadius = 4
             view.layer.masksToBounds = true
             view.contentMode = .scaleAspectFill
             view.backgroundColor = Colors.perfectGray
 
-            WebImage.load(url: model.user.avatar, into: view)
+            WebImage.load(url: self.model.user.avatar, into: view)
         }
 
-        let userNameNode = LayoutNode(sizeProvider: userNameString, config: { node in
-            node.marginBottom = 2
+        let userNameNode = LayoutNode(sizeProvider: userNameString, {
+            $0.margin(.bottom(2))
         }) { (label: UILabel, _) in
             label.numberOfLines = 0
             label.attributedText = userNameString
         }
 
-        let dateNode = LayoutNode(sizeProvider: dateString, config: nil) { (label: UILabel, _) in
+        let dateNode = LayoutNode(sizeProvider: dateString) { (label: UILabel, _) in
             label.attributedText = dateString
         }
 
-        let userStackNode = LayoutNode(children: [userNameNode, dateNode], config: { node in
-            node.flex = 1
-            node.flexDirection = .column
-            node.alignItems = .flexStart
+        let userStackNode = LayoutNode(children: [userNameNode, dateNode], {
+            $0.flex(1).flexDirection(.column).alignItems(.flexStart)
         })
         
-        let markStackNode: LayoutNode?
+        let markStackNode: LayoutNodeConvertible?
         
         if model.mark > 0 {
-            markStackNode = WorkReviewRatingLayoutSpec(model: (model.mark, model.votes)).makeNodeWith(sizeConstraints: sizeConstraints)
+            markStackNode = WorkReviewRatingLayoutSpec(model: (model.mark, model.votes)).makeNodeWith(boundingDimensions: boundingDimensions)
         } else {
             markStackNode = nil
         }
 
-        let contentNode = LayoutNode(children: [userAvatarNode, userStackNode, markStackNode], config: { node in
-            node.alignItems = .center
-            node.flexDirection = .row
-            node.padding(top: 16, left: 16, bottom: nil, right: 16)
+        let contentNode = LayoutNode(children: [userAvatarNode, userStackNode, markStackNode], {
+            $0.alignItems(.center).flexDirection(.row).padding(.horizontal(16), .top(16))
         })
 
         return contentNode
